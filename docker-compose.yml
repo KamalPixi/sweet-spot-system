@@ -1,0 +1,50 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: pudding_london_app
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    depends_on:
+      - db
+    volumes:
+      # Persistent storage for uploaded brand and product media files
+      - storage_data:/var/www/html/storage/app/public
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
+      - DB_CONNECTION=pgsql
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_DATABASE=pudding_london
+      - DB_USERNAME=pudding_user
+      - DB_PASSWORD=pudding_secure_pass
+      - APP_KEY=base64:3cO6/JmmDT9NQ+FEXEOtg9H0XeJgyx5xi+R6hZxKF1A=
+      - REVERB_APP_ID=864560
+      - REVERB_APP_KEY=mlt7q9koubgb3va3pkys
+      - REVERB_APP_SECRET=afgzzqterndgrh9xxfdu
+      - REVERB_HOST=localhost
+      - REVERB_PORT=443
+      - REVERB_SCHEME=https
+      - VITE_REVERB_APP_KEY=mlt7q9koubgb3va3pkys
+      - VITE_REVERB_HOST=localhost
+      - VITE_REVERB_PORT=443
+      - VITE_REVERB_SCHEME=https
+
+  db:
+    image: postgres:15-alpine
+    container_name: pudding_london_db
+    restart: unless-stopped
+    environment:
+      - POSTGRES_DB=pudding_london
+      - POSTGRES_USER=pudding_user
+      - POSTGRES_PASSWORD=pudding_secure_pass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+  storage_data:

@@ -1,0 +1,19 @@
+@import 'tailwindcss';
+
+@source '../js/**/*.jsx';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+
+@theme {
+    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+    --font-serif: 'Inter', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+}
+
+html {
+    background-color: #8F5336; /* Matches the brand brown header during top overscroll */
+}
+
+body {
+    background-color: #fdfaf5; /* Default warm background for the page content */
+}
