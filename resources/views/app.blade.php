@@ -1,9 +1,17 @@
 @php
-    $storeName = \App\Models\StoreConfig::where('key', 'store_name')->value('value') ?: 'Pudding London';
-    $seoTitle = \App\Models\StoreConfig::where('key', 'seo_title')->value('value') ?: 'Handcrafted Cakes & Specialty Coffee | Pudding London';
-    $seoDesc = \App\Models\StoreConfig::where('key', 'seo_description')->value('value') ?: 'Order handcrafted artisanal cakes, braids, and specialty coffee online for delivery or collection in London.';
-    $seoKeywords = \App\Models\StoreConfig::where('key', 'seo_keywords')->value('value') ?: 'cakes, coffee, london, bakery, artisanal, pastries';
-    $storeLogo = \App\Models\StoreConfig::where('key', 'store_logo')->value('value');
+    $storeName = 'Sweet Spot System';
+    $seoTitle = 'Handcrafted Treats & Coffee | Sweet Spot System';
+    $seoDesc = 'Order handcrafted artisanal treats, cakes, and coffee online for delivery or collection.';
+    $seoKeywords = 'cakes, coffee, bakery, artisanal, pastries, sweet spot';
+    $storeLogo = null;
+
+    if (\Illuminate\Support\Facades\Schema::hasTable('store_configs')) {
+        $storeName = \App\Models\StoreConfig::where('key', 'store_name')->value('value') ?: $storeName;
+        $seoTitle = \App\Models\StoreConfig::where('key', 'seo_title')->value('value') ?: $seoTitle;
+        $seoDesc = \App\Models\StoreConfig::where('key', 'seo_description')->value('value') ?: $seoDesc;
+        $seoKeywords = \App\Models\StoreConfig::where('key', 'seo_keywords')->value('value') ?: $seoKeywords;
+        $storeLogo = \App\Models\StoreConfig::where('key', 'store_logo')->value('value');
+    }
 @endphp
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">

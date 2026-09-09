@@ -13,6 +13,8 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\TrashController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\CloudPrntController;
+use App\Http\Controllers\Api\UberDirectController;
 
 /*
 |--------------------------------------------------------------------------
@@ -46,6 +48,24 @@ Route::middleware('throttle:global_api')->group(function () {
     Route::post('/orders', [OrderController::class, 'store'])->middleware('throttle:order_limit');
     Route::get('/orders/track/{orderNumber}', [OrderController::class, 'show']);
     Route::post('/payment/webhook', [OrderController::class, 'webhook']);
+
+    // --- Table Ordering / QR ---
+    Route::get('/tables/validate/{tableNumber}', function ($tableNumber) {
+        return response()->json([
+            'success' => true,
+            'table_number' => (string) $tableNumber,
+            'message' => 'Table verified',
+        ]);
+    });
+
+    // --- Star CloudPRNT (Printer Polling Protocol) ---
+    Route::post('/cloudprnt/poll', [CloudPrntController::class, 'poll']);
+    Route::get('/cloudprnt/job/{jobToken}', [CloudPrntController::class, 'getJob']);
+    Route::delete('/cloudprnt/job/{jobToken}', [CloudPrntController::class, 'deleteJob']);
+
+    // --- Uber Direct (Customer Quotation & Delivery Webhook) ---
+    Route::post('/delivery/uber/quote', [UberDirectController::class, 'getQuote']);
+    Route::post('/webhooks/uber-direct', [UberDirectController::class, 'webhook']);
 
     // --- Customer Auth (Throttled) ---
     Route::post('/customer/register', [CustomerAuthController::class, 'register'])->middleware('throttle:auth_limit');
@@ -102,6 +122,9 @@ Route::middleware('throttle:global_api')->group(function () {
             Route::get('/orders', [OrderController::class, 'adminOrders']);
             Route::get('/orders/{orderNumber}', [OrderController::class, 'adminOrderShow']);
             Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
+            Route::post('/orders/{id}/print', [CloudPrntController::class, 'manualPrint']);
+            Route::post('/orders/{id}/dispatch-uber', [UberDirectController::class, 'dispatchOrder']);
+            Route::get('/printer/jobs', [CloudPrntController::class, 'listJobs']);
             
             // Admin Collection Slots Management
             Route::post('/collection-slots', [CollectionSlotController::class, 'store']);

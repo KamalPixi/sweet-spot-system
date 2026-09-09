@@ -38,11 +38,12 @@ class CustomerService
         }
 
         // Create new guest customer
+        $phone = $data['phone'] ?? ('+4479' . rand(10000000, 99999999));
         return Customer::create([
             'first_name' => $data['first_name'] ?? null,
             'last_name' => $data['last_name'] ?? null,
             'email' => $data['email'] ?? null,
-            'phone' => $data['phone'] ?? null,
+            'phone' => $phone,
             'is_guest' => true,
         ]);
     }

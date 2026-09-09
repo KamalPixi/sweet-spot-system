@@ -103,8 +103,12 @@ class OrderService
                 if (!$slotExists) {
                     throw new Exception('The selected collection time slot is invalid or outside operating hours.');
                 }
+            } elseif ($type === 'dine_in') {
+                if (empty($data['table_number'])) {
+                    throw new Exception('Table number is required for dine-in table orders.');
+                }
             } else {
-                throw new Exception('Invalid order type. Must be delivery or collection.');
+                throw new Exception('Invalid order type. Must be delivery, collection, or dine_in.');
             }
 
             // 3. Process Cart Items
@@ -162,7 +166,8 @@ class OrderService
 
             // Calculate delivery fee after subtotal is known
             if ($type === 'delivery') {
-                $flatFee = (float) $this->storeConfigService->get('delivery_fee', '3.00');
+                $flatFee = (float) ($this->storeConfigService->get('store_delivery_base_fee')
+                    ?? $this->storeConfigService->get('delivery_fee', '3.00'));
                 $freeThreshold = $this->storeConfigService->get('free_delivery_threshold');
                 if ($freeThreshold !== null && $subtotal >= (float) $freeThreshold) {
                     $deliveryFee = 0.00;
@@ -191,11 +196,13 @@ class OrderService
                 'customer_id' => $customer->id,
                 'delivery_address_id' => $deliveryAddressId,
                 'type' => $type,
+                'table_number' => $data['table_number'] ?? null,
                 'status' => $initialStatus,
                 'collection_time' => $collectionTime,
                 'notes' => $data['notes'] ?? null,
                 'subtotal' => $subtotal,
                 'delivery_fee' => $deliveryFee,
+                'delivery_provider' => $data['delivery_provider'] ?? ($type === 'delivery' ? 'uber_direct' : null),
                 'total' => $total,
                 'payment_status' => 'unpaid',
                 'payment_method' => $paymentMethod,

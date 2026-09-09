@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use App\Services\RealtimeBroadcastService;
+use App\Services\CloudPrntService;
 use App\Models\Order;
 use App\Models\User;
 use App\Notifications\NewOrderPlacedNotification;
@@ -24,11 +25,16 @@ class OrderController extends Controller
 {
     protected OrderService $orderService;
     protected RealtimeBroadcastService $realtimeBroadcastService;
+    protected CloudPrntService $cloudPrntService;
 
-    public function __construct(OrderService $orderService, RealtimeBroadcastService $realtimeBroadcastService)
-    {
+    public function __construct(
+        OrderService $orderService,
+        RealtimeBroadcastService $realtimeBroadcastService,
+        CloudPrntService $cloudPrntService
+    ) {
         $this->orderService = $orderService;
         $this->realtimeBroadcastService = $realtimeBroadcastService;
+        $this->cloudPrntService = $cloudPrntService;
     }
 
     /**
@@ -77,13 +83,22 @@ class OrderController extends Controller
                 }
             }
 
-            // Only notify admin and broadcast once payment is confirmed, not for awaiting_payment orders
+            // Only notify admin, print and broadcast once payment is confirmed, not for awaiting_payment orders
             if ($order->status !== 'awaiting_payment') {
                 User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
                 if ($order->customer) {
                     $order->customer->notify(new \App\Notifications\CustomerOrderConfirmationNotification($order));
                 }
                 $this->realtimeBroadcastService->broadcastOrderCreated($order);
+
+                // Auto-print to Star CloudPRNT if enabled
+                if (config('services.star_cloudprnt.auto_print', true)) {
+                    try {
+                        $this->cloudPrntService->queueOrderReceipt($order);
+                    } catch (Exception $e) {
+                        logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
+                    }
+                }
             }
 
             $responseData = (new OrderResource($order))->resolve($request);
@@ -604,6 +619,15 @@ class OrderController extends Controller
                     $order->customer->notify(new \App\Notifications\CustomerOrderConfirmationNotification($order));
                 }
                 $this->realtimeBroadcastService->broadcastOrderCreated($order);
+
+                // Auto-print receipt upon successful payment
+                if (config('services.star_cloudprnt.auto_print', true)) {
+                    try {
+                        $this->cloudPrntService->queueOrderReceipt($order);
+                    } catch (Exception $e) {
+                        logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
+                    }
+                }
             } else {
                 $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
             }

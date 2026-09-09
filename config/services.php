@@ -41,4 +41,18 @@ return [
         'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
+    'uber_direct' => [
+        'client_id' => env('UBER_DIRECT_CLIENT_ID'),
+        'client_secret' => env('UBER_DIRECT_CLIENT_SECRET'),
+        'customer_id' => env('UBER_DIRECT_CUSTOMER_ID'),
+        'env' => env('UBER_DIRECT_ENV', 'sandbox'), // sandbox or production
+        'webhook_secret' => env('UBER_DIRECT_WEBHOOK_SECRET'),
+    ],
+
+    'star_cloudprnt' => [
+        'enabled' => env('STAR_CLOUDPRNT_ENABLED', true),
+        'allowed_macs' => env('STAR_CLOUDPRNT_ALLOWED_MACS', ''),
+        'auto_print' => env('STAR_CLOUDPRNT_AUTO_PRINT', true),
+    ],
+
 ];

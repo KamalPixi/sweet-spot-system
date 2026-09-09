@@ -14,7 +14,8 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
         $rules = [
-            'type' => 'required|in:delivery,collection',
+            'type' => 'required|in:delivery,collection,dine_in',
+            'table_number' => 'required_if:type,dine_in|nullable|string|max:50',
             'notes' => 'nullable|string',
             'payment_method' => 'nullable|string',
             'payment_transaction_id' => 'nullable|string',
@@ -27,8 +28,8 @@ class StoreOrderRequest extends FormRequest
         if (!$this->user() || !($this->user() instanceof \App\Models\Customer)) {
             $rules['customer.first_name'] = 'nullable|string|max:255';
             $rules['customer.last_name'] = 'nullable|string|max:255';
-            $rules['customer.phone'] = 'required_without:customer.email|nullable|string';
-            $rules['customer.email'] = 'required_without:customer.phone|nullable|email';
+            $rules['customer.phone'] = 'nullable|string';
+            $rules['customer.email'] = 'nullable|email';
         }
 
         if ($this->input('type') === 'delivery') {
