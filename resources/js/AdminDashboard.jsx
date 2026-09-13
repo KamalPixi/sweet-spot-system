@@ -1640,7 +1640,7 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#FBF9F5] text-[#261B16] font-sans flex">
+        <div className="min-h-screen bg-[#F5EFEB] text-[#132B25] font-sans flex">
             <AdminSidebar
                 collapsed={sidebarCollapsed}
                 onToggleCollapsed={() => setSidebarCollapsed(prev => !prev)}
@@ -1653,9 +1653,12 @@ export default function AdminDashboard() {
                 }}
                 onLogout={handleLogout}
                 sections={sidebarSections}
+                adminDisplayName={adminDisplayName}
+                userEmail={user?.email || 'admin@sweetspot.co.uk'}
+                adminRole={adminRole}
             />
 
-            <main className="flex-grow max-h-screen overflow-y-auto w-full bg-[#FBF9F5]">
+            <main className="flex-grow max-h-screen overflow-y-auto w-full bg-[#F5EFEB]">
                 <AdminTopbar
                     sectionLabel={currentSectionLabel}
                     adminRole={adminRole}
@@ -1692,7 +1695,7 @@ export default function AdminDashboard() {
                     orderSummary={orderSummary}
                 />
 
-                <div className="p-8">
+                <div className="pt-2 pr-2.5 lg:pr-3 pl-0 pb-8">
                 {loading && !catFormOpen && !prodFormOpen ? (
                     <div className="flex items-center justify-center py-24">
                         <Loader2 className="animate-spin text-neutral-950" size={40} />
@@ -1717,42 +1720,42 @@ export default function AdminDashboard() {
 
                             return (
                                 <div className="space-y-6 pb-10">
-                                    {/* Atelier Hero Command Banner */}
-                                    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#2D1B15] via-[#241510] to-[#170C08] p-6 md:p-8 text-[#FFF9F2] shadow-[0_8px_24px_-8px_rgba(45,27,21,0.2)] border border-amber-950/40">
+                                    {/* Atelier Hero Command Banner (Ember Forest & Warm Terracotta) */}
+                                    <div className="relative overflow-hidden rounded-2xl bg-primary text-white p-6 md:p-8 shadow-sm border border-stone-200/40">
                                         {/* Background subtle art glow */}
-                                        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-72 h-72 bg-gradient-to-br from-amber-600/20 to-transparent rounded-full blur-3xl pointer-events-none" />
-                                        <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+                                        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-emerald-700/20 rounded-full blur-3xl pointer-events-none" />
+                                        <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-accent/10 rounded-full blur-2xl pointer-events-none" />
 
-                                        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
-                                            <div className="space-y-1.5 max-w-xl">
-                                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-extrabold uppercase tracking-widest">
-                                                    <Sparkles size={11} className="text-amber-400" />
+                                        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                                            <div className="space-y-2 max-w-xl">
+                                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-emerald-500/20 text-accent text-[10px] font-bold uppercase tracking-widest">
+                                                    <Sparkles size={11} className="text-accent" />
                                                     <span>Sweet Spot · Live Operations</span>
                                                 </div>
-                                                <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-tight text-[#FFF8F0] leading-tight">
+                                                <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-tight text-white leading-tight">
                                                     {greeting}, {user?.name?.split(' ')[0] || 'Atelier Master'}
                                                 </h1>
-                                                <p className="text-xs md:text-sm text-stone-300/90 font-light leading-relaxed">
+                                                <p className="text-xs md:text-sm text-emerald-100/75 font-light leading-relaxed">
                                                     Your kitchen is live. Currently tracking{' '}
-                                                    <span className="font-semibold text-amber-300">{reports.today_orders || 0} order{reports.today_orders !== 1 ? 's' : ''}</span>{' '}
+                                                    <span className="font-semibold text-accent">{reports.today_orders || 0} order{reports.today_orders !== 1 ? 's' : ''}</span>{' '}
                                                     today across UK Deliveries, Store Collections, and Dine-In QR tables.
                                                 </p>
                                             </div>
 
                                             {/* Quick Operational Shortcuts */}
-                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-2.5 shrink-0">
+                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-3 shrink-0">
                                                 <button
                                                     onClick={() => setActiveTab('tables')}
-                                                    className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-[#261B16] text-xs font-black tracking-tight transition-all duration-200 flex items-center gap-2 shadow-md shadow-amber-950/40 cursor-pointer border border-amber-400/40 hover:-translate-y-0.5"
+                                                    className="px-4 py-2.5 rounded-xl bg-secondary hover:bg-secondary-hover active:scale-98 text-white text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 shadow-xs cursor-pointer hover:-translate-y-0.5"
                                                 >
                                                     <QrCode size={14} className="stroke-[2.5]" />
                                                     <span>Table QR Floorplan</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setActiveTab('printers')}
-                                                    className="px-4 py-2.5 rounded-lg bg-[#33241D]/90 hover:bg-[#3D2C23] active:bg-[#281B15] text-[#FFF9F2] border border-[#523B2E] text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-sm hover:-translate-y-0.5"
+                                                    className="px-4 py-2.5 rounded-xl bg-primary-light hover:bg-[#23493F] active:scale-98 text-white border border-emerald-500/20 text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5"
                                                 >
-                                                    <Printer size={14} className="text-amber-400" />
+                                                    <Printer size={14} className="text-accent" />
                                                     <span>Star TSP100 CloudPRNT</span>
                                                 </button>
                                             </div>
@@ -1762,23 +1765,23 @@ export default function AdminDashboard() {
                                     {/* Urgent Orders Alert Banner */}
                                     {activeOrdersCount > 0 && (
                                         <div
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200/80 rounded-lg px-4 py-3 cursor-pointer hover:border-amber-300 hover:shadow-xs transition-all duration-200"
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-secondary-light/70 border border-secondary/20 rounded-2xl px-5 py-3.5 cursor-pointer hover:border-secondary/40 hover:shadow-xs transition-all duration-200"
                                             onClick={() => setActiveTab('orders')}
                                         >
                                             <div className="flex items-center gap-3">
-                                                <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0" />
+                                                <div className="w-2.5 h-2.5 rounded-full bg-secondary animate-ping shrink-0" />
                                                 <div>
-                                                    <p className="text-xs font-black text-[#261B16]">
+                                                    <p className="text-xs font-bold text-primary">
                                                         {activeOrdersCount} order{activeOrdersCount !== 1 ? 's' : ''} requiring live kitchen attention
                                                     </p>
                                                     <p className="text-[11px] text-stone-600 mt-0.5">
-                                                        {reports.orders_count.pending > 0 && <span className="font-semibold text-amber-900">• {reports.orders_count.pending} pending checkout </span>}
-                                                        {reports.orders_count.preparing > 0 && <span className="font-semibold text-amber-900">• {reports.orders_count.preparing} baking in oven </span>}
-                                                        {reports.orders_count.ready > 0 && <span className="font-semibold text-emerald-900">• {reports.orders_count.ready} packed & ready</span>}
+                                                        {reports.orders_count.pending > 0 && <span className="font-semibold text-secondary">• {reports.orders_count.pending} pending checkout </span>}
+                                                        {reports.orders_count.preparing > 0 && <span className="font-semibold text-amber-700">• {reports.orders_count.preparing} baking in oven </span>}
+                                                        {reports.orders_count.ready > 0 && <span className="font-semibold text-emerald-800">• {reports.orders_count.ready} packed & ready</span>}
                                                     </p>
                                                 </div>
                                             </div>
-                                            <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 self-end sm:self-center shrink-0">
+                                            <div className="flex items-center gap-1.5 text-xs font-bold text-secondary self-end sm:self-center shrink-0">
                                                 <span>Review Orders Pipeline</span>
                                                 <ArrowUpRight size={13} />
                                             </div>
@@ -1793,35 +1796,35 @@ export default function AdminDashboard() {
                                                 value: `£${reports.today_sales.toFixed(2)}`,
                                                 sub: `£${reports.this_week_sales?.toFixed(2) || '0.00'} this week`,
                                                 icon: DollarSign,
-                                                iconBg: 'bg-amber-100 text-amber-800',
+                                                iconBg: 'bg-primary/10 text-primary',
                                             },
                                             {
                                                 label: "Orders Today",
                                                 value: reports.today_orders ?? 0,
                                                 sub: reports.today_orders > 0 ? 'Orders received' : 'No orders yet',
                                                 icon: ClipboardList,
-                                                iconBg: 'bg-orange-100 text-orange-800',
+                                                iconBg: 'bg-secondary/15 text-secondary',
                                             },
                                             {
                                                 label: 'Pending',
                                                 value: reports.orders_count.pending,
                                                 sub: 'Awaiting queue',
                                                 icon: Clock,
-                                                iconBg: 'bg-amber-50 text-amber-700',
+                                                iconBg: 'bg-amber-100 text-amber-800',
                                             },
                                             {
                                                 label: 'In The Oven',
                                                 value: reports.orders_count.preparing,
                                                 sub: 'Active preparation',
                                                 icon: Flame,
-                                                iconBg: 'bg-sky-50 text-sky-700',
+                                                iconBg: 'bg-sky-100 text-sky-800',
                                             },
                                             {
                                                 label: 'Ready / Dispatch',
                                                 value: reports.orders_count.ready,
                                                 sub: 'Ready for handoff',
                                                 icon: CheckCircle2,
-                                                iconBg: 'bg-emerald-50 text-emerald-700',
+                                                iconBg: 'bg-emerald-100 text-emerald-800',
                                             },
                                             {
                                                 label: 'Fulfilled',
@@ -1833,21 +1836,21 @@ export default function AdminDashboard() {
                                         ].map((card, i) => (
                                             <div
                                                 key={card.label}
-                                                className="bg-white border border-stone-200/70 rounded-lg p-3.5 md:p-4 shadow-xs hover:shadow-sm hover:border-amber-300/60 transition-all duration-200 flex flex-col justify-between group"
+                                                className="bg-surface border border-stone-200/70 rounded-2xl p-4 shadow-2xs hover:shadow-xs hover:border-primary/30 transition-all duration-200 flex flex-col justify-between group"
                                             >
                                                 <div className="flex items-center justify-between mb-2.5">
-                                                    <span className="text-[9px] font-black text-stone-400 uppercase tracking-widest">
+                                                    <span className="text-[9.5px] font-bold text-stone-400 uppercase tracking-wider">
                                                         {card.label}
                                                     </span>
-                                                    <div className={`w-6 h-6 rounded-md ${card.iconBg} flex items-center justify-center shrink-0`}>
-                                                        <card.icon size={12} />
+                                                    <div className={`w-7 h-7 rounded-xl ${card.iconBg} flex items-center justify-center shrink-0`}>
+                                                        <card.icon size={13} />
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <span className="text-xl lg:text-[22px] font-black font-serif text-[#261B16] block tracking-tight group-hover:text-amber-700 transition-colors">
+                                                    <span className="text-xl lg:text-[22px] font-black font-serif text-primary block tracking-tight group-hover:text-secondary transition-colors">
                                                         {card.value}
                                                     </span>
-                                                    <span className="text-[9.5px] font-medium text-stone-400 mt-0.5 block truncate">
+                                                    <span className="text-[10px] font-medium text-stone-400 mt-0.5 block truncate">
                                                         {card.sub}
                                                     </span>
                                                 </div>

@@ -8,6 +8,19 @@
     --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
     --font-serif: 'Inter', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+
+    /* Single source of truth color tokens (Ember / Dark Forest & Terracotta aesthetic) */
+    --color-primary: #132B25;
+    --color-primary-hover: #1D3F37;
+    --color-primary-light: #1C3B33;
+    --color-secondary: #C84C1C;
+    --color-secondary-hover: #AF3E15;
+    --color-secondary-light: #FBF1EC;
+    --color-canvas: #F5EFEB;
+    --color-surface: #FFFFFF;
+    --color-accent: #E4C586;
+    --color-accent-hover: #D8B774;
+    --color-accent-light: #FBF7EE;
 }
 
 html {
