@@ -23,7 +23,7 @@ export default function AdminSidebar({
                             className="flex items-center space-x-3 cursor-pointer group select-none"
                             onClick={() => onTabChange('dashboard')}
                         >
-                            <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-[#D97706] via-[#B45309] to-[#78350F] text-white flex items-center justify-center font-serif font-black shadow-md shadow-amber-800/20 shrink-0 text-base tracking-tighter group-hover:scale-105 transition-transform duration-200">
+                            <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[#D97706] via-[#B45309] to-[#78350F] text-white flex items-center justify-center font-serif font-black shadow-sm shadow-amber-800/20 shrink-0 text-sm tracking-tighter group-hover:scale-105 transition-transform duration-200">
                                 <span>SS</span>
                             </div>
                             <div className="text-left leading-tight">
@@ -43,7 +43,7 @@ export default function AdminSidebar({
                         </div>
                     ) : (
                         <div
-                            className="flex items-center justify-center cursor-pointer w-10 h-10 rounded-2xl bg-gradient-to-br from-[#D97706] via-[#B45309] to-[#78350F] text-white font-serif font-black shadow-md shadow-amber-800/20 text-sm hover:scale-105 transition-transform"
+                            className="flex items-center justify-center cursor-pointer w-9 h-9 rounded-lg bg-gradient-to-br from-[#D97706] via-[#B45309] to-[#78350F] text-white font-serif font-black shadow-sm shadow-amber-800/20 text-xs hover:scale-105 transition-transform"
                             onClick={() => onTabChange('dashboard')}
                             title="Sweet Spot System"
                         >
@@ -52,7 +52,7 @@ export default function AdminSidebar({
                     )}
                     <button
                         onClick={onToggleCollapsed}
-                        className="p-1.5 rounded-xl border border-stone-200/80 bg-white/90 text-stone-400 hover:text-stone-800 hover:bg-white hover:border-stone-300 transition-all shadow-xs cursor-pointer"
+                        className="p-1.5 rounded-md border border-stone-200/80 bg-white/90 text-stone-400 hover:text-stone-800 hover:bg-white hover:border-stone-300 transition-all shadow-xs cursor-pointer"
                         title={collapsed ? 'Expand Menu' : 'Collapse Menu'}
                     >
                         {collapsed ? <ChevronRight size={13} /> : <ChevronLeft size={13} />}
@@ -64,7 +64,7 @@ export default function AdminSidebar({
                     {sections.map(section => (
                         <div key={section.label} className="space-y-1">
                             {!collapsed && (
-                                <div className="px-3.5 pb-1 text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-stone-400/90 select-none">
+                                <div className="px-3 pb-1 text-[9.5px] font-extrabold uppercase tracking-[0.16em] text-stone-400/90 select-none">
                                     {section.label}
                                 </div>
                             )}
@@ -82,11 +82,11 @@ export default function AdminSidebar({
                                             key={item.id}
                                             onClick={() => onTabChange(item.id)}
                                             className={`w-full flex items-center transition-all duration-200 ${
-                                                collapsed ? 'justify-center p-2.5 relative' : 'gap-3 px-3.5 py-2.5'
-                                            } text-[12.5px] font-bold rounded-xl cursor-pointer ${
+                                                collapsed ? 'justify-center p-2.5 relative' : 'gap-2.5 px-3 py-2'
+                                            } text-[12.5px] font-bold rounded-lg cursor-pointer ${
                                                 isActive
-                                                    ? 'bg-gradient-to-r from-[#2B1B15] to-[#1E130E] text-[#FFF9F2] shadow-sm shadow-[#2B1B15]/20'
-                                                    : 'text-stone-600 hover:text-[#261B16] hover:bg-white/80 hover:shadow-xs'
+                                                    ? 'bg-[#261B16] text-[#FFF9F2] shadow-xs'
+                                                    : 'text-stone-600 hover:text-[#261B16] hover:bg-white/80'
                                             }`}
                                             title={collapsed ? item.label : undefined}
                                         >
@@ -105,14 +105,14 @@ export default function AdminSidebar({
                                                         {item.label}
                                                     </span>
                                                     {item.badge && (
-                                                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-black ${isActive ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30' : badgeClasses}`}>
+                                                        <span className={`px-2 py-0.5 rounded-md text-[9px] font-black ${isActive ? 'bg-amber-400/20 text-amber-300 border border-amber-400/30' : badgeClasses}`}>
                                                             {item.badge}
                                                         </span>
                                                     )}
                                                 </>
                                             )}
                                             {collapsed && item.badge && (
-                                                <span className={`absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full text-[9px] font-black flex items-center justify-center ${isActive ? 'bg-amber-400 text-stone-950 font-bold' : badgeClasses}`}>
+                                                <span className={`absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-md text-[9px] font-black flex items-center justify-center ${isActive ? 'bg-amber-400 text-stone-950 font-bold' : badgeClasses}`}>
                                                     {item.badge}
                                                 </span>
                                             )}
@@ -128,9 +128,9 @@ export default function AdminSidebar({
             {/* Footer / Store Badge & Log Out */}
             <div className="pt-3 mt-2 border-t border-stone-200/80 space-y-2">
                 {!collapsed && (
-                    <div className="bg-white/70 border border-stone-200/60 rounded-xl p-2.5 flex items-center justify-between">
+                    <div className="bg-white/70 border border-stone-200/60 rounded-lg p-2.5 flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500 ring-4 ring-emerald-100" />
+                            <span className="w-2 h-2 rounded-full bg-emerald-500 ring-2 ring-emerald-100" />
                             <div className="text-left">
                                 <p className="text-[10px] font-bold text-stone-800 leading-tight">London HQ Store</p>
                                 <p className="text-[9px] text-stone-400 leading-tight">Dine-In · Deliveries · Pickup</p>
@@ -140,7 +140,7 @@ export default function AdminSidebar({
                 )}
                 <button
                     onClick={onLogout}
-                    className={`w-full py-2 bg-transparent text-stone-500 hover:text-rose-600 hover:bg-rose-50/70 rounded-xl text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
+                    className={`w-full py-2 bg-transparent text-stone-500 hover:text-rose-600 hover:bg-rose-50/70 rounded-lg text-xs font-bold flex items-center justify-center transition-all cursor-pointer ${
                         collapsed ? 'px-0' : 'space-x-2'
                     }`}
                     title="Log Out of Portal"

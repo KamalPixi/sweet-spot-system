@@ -1708,20 +1708,20 @@ export default function AdminDashboard() {
                             };
 
                             return (
-                                <div className="space-y-7 pb-10">
+                                <div className="space-y-6 pb-10">
                                     {/* Atelier Hero Command Banner */}
-                                    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2D1B15] via-[#241510] to-[#170C08] p-7 md:p-9 text-[#FFF9F2] shadow-[0_12px_36px_-12px_rgba(45,27,21,0.25)] border border-amber-950/40">
+                                    <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-[#2D1B15] via-[#241510] to-[#170C08] p-6 md:p-8 text-[#FFF9F2] shadow-[0_8px_24px_-8px_rgba(45,27,21,0.2)] border border-amber-950/40">
                                         {/* Background subtle art glow */}
                                         <div className="absolute top-0 right-0 -mt-8 -mr-8 w-72 h-72 bg-gradient-to-br from-amber-600/20 to-transparent rounded-full blur-3xl pointer-events-none" />
                                         <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
-                                        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
-                                            <div className="space-y-2 max-w-xl">
-                                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10.5px] font-extrabold uppercase tracking-widest">
+                                        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-5">
+                                            <div className="space-y-1.5 max-w-xl">
+                                                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10px] font-extrabold uppercase tracking-widest">
                                                     <Sparkles size={11} className="text-amber-400" />
                                                     <span>Sweet Spot · Live Operations</span>
                                                 </div>
-                                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-black tracking-tight text-[#FFF8F0] leading-tight">
+                                                <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-tight text-[#FFF8F0] leading-tight">
                                                     {greeting}, {user?.name?.split(' ')[0] || 'Atelier Master'}
                                                 </h1>
                                                 <p className="text-xs md:text-sm text-stone-300/90 font-light leading-relaxed">
@@ -1732,19 +1732,19 @@ export default function AdminDashboard() {
                                             </div>
 
                                             {/* Quick Operational Shortcuts */}
-                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-2.5 shrink-0">
+                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-2 shrink-0">
                                                 <button
                                                     onClick={() => setActiveTab('tables')}
-                                                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-[#261B16] text-xs font-black tracking-tight transition-all duration-200 flex items-center gap-2 shadow-sm cursor-pointer"
+                                                    className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-[#261B16] text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 shadow-xs cursor-pointer"
                                                 >
-                                                    <QrCode size={14} />
+                                                    <QrCode size={13} />
                                                     <span>Table QR Floorplan</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setActiveTab('printers')}
-                                                    className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/15 text-white border border-white/15 text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer"
+                                                    className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/15 text-white border border-white/15 text-xs font-semibold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer"
                                                 >
-                                                    <Printer size={14} className="text-amber-400" />
+                                                    <Printer size={13} className="text-amber-400" />
                                                     <span>Star CloudPRNT</span>
                                                 </button>
                                             </div>
@@ -1754,11 +1754,11 @@ export default function AdminDashboard() {
                                     {/* Urgent Orders Alert Banner */}
                                     {activeOrdersCount > 0 && (
                                         <div
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200/80 rounded-2xl px-5 py-4 cursor-pointer hover:border-amber-300 hover:shadow-xs transition-all duration-200"
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200/80 rounded-lg px-4 py-3 cursor-pointer hover:border-amber-300 hover:shadow-xs transition-all duration-200"
                                             onClick={() => setActiveTab('orders')}
                                         >
-                                            <div className="flex items-center gap-3.5">
-                                                <div className="w-3 h-3 rounded-full bg-amber-500 animate-ping shrink-0" />
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping shrink-0" />
                                                 <div>
                                                     <p className="text-xs font-black text-[#261B16]">
                                                         {activeOrdersCount} order{activeOrdersCount !== 1 ? 's' : ''} requiring live kitchen attention
@@ -1772,13 +1772,13 @@ export default function AdminDashboard() {
                                             </div>
                                             <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 self-end sm:self-center shrink-0">
                                                 <span>Review Orders Pipeline</span>
-                                                <ArrowUpRight size={14} />
+                                                <ArrowUpRight size={13} />
                                             </div>
                                         </div>
                                     )}
 
                                     {/* Executive Atelier Metric Tiles */}
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 md:gap-4">
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3">
                                         {[
                                             {
                                                 label: "Today's Gross",
@@ -1825,21 +1825,21 @@ export default function AdminDashboard() {
                                         ].map((card, i) => (
                                             <div
                                                 key={card.label}
-                                                className="bg-white border border-stone-200/70 rounded-2xl p-4 md:p-5 shadow-[0_4px_16px_-4px_rgba(180,140,110,0.06)] hover:shadow-md hover:border-amber-300/60 transition-all duration-200 flex flex-col justify-between group"
+                                                className="bg-white border border-stone-200/70 rounded-lg p-3.5 md:p-4 shadow-xs hover:shadow-sm hover:border-amber-300/60 transition-all duration-200 flex flex-col justify-between group"
                                             >
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <span className="text-[9.5px] font-black text-stone-400 uppercase tracking-widest">
+                                                <div className="flex items-center justify-between mb-2.5">
+                                                    <span className="text-[9px] font-black text-stone-400 uppercase tracking-widest">
                                                         {card.label}
                                                     </span>
-                                                    <div className={`w-7 h-7 rounded-lg ${card.iconBg} flex items-center justify-center shrink-0`}>
-                                                        <card.icon size={13} />
+                                                    <div className={`w-6 h-6 rounded-md ${card.iconBg} flex items-center justify-center shrink-0`}>
+                                                        <card.icon size={12} />
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <span className="text-2xl lg:text-[26px] font-black font-serif text-[#261B16] block tracking-tight group-hover:text-amber-700 transition-colors">
+                                                    <span className="text-xl lg:text-[22px] font-black font-serif text-[#261B16] block tracking-tight group-hover:text-amber-700 transition-colors">
                                                         {card.value}
                                                     </span>
-                                                    <span className="text-[10px] font-medium text-stone-400 mt-1 block truncate">
+                                                    <span className="text-[9.5px] font-medium text-stone-400 mt-0.5 block truncate">
                                                         {card.sub}
                                                     </span>
                                                 </div>
@@ -1850,21 +1850,21 @@ export default function AdminDashboard() {
                                     {/* Order Pipeline Timeline & 3-Way Fulfilment Hub */}
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                                         {/* Kitchen Pipeline Flow */}
-                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-3xl p-6 md:p-7 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)]">
-                                            <div className="flex items-center justify-between mb-5">
+                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-xl p-5 md:p-6 shadow-xs">
+                                            <div className="flex items-center justify-between mb-4">
                                                 <div>
-                                                    <h2 className="text-sm font-black uppercase tracking-wider text-[#261B16]">
+                                                    <h2 className="text-xs font-black uppercase tracking-wider text-[#261B16]">
                                                         Kitchen Order Pipeline
                                                     </h2>
-                                                    <p className="text-[11px] text-stone-400 mt-0.5">Real-time status progression of all order batches</p>
+                                                    <p className="text-[10.5px] text-stone-400 mt-0.5">Real-time status progression of all order batches</p>
                                                 </div>
-                                                <span className="text-[11px] font-bold text-stone-500 bg-stone-100/80 px-2.5 py-1 rounded-full">
+                                                <span className="text-[10px] font-bold text-stone-500 bg-stone-100/80 px-2 py-0.5 rounded-md">
                                                     {totalOrders} Total Orders
                                                 </span>
                                             </div>
 
                                             {/* Stacked Progress Bar */}
-                                            <div className="flex gap-1.5 mb-5 h-3 rounded-full overflow-hidden bg-stone-100 p-0.5 border border-stone-200/60">
+                                            <div className="flex gap-1 mb-4 h-2.5 rounded-full overflow-hidden bg-stone-100 p-0.5 border border-stone-200/60">
                                                 {Object.entries(reports.orders_count).map(([key, count]) => {
                                                     const cfg = statusConfig[key];
                                                     const pct = totalOrders > 0 ? (count / totalOrders) * 100 : 0;
@@ -1880,12 +1880,12 @@ export default function AdminDashboard() {
                                             </div>
 
                                             {/* Legend Chips */}
-                                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2 border-t border-stone-100">
+                                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-stone-100">
                                                 {Object.entries(reports.orders_count).map(([key, count]) => {
                                                     const cfg = statusConfig[key];
                                                     const pct = totalOrders > 0 ? Math.round((count / totalOrders) * 100) : 0;
                                                     return (
-                                                        <div key={key} className="bg-[#FAF7F2]/60 rounded-xl p-2.5 border border-stone-200/40 text-left">
+                                                        <div key={key} className="bg-[#FAF7F2]/60 rounded-lg p-2.5 border border-stone-200/40 text-left">
                                                             <div className="flex items-center gap-1.5 mb-1">
                                                                 <div className={`w-2 h-2 rounded-full ${cfg.color}`} />
                                                                 <span className="text-[10.5px] text-stone-500 font-bold truncate">{cfg.label}</span>
@@ -1901,16 +1901,16 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* 3-Way Fulfilment Split Card */}
-                                        <div className="bg-white border border-stone-200/70 rounded-3xl p-6 md:p-7 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)] flex flex-col justify-between">
+                                        <div className="bg-white border border-stone-200/70 rounded-xl p-5 md:p-6 shadow-xs flex flex-col justify-between">
                                             <div>
-                                                <div className="flex items-center justify-between mb-5">
+                                                <div className="flex items-center justify-between mb-4">
                                                     <div>
-                                                        <h2 className="text-sm font-black uppercase tracking-wider text-[#261B16]">
+                                                        <h2 className="text-xs font-black uppercase tracking-wider text-[#261B16]">
                                                             Fulfillment Channels
                                                         </h2>
-                                                        <p className="text-[11px] text-stone-400 mt-0.5">3-Way split across dining formats</p>
+                                                        <p className="text-[10.5px] text-stone-400 mt-0.5">3-Way split across dining formats</p>
                                                     </div>
-                                                    <span className="text-[10px] font-black text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-full">
+                                                    <span className="text-[9.5px] font-black text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-md">
                                                         Triple-Channel
                                                     </span>
                                                 </div>
@@ -1918,7 +1918,7 @@ export default function AdminDashboard() {
                                                 {fulfillmentTotal === 0 ? (
                                                     <p className="text-xs text-stone-400 text-center py-8">No fulfillment data recorded yet.</p>
                                                 ) : (
-                                                    <div className="space-y-4">
+                                                    <div className="space-y-3">
                                                         {[
                                                             { label: 'Home Delivery (Uber Direct)', key: 'delivery', icon: Truck, color: 'bg-[#261B16]', badgeBg: 'bg-stone-100 text-stone-800' },
                                                             { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-amber-600', badgeBg: 'bg-amber-50 text-amber-800' },
@@ -1927,9 +1927,9 @@ export default function AdminDashboard() {
                                                             const count = reports.fulfillment_split?.[f.key] || 0;
                                                             const pct = fulfillmentTotal > 0 ? Math.round((count / fulfillmentTotal) * 100) : 0;
                                                             return (
-                                                                <div key={f.key} className="bg-[#FAF7F2]/60 border border-stone-200/50 rounded-2xl p-3">
-                                                                    <div className="flex justify-between items-center mb-2">
-                                                                        <span className="text-xs font-bold text-stone-700 flex items-center gap-2">
+                                                                <div key={f.key} className="bg-[#FAF7F2]/60 border border-stone-200/50 rounded-lg p-2.5">
+                                                                    <div className="flex justify-between items-center mb-1.5">
+                                                                        <span className="text-xs font-bold text-stone-700 flex items-center gap-1.5">
                                                                             <f.icon size={13} className="text-amber-700 shrink-0" />
                                                                             {f.label}
                                                                         </span>
@@ -1948,8 +1948,8 @@ export default function AdminDashboard() {
                                                 )}
                                             </div>
 
-                                            <div className="pt-4 mt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
-                                                <span>Table scan & courier integrations live</span>
+                                            <div className="pt-3.5 mt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
+                                                <span>Table scan & courier live</span>
                                                 <span className="font-bold text-amber-700 cursor-pointer hover:underline" onClick={() => setActiveTab('tables')}>Manage Tables →</span>
                                             </div>
                                         </div>
@@ -1958,13 +1958,13 @@ export default function AdminDashboard() {
                                     {/* Recent Live Orders & Top Artisanal Desserts */}
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
                                         {/* Recent Orders Atelier Feed */}
-                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-3xl shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)] overflow-hidden">
-                                            <div className="px-6 py-5 border-b border-stone-100 flex justify-between items-center bg-[#FAF7F2]/40">
+                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-xl shadow-xs overflow-hidden">
+                                            <div className="px-5 py-4 border-b border-stone-100 flex justify-between items-center bg-[#FAF7F2]/40">
                                                 <div>
-                                                    <h2 className="font-black text-[#261B16] text-sm uppercase tracking-wider">
+                                                    <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider">
                                                         Recent Kitchen Orders
                                                     </h2>
-                                                    <p className="text-[11px] text-stone-400 mt-0.5">Live feed of orders entering the atelier</p>
+                                                    <p className="text-[10.5px] text-stone-400 mt-0.5">Live feed of orders entering the atelier</p>
                                                 </div>
                                                 <button
                                                     onClick={() => setActiveTab('orders')}
@@ -1985,11 +1985,11 @@ export default function AdminDashboard() {
                                                     <table className="w-full text-xs text-left">
                                                         <thead>
                                                             <tr className="bg-[#FAF7F2]/80 text-stone-400 uppercase tracking-widest font-extrabold text-[9px] border-b border-stone-100">
-                                                                <th className="py-3 px-6">Order ID</th>
-                                                                <th className="py-3 px-6">Guest</th>
-                                                                <th className="py-3 px-6">Fulfillment</th>
-                                                                <th className="py-3 px-6">Total</th>
-                                                                <th className="py-3 px-6">Status</th>
+                                                                <th className="py-2.5 px-5">Order ID</th>
+                                                                <th className="py-2.5 px-5">Guest</th>
+                                                                <th className="py-2.5 px-5">Fulfillment</th>
+                                                                <th className="py-2.5 px-5">Total</th>
+                                                                <th className="py-2.5 px-5">Status</th>
                                                             </tr>
                                                         </thead>
                                                         <tbody className="divide-y divide-stone-100/70">
@@ -2001,14 +2001,14 @@ export default function AdminDashboard() {
                                                                         onClick={() => navigate(`/admin/orders/${o.order_number}`)}
                                                                         className="hover:bg-amber-50/30 transition-colors cursor-pointer"
                                                                     >
-                                                                        <td className="py-3.5 px-6 font-mono font-bold text-amber-900 text-[11px]">
+                                                                        <td className="py-3 px-5 font-mono font-bold text-amber-900 text-[11px]">
                                                                             #{o.order_number}
                                                                         </td>
-                                                                        <td className="py-3.5 px-6 font-semibold text-stone-800">
+                                                                        <td className="py-3 px-5 font-semibold text-stone-800">
                                                                             {o.customer_name || 'Guest Diner'}
                                                                         </td>
-                                                                        <td className="py-3.5 px-6">
-                                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-stone-200/60 text-[10.5px] font-bold text-stone-700">
+                                                                        <td className="py-3 px-5">
+                                                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF7F2] border border-stone-200/60 text-[10.5px] font-bold text-stone-700">
                                                                                 {o.type === 'delivery' ? (
                                                                                     <><Truck size={11} className="text-amber-700" /><span>Delivery</span></>
                                                                                 ) : o.type === 'dine_in' ? (
@@ -2018,11 +2018,11 @@ export default function AdminDashboard() {
                                                                                 )}
                                                                             </span>
                                                                         </td>
-                                                                        <td className="py-3.5 px-6 font-black font-serif text-[#261B16] text-[13px]">
+                                                                        <td className="py-3 px-5 font-black font-serif text-[#261B16] text-[13px]">
                                                                             £{o.total.toFixed(2)}
                                                                         </td>
-                                                                        <td className="py-3.5 px-6">
-                                                                            <span className={`px-2.5 py-0.5 text-[9.5px] font-bold rounded-full border capitalize ${cfg.pill}`}>
+                                                                        <td className="py-3 px-5">
+                                                                            <span className={`px-2 py-0.5 text-[9.5px] font-bold rounded-md border capitalize ${cfg.pill}`}>
                                                                                 {cfg.label}
                                                                             </span>
                                                                         </td>
@@ -2036,10 +2036,10 @@ export default function AdminDashboard() {
                                         </div>
 
                                         {/* Best Sellers & Category Revenue */}
-                                        <div className="space-y-5">
+                                        <div className="space-y-4">
                                             {/* Category Breakdown */}
-                                            <div className="bg-white border border-stone-200/70 rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)]">
-                                                <div className="flex items-center justify-between mb-4">
+                                            <div className="bg-white border border-stone-200/70 rounded-xl p-5 shadow-xs">
+                                                <div className="flex items-center justify-between mb-3">
                                                     <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider">
                                                         Revenue by Category
                                                     </h2>
@@ -2070,18 +2070,18 @@ export default function AdminDashboard() {
 
                                             {/* Best Selling Treats */}
                                             {reports.top_products?.length > 0 && (
-                                                <div className="bg-white border border-stone-200/70 rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)]">
-                                                    <div className="flex items-center justify-between mb-4">
+                                                <div className="bg-white border border-stone-200/70 rounded-xl p-5 shadow-xs">
+                                                    <div className="flex items-center justify-between mb-3">
                                                         <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider flex items-center gap-1.5">
                                                             <Trophy size={13} className="text-amber-600" />
                                                             <span>Best-Selling Treats</span>
                                                         </h2>
                                                         <span className="text-[10px] text-stone-400">Popular</span>
                                                     </div>
-                                                    <div className="space-y-3">
+                                                    <div className="space-y-2.5">
                                                         {reports.top_products.map((p, idx) => (
-                                                            <div key={idx} className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FAF7F2] transition-colors">
-                                                                <span className="text-[10px] font-serif font-black text-amber-700 bg-amber-100/70 w-5 h-5 rounded-lg flex items-center justify-center shrink-0">
+                                                            <div key={idx} className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-[#FAF7F2] transition-colors">
+                                                                <span className="text-[10px] font-serif font-black text-amber-700 bg-amber-100/70 w-5 h-5 rounded-md flex items-center justify-center shrink-0">
                                                                     #{idx + 1}
                                                                 </span>
                                                                 <div className="flex-grow min-w-0">

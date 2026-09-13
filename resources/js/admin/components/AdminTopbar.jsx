@@ -53,7 +53,7 @@ export default function AdminTopbar({
                 {/* Right Actions: Notifications, Refresh, User Profile */}
                 <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
                     {/* Live Sync Beacon */}
-                    <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/80 border border-stone-200/60 shadow-xs text-[10.5px] font-semibold text-stone-600">
+                    <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/80 border border-stone-200/60 shadow-xs text-[10.5px] font-semibold text-stone-600">
                         <span className="relative flex h-2 w-2">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -69,9 +69,9 @@ export default function AdminTopbar({
                                 setNotificationsOpen(prev => !prev);
                                 setAccountMenuOpen(false);
                             }}
-                            className={`relative flex items-center gap-2 bg-white/90 border rounded-xl px-3 py-2 text-[11px] font-bold transition-all shadow-xs cursor-pointer ${
+                            className={`relative flex items-center gap-2 bg-white/90 border rounded-lg px-3 py-2 text-[11px] font-bold transition-all shadow-xs cursor-pointer ${
                                 notificationsOpen
-                                    ? 'border-[#261B16] text-[#261B16] bg-white ring-2 ring-stone-200/50'
+                                    ? 'border-[#261B16] text-[#261B16] bg-white ring-1 ring-stone-300'
                                     : 'border-stone-200/80 text-stone-700 hover:border-stone-400 hover:text-stone-950 hover:bg-white'
                             }`}
                             title="Open notifications"
@@ -79,14 +79,14 @@ export default function AdminTopbar({
                             <Bell size={14} className="text-amber-700/80" />
                             <span className="hidden sm:inline">Activity</span>
                             {unreadNotificationCount > 0 && (
-                                <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center border-2 border-[#FAF7F2] shadow-xs animate-bounce">
+                                <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center border-2 border-[#FAF7F2] shadow-xs">
                                     {unreadNotificationCount}
                                 </span>
                             )}
                         </button>
 
                         {notificationsOpen && (
-                            <div className="absolute right-0 top-full mt-2.5 w-[370px] max-w-[calc(100vw-2rem)] bg-white border border-stone-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-fadeIn">
+                            <div className="absolute right-0 top-full mt-2 w-[370px] max-w-[calc(100vw-2rem)] bg-white border border-stone-200 rounded-lg shadow-xl overflow-hidden z-50 animate-fadeIn">
                                 <div className="px-4 py-3 bg-[#FAF7F2]/80 border-b border-stone-200/70 flex items-center justify-between">
                                     <div>
                                         <h2 className="text-xs font-black text-[#261B16] uppercase tracking-wider">Atelier Notifications</h2>
@@ -182,7 +182,7 @@ export default function AdminTopbar({
                     <button
                         type="button"
                         onClick={onRefresh}
-                        className="p-2 bg-white/90 border border-stone-200/80 rounded-xl text-stone-500 hover:text-[#261B16] hover:border-stone-400 hover:bg-white transition-all shadow-xs cursor-pointer"
+                        className="p-2 bg-white/90 border border-stone-200/80 rounded-lg text-stone-500 hover:text-[#261B16] hover:border-stone-400 hover:bg-white transition-all shadow-xs cursor-pointer"
                         title="Refresh store metrics"
                     >
                         <RefreshCw size={14} />
@@ -196,14 +196,14 @@ export default function AdminTopbar({
                                 setAccountMenuOpen(prev => !prev);
                                 setNotificationsOpen(false);
                             }}
-                            className={`flex items-center gap-2 bg-white/90 border rounded-xl px-2.5 py-1.5 transition-all shadow-xs cursor-pointer ${
+                            className={`flex items-center gap-2 bg-white/90 border rounded-lg px-2.5 py-1.5 transition-all shadow-xs cursor-pointer ${
                                 accountMenuOpen
-                                    ? 'border-[#261B16] ring-2 ring-stone-200/50 bg-white'
+                                    ? 'border-[#261B16] ring-1 ring-stone-300 bg-white'
                                     : 'border-stone-200/80 hover:border-stone-400 hover:bg-white'
                             }`}
                             title="Open account menu"
                         >
-                            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#D97706] to-[#78350F] text-white flex items-center justify-center text-[11px] font-serif font-black shrink-0 shadow-xs">
+                            <div className="w-6 h-6 rounded bg-gradient-to-br from-[#D97706] to-[#78350F] text-white flex items-center justify-center text-[10.5px] font-serif font-black shrink-0 shadow-xs">
                                 {adminDisplayName[0].toUpperCase()}
                             </div>
                             <div className="text-left min-w-0 hidden sm:block">
@@ -217,8 +217,8 @@ export default function AdminTopbar({
                         </button>
 
                         {accountMenuOpen && (
-                            <div className="absolute right-0 top-full mt-2.5 w-64 bg-white border border-stone-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-fadeIn">
-                                <div className="px-4 py-3.5 bg-[#FAF7F2]/80 border-b border-stone-200/70">
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-stone-200 rounded-lg shadow-xl overflow-hidden z-50 animate-fadeIn">
+                                <div className="px-4 py-3 bg-[#FAF7F2]/80 border-b border-stone-200/70">
                                     <p className="text-xs font-black text-[#261B16] truncate">{adminDisplayName}</p>
                                     <p className="text-[10px] text-stone-500 truncate mt-0.5">{userEmail}</p>
                                     <span className="inline-flex mt-2 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider">
@@ -229,7 +229,7 @@ export default function AdminTopbar({
                                     <button
                                         type="button"
                                         onClick={onOpenProfile}
-                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-stone-700 hover:bg-[#FAF7F2] hover:text-[#261B16] transition-colors text-left cursor-pointer"
+                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 hover:bg-[#FAF7F2] hover:text-[#261B16] transition-colors text-left cursor-pointer"
                                     >
                                         <Users size={13} className="text-amber-700" />
                                         Admin Profile
@@ -239,7 +239,7 @@ export default function AdminTopbar({
                                     <button
                                         type="button"
                                         onClick={onLogout}
-                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
+                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
                                     >
                                         <LogOut size={13} />
                                         Log Out
