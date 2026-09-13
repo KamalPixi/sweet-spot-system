@@ -1640,7 +1640,7 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-neutral-50 text-neutral-850 font-sans flex">
+        <div className="min-h-screen bg-[#FBF9F5] text-[#261B16] font-sans flex">
             <AdminSidebar
                 collapsed={sidebarCollapsed}
                 onToggleCollapsed={() => setSidebarCollapsed(prev => !prev)}
@@ -1655,7 +1655,7 @@ export default function AdminDashboard() {
                 sections={sidebarSections}
             />
 
-            <main className="flex-grow max-h-screen overflow-y-auto w-full bg-neutral-50">
+            <main className="flex-grow max-h-screen overflow-y-auto w-full bg-[#FBF9F5]">
                 <AdminTopbar
                     sectionLabel={currentSectionLabel}
                     adminRole={adminRole}
@@ -1700,248 +1700,246 @@ export default function AdminDashboard() {
                             const fulfillmentTotal = (reports.fulfillment_split?.delivery || 0) + (reports.fulfillment_split?.collection || 0) + (reports.fulfillment_split?.dine_in || 0);
 
                             const statusConfig = {
-                                pending:   { label: 'Pending',   color: 'bg-amber-400' },
-                                preparing: { label: 'Preparing', color: 'bg-blue-400' },
-                                ready:     { label: 'Ready',     color: 'bg-emerald-400' },
-                                completed: { label: 'Completed', color: 'bg-neutral-300' },
-                                cancelled: { label: 'Cancelled', color: 'bg-red-300' },
+                                pending:   { label: 'Pending',   color: 'bg-amber-400', pill: 'bg-amber-50 text-amber-800 border-amber-200' },
+                                preparing: { label: 'In Oven',   color: 'bg-sky-400',   pill: 'bg-sky-50 text-sky-800 border-sky-200' },
+                                ready:     { label: 'Ready',     color: 'bg-emerald-400', pill: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+                                completed: { label: 'Fulfilled', color: 'bg-stone-300', pill: 'bg-stone-100 text-stone-600 border-stone-200' },
+                                cancelled: { label: 'Cancelled', color: 'bg-rose-300',  pill: 'bg-rose-50 text-rose-700 border-rose-200' },
                             };
 
                             return (
-                                <div className="space-y-8">
-                                    {/* Header */}
-                                    <div className="flex items-start justify-between">
-                                        <div>
-                                            <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-1">Sweet Spot System · Store Management</p>
-                                            <h1 className="text-3xl font-black text-neutral-900 tracking-tight">
-                                                {greeting}, {user?.name?.split(' ')[0] || 'Admin'} 👋
-                                            </h1>
-                                            <p className="text-sm text-neutral-400 mt-1.5">
-                                                Here's what's happening with your store today —
-                                                {reports.today_orders > 0
-                                                    ? <span className="font-semibold text-neutral-700"> {reports.today_orders} order{reports.today_orders !== 1 ? 's' : ''} placed so far.</span>
-                                                    : <span className="text-neutral-400"> no orders yet today.</span>
-                                                }
-                                            </p>
-                                        </div>
-                                        <div className="text-right text-xs text-neutral-400 shrink-0">
-                                            <p className="font-bold text-neutral-700 text-sm">{new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long' })}</p>
-                                            <p className="mt-0.5">Last refreshed on page load</p>
+                                <div className="space-y-7 pb-10">
+                                    {/* Atelier Hero Command Banner */}
+                                    <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#2D1B15] via-[#241510] to-[#170C08] p-7 md:p-9 text-[#FFF9F2] shadow-[0_12px_36px_-12px_rgba(45,27,21,0.25)] border border-amber-950/40">
+                                        {/* Background subtle art glow */}
+                                        <div className="absolute top-0 right-0 -mt-8 -mr-8 w-72 h-72 bg-gradient-to-br from-amber-600/20 to-transparent rounded-full blur-3xl pointer-events-none" />
+                                        <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+
+                                        <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+                                            <div className="space-y-2 max-w-xl">
+                                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[10.5px] font-extrabold uppercase tracking-widest">
+                                                    <Sparkles size={11} className="text-amber-400" />
+                                                    <span>Sweet Spot · Live Operations</span>
+                                                </div>
+                                                <h1 className="text-2xl md:text-3xl lg:text-4xl font-serif font-black tracking-tight text-[#FFF8F0] leading-tight">
+                                                    {greeting}, {user?.name?.split(' ')[0] || 'Atelier Master'}
+                                                </h1>
+                                                <p className="text-xs md:text-sm text-stone-300/90 font-light leading-relaxed">
+                                                    Your kitchen is live. Currently tracking{' '}
+                                                    <span className="font-semibold text-amber-300">{reports.today_orders || 0} order{reports.today_orders !== 1 ? 's' : ''}</span>{' '}
+                                                    today across UK Deliveries, Store Collections, and Dine-In QR tables.
+                                                </p>
+                                            </div>
+
+                                            {/* Quick Operational Shortcuts */}
+                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-2.5 shrink-0">
+                                                <button
+                                                    onClick={() => setActiveTab('tables')}
+                                                    className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-[#261B16] text-xs font-black tracking-tight transition-all duration-200 flex items-center gap-2 shadow-sm cursor-pointer"
+                                                >
+                                                    <QrCode size={14} />
+                                                    <span>Table QR Floorplan</span>
+                                                </button>
+                                                <button
+                                                    onClick={() => setActiveTab('printers')}
+                                                    className="px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 active:bg-white/15 text-white border border-white/15 text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer"
+                                                >
+                                                    <Printer size={14} className="text-amber-400" />
+                                                    <span>Star CloudPRNT</span>
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Active orders alert — only shown when there are urgent orders */}
+                                    {/* Urgent Orders Alert Banner */}
                                     {activeOrdersCount > 0 && (
                                         <div
-                                            className="flex items-center justify-between gap-4 bg-amber-50 border border-amber-200 rounded-xl px-5 py-3.5 cursor-pointer hover:bg-amber-100 transition-colors"
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-gradient-to-r from-amber-50 to-orange-50/60 border border-amber-200/80 rounded-2xl px-5 py-4 cursor-pointer hover:border-amber-300 hover:shadow-xs transition-all duration-200"
                                             onClick={() => setActiveTab('orders')}
                                         >
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse shrink-0" />
-                                                <p className="text-sm font-bold text-amber-800">
-                                                    {activeOrdersCount} order{activeOrdersCount !== 1 ? 's' : ''} need your attention
-                                                    {reports.orders_count.pending > 0 && <span className="font-normal text-amber-700"> · {reports.orders_count.pending} pending</span>}
-                                                    {reports.orders_count.preparing > 0 && <span className="font-normal text-amber-700"> · {reports.orders_count.preparing} in oven</span>}
-                                                    {reports.orders_count.ready > 0 && <span className="font-normal text-amber-700"> · {reports.orders_count.ready} ready for pickup</span>}
-                                                </p>
+                                            <div className="flex items-center gap-3.5">
+                                                <div className="w-3 h-3 rounded-full bg-amber-500 animate-ping shrink-0" />
+                                                <div>
+                                                    <p className="text-xs font-black text-[#261B16]">
+                                                        {activeOrdersCount} order{activeOrdersCount !== 1 ? 's' : ''} requiring live kitchen attention
+                                                    </p>
+                                                    <p className="text-[11px] text-stone-600 mt-0.5">
+                                                        {reports.orders_count.pending > 0 && <span className="font-semibold text-amber-900">• {reports.orders_count.pending} pending checkout </span>}
+                                                        {reports.orders_count.preparing > 0 && <span className="font-semibold text-amber-900">• {reports.orders_count.preparing} baking in oven </span>}
+                                                        {reports.orders_count.ready > 0 && <span className="font-semibold text-emerald-900">• {reports.orders_count.ready} packed & ready</span>}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <span className="text-xs font-bold text-amber-700 whitespace-nowrap">View Orders →</span>
+                                            <div className="flex items-center gap-1.5 text-xs font-black text-amber-800 self-end sm:self-center shrink-0">
+                                                <span>Review Orders Pipeline</span>
+                                                <ArrowUpRight size={14} />
+                                            </div>
                                         </div>
                                     )}
 
-                                    {/* Key Metric Cards — today's operational view */}
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-5">
+                                    {/* Executive Atelier Metric Tiles */}
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-3.5 md:gap-4">
                                         {[
                                             {
-                                                label: "Today's Revenue",
+                                                label: "Today's Gross",
                                                 value: `£${reports.today_sales.toFixed(2)}`,
                                                 sub: `£${reports.this_week_sales?.toFixed(2) || '0.00'} this week`,
+                                                icon: DollarSign,
+                                                iconBg: 'bg-amber-100 text-amber-800',
                                             },
                                             {
-                                                label: "Today's Orders",
+                                                label: "Orders Today",
                                                 value: reports.today_orders ?? 0,
-                                                sub: reports.today_orders > 0 ? 'Orders received today' : 'No orders yet today',
+                                                sub: reports.today_orders > 0 ? 'Orders received' : 'No orders yet',
+                                                icon: ClipboardList,
+                                                iconBg: 'bg-orange-100 text-orange-800',
                                             },
                                             {
                                                 label: 'Pending',
                                                 value: reports.orders_count.pending,
-                                                sub: 'Awaiting preparation',
+                                                sub: 'Awaiting queue',
+                                                icon: Clock,
+                                                iconBg: 'bg-amber-50 text-amber-700',
                                             },
                                             {
-                                                label: 'In Preparation',
+                                                label: 'In The Oven',
                                                 value: reports.orders_count.preparing,
-                                                sub: 'Currently in the oven',
+                                                sub: 'Active preparation',
+                                                icon: Flame,
+                                                iconBg: 'bg-sky-50 text-sky-700',
                                             },
                                             {
-                                                label: 'Ready for Pickup',
+                                                label: 'Ready / Dispatch',
                                                 value: reports.orders_count.ready,
-                                                sub: reports.orders_count.ready > 0 ? 'Awaiting customer collection' : 'No collections pending',
+                                                sub: 'Ready for handoff',
+                                                icon: CheckCircle2,
+                                                iconBg: 'bg-emerald-50 text-emerald-700',
                                             },
                                             {
-                                                label: 'Completed',
+                                                label: 'Fulfilled',
                                                 value: reports.orders_count.completed,
-                                                sub: 'All-time fulfilled orders',
+                                                sub: 'All-time volume',
+                                                icon: Trophy,
+                                                iconBg: 'bg-stone-100 text-stone-700',
                                             },
-                                        ].map(card => (
-                                            <div key={card.label} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">{card.label}</span>
-                                                <span className="text-3xl font-black text-neutral-900 block mt-2">{card.value}</span>
-                                                <span className="text-[11px] text-neutral-400 mt-1 block">{card.sub}</span>
+                                        ].map((card, i) => (
+                                            <div
+                                                key={card.label}
+                                                className="bg-white border border-stone-200/70 rounded-2xl p-4 md:p-5 shadow-[0_4px_16px_-4px_rgba(180,140,110,0.06)] hover:shadow-md hover:border-amber-300/60 transition-all duration-200 flex flex-col justify-between group"
+                                            >
+                                                <div className="flex items-center justify-between mb-3">
+                                                    <span className="text-[9.5px] font-black text-stone-400 uppercase tracking-widest">
+                                                        {card.label}
+                                                    </span>
+                                                    <div className={`w-7 h-7 rounded-lg ${card.iconBg} flex items-center justify-center shrink-0`}>
+                                                        <card.icon size={13} />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <span className="text-2xl lg:text-[26px] font-black font-serif text-[#261B16] block tracking-tight group-hover:text-amber-700 transition-colors">
+                                                        {card.value}
+                                                    </span>
+                                                    <span className="text-[10px] font-medium text-stone-400 mt-1 block truncate">
+                                                        {card.sub}
+                                                    </span>
+                                                </div>
                                             </div>
                                         ))}
                                     </div>
 
-                                    {/* Order Pipeline + Fulfillment Split Row */}
+                                    {/* Order Pipeline Timeline & 3-Way Fulfilment Hub */}
                                     <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                                        {/* Kitchen Pipeline Flow */}
+                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-3xl p-6 md:p-7 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)]">
+                                            <div className="flex items-center justify-between mb-5">
+                                                <div>
+                                                    <h2 className="text-sm font-black uppercase tracking-wider text-[#261B16]">
+                                                        Kitchen Order Pipeline
+                                                    </h2>
+                                                    <p className="text-[11px] text-stone-400 mt-0.5">Real-time status progression of all order batches</p>
+                                                </div>
+                                                <span className="text-[11px] font-bold text-stone-500 bg-stone-100/80 px-2.5 py-1 rounded-full">
+                                                    {totalOrders} Total Orders
+                                                </span>
+                                            </div>
 
-                                        {/* Pipeline */}
-                                        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
-                                            <h2 className="text-sm font-bold text-neutral-800 mb-5">Order Pipeline</h2>
-                                            <div className="flex gap-2 mb-4 h-3 rounded-full overflow-hidden bg-neutral-100">
+                                            {/* Stacked Progress Bar */}
+                                            <div className="flex gap-1.5 mb-5 h-3 rounded-full overflow-hidden bg-stone-100 p-0.5 border border-stone-200/60">
                                                 {Object.entries(reports.orders_count).map(([key, count]) => {
                                                     const cfg = statusConfig[key];
                                                     const pct = totalOrders > 0 ? (count / totalOrders) * 100 : 0;
                                                     return pct > 0 ? (
                                                         <div
                                                             key={key}
-                                                            className={`${cfg.color} h-full rounded-full transition-all`}
+                                                            className={`${cfg.color} h-full rounded-full transition-all duration-300`}
                                                             style={{ width: `${pct}%` }}
-                                                            title={`${cfg.label}: ${count}`}
+                                                            title={`${cfg.label}: ${count} (${Math.round(pct)}%)`}
                                                         />
                                                     ) : null;
                                                 })}
                                             </div>
-                                            <div className="flex flex-wrap gap-x-6 gap-y-2">
+
+                                            {/* Legend Chips */}
+                                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 pt-2 border-t border-stone-100">
                                                 {Object.entries(reports.orders_count).map(([key, count]) => {
                                                     const cfg = statusConfig[key];
+                                                    const pct = totalOrders > 0 ? Math.round((count / totalOrders) * 100) : 0;
                                                     return (
-                                                        <div key={key} className="flex items-center gap-2">
-                                                            <div className={`w-2.5 h-2.5 rounded-full ${cfg.color}`} />
-                                                            <span className="text-xs text-neutral-500 font-medium">{cfg.label}</span>
-                                                            <span className="text-xs font-black text-neutral-900">{count}</span>
+                                                        <div key={key} className="bg-[#FAF7F2]/60 rounded-xl p-2.5 border border-stone-200/40 text-left">
+                                                            <div className="flex items-center gap-1.5 mb-1">
+                                                                <div className={`w-2 h-2 rounded-full ${cfg.color}`} />
+                                                                <span className="text-[10.5px] text-stone-500 font-bold truncate">{cfg.label}</span>
+                                                            </div>
+                                                            <div className="flex items-baseline justify-between">
+                                                                <span className="text-base font-black text-[#261B16]">{count}</span>
+                                                                <span className="text-[9.5px] text-stone-400 font-semibold">{pct}%</span>
+                                                            </div>
                                                         </div>
                                                     );
                                                 })}
                                             </div>
                                         </div>
 
-                                        {/* Fulfillment Split (3-Way: Delivery, Collection, Dine-In) */}
-                                        <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
-                                            <h2 className="text-sm font-bold text-neutral-800 mb-5">Fulfilment Split</h2>
-                                            {fulfillmentTotal === 0 ? (
-                                                <p className="text-xs text-neutral-400 text-center py-4">No orders yet</p>
-                                            ) : (
-                                                <div className="space-y-4">
-                                                    {[
-                                                        { label: 'Home Delivery', key: 'delivery', icon: Truck, color: 'bg-neutral-900' },
-                                                        { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-amber-600' },
-                                                        { label: 'Dine-In Table', key: 'dine_in', icon: QrCode, color: 'bg-emerald-600' },
-                                                    ].map(f => {
-                                                        const count = reports.fulfillment_split?.[f.key] || 0;
-                                                        const pct = fulfillmentTotal > 0 ? Math.round((count / fulfillmentTotal) * 100) : 0;
-                                                        return (
-                                                            <div key={f.key}>
-                                                                <div className="flex justify-between items-center mb-1.5">
-                                                                    <span className="text-xs font-semibold text-neutral-600 flex items-center gap-1.5">
-                                                                        <f.icon size={14} className="text-neutral-400 shrink-0" />
-                                                                        {f.label}
-                                                                    </span>
-                                                                    <span className="text-xs font-black text-neutral-900">{count} <span className="font-normal text-neutral-400">({pct}%)</span></span>
-                                                                </div>
-                                                                <div className="w-full bg-neutral-100 h-2 rounded-full overflow-hidden">
-                                                                    <div className={`${f.color} h-full rounded-full transition-all`} style={{ width: `${pct}%` }} />
-                                                                </div>
-                                                            </div>
-                                                        );
-                                                    })}
+                                        {/* 3-Way Fulfilment Split Card */}
+                                        <div className="bg-white border border-stone-200/70 rounded-3xl p-6 md:p-7 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)] flex flex-col justify-between">
+                                            <div>
+                                                <div className="flex items-center justify-between mb-5">
+                                                    <div>
+                                                        <h2 className="text-sm font-black uppercase tracking-wider text-[#261B16]">
+                                                            Fulfillment Channels
+                                                        </h2>
+                                                        <p className="text-[11px] text-stone-400 mt-0.5">3-Way split across dining formats</p>
+                                                    </div>
+                                                    <span className="text-[10px] font-black text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-full">
+                                                        Triple-Channel
+                                                    </span>
                                                 </div>
-                                            )}
-                                        </div>
-                                    </div>
 
-                                    {/* Recent Orders + Top Products */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-
-                                        {/* Recent Orders Live Feed */}
-                                        <div className="lg:col-span-2 bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
-                                            <div className="px-6 py-4 border-b border-neutral-100 flex justify-between items-center">
-                                                <h2 className="font-bold text-neutral-800 text-sm">Recent Orders</h2>
-                                                <button
-                                                    onClick={() => setActiveTab('orders')}
-                                                    className="text-[11px] font-bold text-neutral-400 hover:text-neutral-900 transition-colors"
-                                                >
-                                                    View all →
-                                                </button>
-                                            </div>
-                                            {!reports.recent_orders?.length ? (
-                                                <div className="py-12 text-center text-neutral-400 text-sm">No orders yet.</div>
-                                            ) : (
-                                                <table className="w-full text-xs">
-                                                    <thead>
-                                                        <tr className="bg-neutral-50 text-neutral-400 uppercase tracking-wider font-bold text-[10px] border-b border-neutral-100">
-                                                            <th className="py-2.5 px-5 text-left">Order</th>
-                                                            <th className="py-2.5 px-5 text-left">Customer</th>
-                                                            <th className="py-2.5 px-5 text-left">Type</th>
-                                                            <th className="py-2.5 px-5 text-left">Amount</th>
-                                                            <th className="py-2.5 px-5 text-left">Status</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody className="divide-y divide-neutral-100">
-                                                        {reports.recent_orders.map((o, idx) => {
-                                                            const statusPill = {
-                                                                pending:   'bg-amber-50 text-amber-700 border-amber-100',
-                                                                preparing: 'bg-blue-50 text-blue-700 border-blue-100',
-                                                                ready:     'bg-emerald-50 text-emerald-700 border-emerald-100',
-                                                                completed: 'bg-neutral-100 text-neutral-500 border-neutral-200',
-                                                                cancelled: 'bg-red-50 text-red-600 border-red-100',
-                                                            }[o.status] || 'bg-neutral-100 text-neutral-500 border-neutral-200';
-                                                            return (
-                                                                <tr key={idx} className="hover:bg-neutral-50/60 transition-colors">
-                                                                    <td className="py-3.5 px-5 font-mono font-bold text-neutral-800 text-[10px]">{o.order_number}</td>
-                                                                    <td className="py-3.5 px-5 font-semibold text-neutral-700">{o.customer_name || '—'}</td>
-                                                                    <td className="py-3.5 px-5">
-                                                                        <span className="flex items-center gap-1.5 text-xs text-neutral-600">
-                                                                            {o.type === 'delivery' ? (
-                                                                                <><Truck size={13} className="text-neutral-400 shrink-0" /><span>Delivery</span></>
-                                                                            ) : (
-                                                                                <><Store size={13} className="text-neutral-400 shrink-0" /><span>Collection</span></>
-                                                                            )}
-                                                                        </span>
-                                                                    </td>
-                                                                    <td className="py-3.5 px-5 font-black text-neutral-900">£{o.total.toFixed(2)}</td>
-                                                                    <td className="py-3.5 px-5">
-                                                                        <span className={`px-2 py-0.5 text-[9px] font-bold rounded-full border capitalize ${statusPill}`}>
-                                                                            {o.status}
-                                                                        </span>
-                                                                    </td>
-                                                                </tr>
-                                                            );
-                                                        })}
-                                                    </tbody>
-                                                </table>
-                                            )}
-                                        </div>
-
-                                        {/* Top Products + Category Revenue */}
-                                        <div className="space-y-5">
-                                            {/* Category Revenue */}
-                                            <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                                <h2 className="font-bold text-neutral-800 text-sm mb-4">Revenue by Category</h2>
-                                                {reports.sales_by_category?.length === 0 ? (
-                                                    <p className="text-xs text-neutral-400 text-center py-3">No sales data yet.</p>
+                                                {fulfillmentTotal === 0 ? (
+                                                    <p className="text-xs text-stone-400 text-center py-8">No fulfillment data recorded yet.</p>
                                                 ) : (
-                                                    <div className="space-y-3">
-                                                        {reports.sales_by_category?.map((item, idx) => {
-                                                            const maxCatRevenue = Math.max(...(reports.sales_by_category.map(s => parseFloat(s.total))));
-                                                            const pct = maxCatRevenue > 0 ? (parseFloat(item.total) / maxCatRevenue) * 100 : 0;
+                                                    <div className="space-y-4">
+                                                        {[
+                                                            { label: 'Home Delivery (Uber Direct)', key: 'delivery', icon: Truck, color: 'bg-[#261B16]', badgeBg: 'bg-stone-100 text-stone-800' },
+                                                            { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-amber-600', badgeBg: 'bg-amber-50 text-amber-800' },
+                                                            { label: 'Dine-In (Table QR)', key: 'dine_in', icon: QrCode, color: 'bg-emerald-600', badgeBg: 'bg-emerald-50 text-emerald-800' },
+                                                        ].map(f => {
+                                                            const count = reports.fulfillment_split?.[f.key] || 0;
+                                                            const pct = fulfillmentTotal > 0 ? Math.round((count / fulfillmentTotal) * 100) : 0;
                                                             return (
-                                                                <div key={idx}>
-                                                                    <div className="flex justify-between mb-1">
-                                                                        <span className="text-[11px] font-semibold text-neutral-600">{item.category}</span>
-                                                                        <span className="text-[11px] font-black text-neutral-900">£{parseFloat(item.total).toFixed(2)}</span>
+                                                                <div key={f.key} className="bg-[#FAF7F2]/60 border border-stone-200/50 rounded-2xl p-3">
+                                                                    <div className="flex justify-between items-center mb-2">
+                                                                        <span className="text-xs font-bold text-stone-700 flex items-center gap-2">
+                                                                            <f.icon size={13} className="text-amber-700 shrink-0" />
+                                                                            {f.label}
+                                                                        </span>
+                                                                        <span className="text-xs font-black text-[#261B16]">
+                                                                            {count}{' '}
+                                                                            <span className="text-[10px] font-semibold text-stone-400">({pct}%)</span>
+                                                                        </span>
                                                                     </div>
-                                                                    <div className="w-full bg-neutral-100 h-1.5 rounded-full overflow-hidden">
-                                                                        <div className="bg-neutral-900 h-full rounded-full" style={{ width: `${pct}%` }} />
+                                                                    <div className="w-full bg-stone-200/70 h-1.5 rounded-full overflow-hidden">
+                                                                        <div className={`${f.color} h-full rounded-full transition-all duration-300`} style={{ width: `${pct}%` }} />
                                                                     </div>
                                                                 </div>
                                                             );
@@ -1950,20 +1948,145 @@ export default function AdminDashboard() {
                                                 )}
                                             </div>
 
-                                            {/* Top Products */}
-                                            {reports.top_products?.length > 0 && (
-                                                <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                                    <h2 className="font-bold text-neutral-800 text-sm mb-4 flex items-center gap-1.5">
-                                                        <Trophy size={15} className="text-neutral-400 shrink-0" />
-                                                        <span>Best Sellers</span>
+                                            <div className="pt-4 mt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
+                                                <span>Table scan & courier integrations live</span>
+                                                <span className="font-bold text-amber-700 cursor-pointer hover:underline" onClick={() => setActiveTab('tables')}>Manage Tables →</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Recent Live Orders & Top Artisanal Desserts */}
+                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+                                        {/* Recent Orders Atelier Feed */}
+                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-3xl shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)] overflow-hidden">
+                                            <div className="px-6 py-5 border-b border-stone-100 flex justify-between items-center bg-[#FAF7F2]/40">
+                                                <div>
+                                                    <h2 className="font-black text-[#261B16] text-sm uppercase tracking-wider">
+                                                        Recent Kitchen Orders
                                                     </h2>
-                                                    <div className="space-y-2.5">
+                                                    <p className="text-[11px] text-stone-400 mt-0.5">Live feed of orders entering the atelier</p>
+                                                </div>
+                                                <button
+                                                    onClick={() => setActiveTab('orders')}
+                                                    className="text-xs font-bold text-amber-700 hover:text-amber-900 transition-colors flex items-center gap-1 cursor-pointer"
+                                                >
+                                                    <span>Open Order Queue</span>
+                                                    <ArrowUpRight size={13} />
+                                                </button>
+                                            </div>
+
+                                            {!reports.recent_orders?.length ? (
+                                                <div className="py-14 text-center text-stone-400 text-xs">
+                                                    <ClipboardList size={28} className="mx-auto text-stone-300 mb-2" />
+                                                    No orders placed yet today.
+                                                </div>
+                                            ) : (
+                                                <div className="overflow-x-auto">
+                                                    <table className="w-full text-xs text-left">
+                                                        <thead>
+                                                            <tr className="bg-[#FAF7F2]/80 text-stone-400 uppercase tracking-widest font-extrabold text-[9px] border-b border-stone-100">
+                                                                <th className="py-3 px-6">Order ID</th>
+                                                                <th className="py-3 px-6">Guest</th>
+                                                                <th className="py-3 px-6">Fulfillment</th>
+                                                                <th className="py-3 px-6">Total</th>
+                                                                <th className="py-3 px-6">Status</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody className="divide-y divide-stone-100/70">
+                                                            {reports.recent_orders.map((o, idx) => {
+                                                                const cfg = statusConfig[o.status] || { pill: 'bg-stone-100 text-stone-600 border-stone-200', label: o.status };
+                                                                return (
+                                                                    <tr
+                                                                        key={idx}
+                                                                        onClick={() => navigate(`/admin/orders/${o.order_number}`)}
+                                                                        className="hover:bg-amber-50/30 transition-colors cursor-pointer"
+                                                                    >
+                                                                        <td className="py-3.5 px-6 font-mono font-bold text-amber-900 text-[11px]">
+                                                                            #{o.order_number}
+                                                                        </td>
+                                                                        <td className="py-3.5 px-6 font-semibold text-stone-800">
+                                                                            {o.customer_name || 'Guest Diner'}
+                                                                        </td>
+                                                                        <td className="py-3.5 px-6">
+                                                                            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FAF7F2] border border-stone-200/60 text-[10.5px] font-bold text-stone-700">
+                                                                                {o.type === 'delivery' ? (
+                                                                                    <><Truck size={11} className="text-amber-700" /><span>Delivery</span></>
+                                                                                ) : o.type === 'dine_in' ? (
+                                                                                    <><QrCode size={11} className="text-emerald-700" /><span>Table Dine-In</span></>
+                                                                                ) : (
+                                                                                    <><Store size={11} className="text-amber-700" /><span>Collection</span></>
+                                                                                )}
+                                                                            </span>
+                                                                        </td>
+                                                                        <td className="py-3.5 px-6 font-black font-serif text-[#261B16] text-[13px]">
+                                                                            £{o.total.toFixed(2)}
+                                                                        </td>
+                                                                        <td className="py-3.5 px-6">
+                                                                            <span className={`px-2.5 py-0.5 text-[9.5px] font-bold rounded-full border capitalize ${cfg.pill}`}>
+                                                                                {cfg.label}
+                                                                            </span>
+                                                                        </td>
+                                                                    </tr>
+                                                                );
+                                                            })}
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Best Sellers & Category Revenue */}
+                                        <div className="space-y-5">
+                                            {/* Category Breakdown */}
+                                            <div className="bg-white border border-stone-200/70 rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)]">
+                                                <div className="flex items-center justify-between mb-4">
+                                                    <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider">
+                                                        Revenue by Category
+                                                    </h2>
+                                                    <span className="text-[10px] text-stone-400">All-time</span>
+                                                </div>
+                                                {reports.sales_by_category?.length === 0 ? (
+                                                    <p className="text-xs text-stone-400 text-center py-4">No category sales recorded.</p>
+                                                ) : (
+                                                    <div className="space-y-3.5">
+                                                        {reports.sales_by_category?.map((item, idx) => {
+                                                            const maxCatRevenue = Math.max(...(reports.sales_by_category.map(s => parseFloat(s.total))));
+                                                            const pct = maxCatRevenue > 0 ? (parseFloat(item.total) / maxCatRevenue) * 100 : 0;
+                                                            return (
+                                                                <div key={idx}>
+                                                                    <div className="flex justify-between items-center mb-1 text-[11px]">
+                                                                        <span className="font-bold text-stone-700">{item.category}</span>
+                                                                        <span className="font-black text-[#261B16] font-serif">£{parseFloat(item.total).toFixed(2)}</span>
+                                                                    </div>
+                                                                    <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
+                                                                        <div className="bg-gradient-to-r from-amber-600 to-amber-700 h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
+
+                                            {/* Best Selling Treats */}
+                                            {reports.top_products?.length > 0 && (
+                                                <div className="bg-white border border-stone-200/70 rounded-3xl p-6 shadow-[0_4px_20px_-4px_rgba(180,140,110,0.06)]">
+                                                    <div className="flex items-center justify-between mb-4">
+                                                        <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider flex items-center gap-1.5">
+                                                            <Trophy size={13} className="text-amber-600" />
+                                                            <span>Best-Selling Treats</span>
+                                                        </h2>
+                                                        <span className="text-[10px] text-stone-400">Popular</span>
+                                                    </div>
+                                                    <div className="space-y-3">
                                                         {reports.top_products.map((p, idx) => (
-                                                            <div key={idx} className="flex items-center gap-3">
-                                                                <span className="text-[10px] font-black text-neutral-300 w-4 shrink-0">#{idx + 1}</span>
+                                                            <div key={idx} className="flex items-center gap-3 p-2 rounded-xl hover:bg-[#FAF7F2] transition-colors">
+                                                                <span className="text-[10px] font-serif font-black text-amber-700 bg-amber-100/70 w-5 h-5 rounded-lg flex items-center justify-center shrink-0">
+                                                                    #{idx + 1}
+                                                                </span>
                                                                 <div className="flex-grow min-w-0">
-                                                                    <p className="text-[11px] font-bold text-neutral-700 truncate">{p.name}</p>
-                                                                    <p className="text-[10px] text-neutral-400">{p.total_qty} sold · £{parseFloat(p.revenue).toFixed(2)}</p>
+                                                                    <p className="text-[11.5px] font-bold text-stone-800 truncate">{p.name}</p>
+                                                                    <p className="text-[10px] text-stone-400">{p.total_qty} units sold · £{parseFloat(p.revenue).toFixed(2)}</p>
                                                                 </div>
                                                             </div>
                                                         ))}
