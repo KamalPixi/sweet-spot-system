@@ -1909,114 +1909,120 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    {/* Recent Live Orders & Top Artisanal Desserts */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                                        {/* Recent Orders Atelier Feed */}
-                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-xl shadow-xs overflow-hidden">
-                                            <div className="px-5 py-4 border-b border-stone-100 flex justify-between items-center bg-[#FAF7F2]/40">
-                                                <div>
-                                                    <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider">
-                                                        Recent Kitchen Orders
-                                                    </h2>
-                                                    <p className="text-[10.5px] text-stone-400 mt-0.5">Live feed of orders entering the atelier</p>
-                                                </div>
-                                                <button
-                                                    onClick={() => setActiveTab('orders')}
-                                                    className="text-xs font-bold text-amber-700 hover:text-amber-900 transition-colors flex items-center gap-1 cursor-pointer"
-                                                >
-                                                    <span>Open Order Queue</span>
-                                                    <ArrowUpRight size={13} />
-                                                </button>
+                                    {/* Recent Live Kitchen Orders - Full Width */}
+                                    <div className="bg-white border border-stone-200/70 rounded-xl shadow-xs overflow-hidden">
+                                        <div className="px-5 py-4 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 bg-[#FAF7F2]/40">
+                                            <div>
+                                                <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider">
+                                                    Recent Kitchen Orders
+                                                </h2>
+                                                <p className="text-[10.5px] text-stone-400 mt-0.5">Live feed of orders entering the atelier</p>
                                             </div>
-
-                                            {!reports.recent_orders?.length ? (
-                                                <div className="py-14 text-center text-stone-400 text-xs">
-                                                    <ClipboardList size={28} className="mx-auto text-stone-300 mb-2" />
-                                                    No orders placed yet today.
-                                                </div>
-                                            ) : (
-                                                <div className="overflow-x-auto">
-                                                    <table className="w-full text-xs text-left">
-                                                        <thead>
-                                                            <tr className="bg-[#FAF7F2]/80 text-stone-400 uppercase tracking-widest font-extrabold text-[9px] border-b border-stone-100">
-                                                                <th className="py-2.5 px-5">Order ID</th>
-                                                                <th className="py-2.5 px-5">Guest</th>
-                                                                <th className="py-2.5 px-5">Fulfillment</th>
-                                                                <th className="py-2.5 px-5">Total</th>
-                                                                <th className="py-2.5 px-5">Status</th>
-                                                            </tr>
-                                                        </thead>
-                                                        <tbody className="divide-y divide-stone-100/70">
-                                                            {reports.recent_orders.map((o, idx) => {
-                                                                const cfg = statusConfig[o.status] || { pill: 'bg-stone-100 text-stone-600 border-stone-200', label: o.status };
-                                                                return (
-                                                                    <tr
-                                                                        key={idx}
-                                                                        onClick={() => navigate(`/admin/orders/${o.order_number}`)}
-                                                                        className="hover:bg-amber-50/30 transition-colors cursor-pointer"
-                                                                    >
-                                                                        <td className="py-3 px-5 font-mono font-bold text-amber-900 text-[11px]">
-                                                                            #{o.order_number}
-                                                                        </td>
-                                                                        <td className="py-3 px-5 font-semibold text-stone-800">
-                                                                            {o.customer_name || 'Guest Diner'}
-                                                                        </td>
-                                                                        <td className="py-3 px-5">
-                                                                            <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#FAF7F2] border border-stone-200/60 text-[10.5px] font-bold text-stone-700">
-                                                                                {o.type === 'delivery' ? (
-                                                                                    <><Truck size={11} className="text-amber-700" /><span>Delivery</span></>
-                                                                                ) : o.type === 'dine_in' ? (
-                                                                                    <><QrCode size={11} className="text-emerald-700" /><span>Table Dine-In</span></>
-                                                                                ) : (
-                                                                                    <><Store size={11} className="text-amber-700" /><span>Collection</span></>
-                                                                                )}
-                                                                            </span>
-                                                                        </td>
-                                                                        <td className="py-3 px-5 font-black font-serif text-[#261B16] text-[13px]">
-                                                                            £{o.total.toFixed(2)}
-                                                                        </td>
-                                                                        <td className="py-3 px-5">
-                                                                            <span className={`px-2 py-0.5 text-[9.5px] font-bold rounded-md border capitalize ${cfg.pill}`}>
-                                                                                {cfg.label}
-                                                                            </span>
-                                                                        </td>
-                                                                    </tr>
-                                                                );
-                                                            })}
-                                                        </tbody>
-                                                    </table>
-                                                </div>
-                                            )}
+                                            <button
+                                                onClick={() => setActiveTab('orders')}
+                                                className="text-xs font-bold text-amber-700 hover:text-amber-900 transition-colors flex items-center gap-1 cursor-pointer self-start sm:self-auto"
+                                            >
+                                                <span>Open Full Order Queue</span>
+                                                <ArrowUpRight size={13} />
+                                            </button>
                                         </div>
 
-                                        {/* Best Selling Treats */}
-                                        <div className="space-y-4">
-                                            {reports.top_products?.length > 0 && (
-                                                <div className="bg-white border border-stone-200/70 rounded-xl p-5 shadow-xs">
-                                                    <div className="flex items-center justify-between mb-3">
-                                                        <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider flex items-center gap-1.5">
-                                                            <Trophy size={13} className="text-amber-600" />
-                                                            <span>Best-Selling Treats</span>
-                                                        </h2>
-                                                        <span className="text-[10px] text-stone-400">Popular</span>
-                                                    </div>
-                                                    <div className="space-y-2.5">
-                                                        {reports.top_products.map((p, idx) => (
-                                                            <div key={idx} className="flex items-center gap-2.5 p-1.5 rounded-lg hover:bg-[#FAF7F2] transition-colors">
-                                                                <span className="text-[10px] font-serif font-black text-amber-700 bg-amber-100/70 w-5 h-5 rounded-md flex items-center justify-center shrink-0">
-                                                                    #{idx + 1}
-                                                                </span>
-                                                                <div className="flex-grow min-w-0">
-                                                                    <p className="text-[11.5px] font-bold text-stone-800 truncate">{p.name}</p>
-                                                                    <p className="text-[10px] text-stone-400">{p.total_qty} units sold · £{parseFloat(p.revenue).toFixed(2)}</p>
-                                                                </div>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
-                                        </div>
+                                        {!reports.recent_orders?.length ? (
+                                            <div className="py-14 text-center text-stone-400 text-xs">
+                                                <ClipboardList size={28} className="mx-auto text-stone-300 mb-2" />
+                                                No orders placed yet today.
+                                            </div>
+                                        ) : (
+                                            <div className="overflow-x-auto">
+                                                <table className="w-full text-xs text-left">
+                                                    <thead>
+                                                        <tr className="bg-[#FAF7F2]/80 text-stone-400 uppercase tracking-widest font-extrabold text-[9px] border-b border-stone-100">
+                                                            <th className="py-3 px-5">Order ID</th>
+                                                            <th className="py-3 px-5">Customer</th>
+                                                            <th className="py-3 px-5">Fulfillment Format</th>
+                                                            <th className="py-3 px-5">Total Amount</th>
+                                                            <th className="py-3 px-5">Order Status</th>
+                                                            <th className="py-3 px-5 text-right">Action</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="divide-y divide-stone-100/70">
+                                                        {reports.recent_orders.map((o, idx) => {
+                                                            const cfg = statusConfig[o.status] || { pill: 'bg-stone-100 text-stone-600 border-stone-200', label: o.status };
+                                                            return (
+                                                                <tr
+                                                                    key={idx}
+                                                                    onClick={() => navigate(`/admin/orders/${o.order_number}`)}
+                                                                    className="hover:bg-amber-50/30 transition-colors cursor-pointer"
+                                                                >
+                                                                    <td className="py-3.5 px-5 font-mono font-bold text-amber-900 text-[11.5px]">
+                                                                        #{o.order_number}
+                                                                    </td>
+                                                                    <td className="py-3.5 px-5 font-semibold text-stone-800">
+                                                                        {o.customer_name || 'Guest Diner'}
+                                                                    </td>
+                                                                    <td className="py-3.5 px-5">
+                                                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-[#FAF7F2] border border-stone-200/60 text-[10.5px] font-bold text-stone-700">
+                                                                            {o.type === 'delivery' ? (
+                                                                                <><Truck size={12} className="text-amber-700" /><span>Home Delivery</span></>
+                                                                            ) : o.type === 'dine_in' ? (
+                                                                                <><QrCode size={12} className="text-emerald-700" /><span>Table Dine-In</span></>
+                                                                            ) : (
+                                                                                <><Store size={12} className="text-amber-700" /><span>Store Pickup</span></>
+                                                                            )}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className="py-3.5 px-5 font-black font-serif text-[#261B16] text-[14px]">
+                                                                        £{o.total.toFixed(2)}
+                                                                    </td>
+                                                                    <td className="py-3.5 px-5">
+                                                                        <span className={`px-2.5 py-0.5 text-[9.5px] font-bold rounded-md border capitalize ${cfg.pill}`}>
+                                                                            {cfg.label}
+                                                                        </span>
+                                                                    </td>
+                                                                    <td className="py-3.5 px-5 text-right">
+                                                                        <span className="text-[11px] font-bold text-amber-700 hover:text-amber-900">
+                                                                            View Details →
+                                                                        </span>
+                                                                    </td>
+                                                                </tr>
+                                                            );
+                                                        })}
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        )}
                                     </div>
+
+                                    {/* Best Selling Treats - Bottom Shelf */}
+                                    {reports.top_products?.length > 0 && (
+                                        <div className="bg-white border border-stone-200/70 rounded-xl p-5 shadow-xs">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <div>
+                                                    <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider flex items-center gap-1.5">
+                                                        <Trophy size={13} className="text-amber-600" />
+                                                        <span>Best-Selling Treats</span>
+                                                    </h2>
+                                                    <p className="text-[10px] text-stone-400 mt-0.5">Customer favorites & top performers</p>
+                                                </div>
+                                                <span className="text-[10px] font-bold text-stone-500 bg-stone-100 px-2 py-0.5 rounded-md">
+                                                    Top {reports.top_products.length}
+                                                </span>
+                                            </div>
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                                                {reports.top_products.map((p, idx) => (
+                                                    <div key={idx} className="flex items-center gap-2.5 p-2.5 rounded-lg bg-[#FAF7F2]/60 border border-stone-200/50 hover:bg-[#FAF7F2] transition-colors">
+                                                        <span className="text-[11px] font-serif font-black text-amber-800 bg-amber-100/80 w-6 h-6 rounded-md flex items-center justify-center shrink-0">
+                                                            #{idx + 1}
+                                                        </span>
+                                                        <div className="flex-grow min-w-0">
+                                                            <p className="text-xs font-bold text-stone-800 truncate">{p.name}</p>
+                                                            <p className="text-[10px] text-stone-400 font-medium">{p.total_qty} sold · £{parseFloat(p.revenue).toFixed(2)}</p>
+                                                        </div>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })()}
