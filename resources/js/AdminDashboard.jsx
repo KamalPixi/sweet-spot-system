@@ -1989,40 +1989,8 @@ export default function AdminDashboard() {
                                             )}
                                         </div>
 
-                                        {/* Best Sellers & Category Revenue */}
+                                        {/* Best Selling Treats */}
                                         <div className="space-y-4">
-                                            {/* Category Breakdown */}
-                                            <div className="bg-white border border-stone-200/70 rounded-xl p-5 shadow-xs">
-                                                <div className="flex items-center justify-between mb-3">
-                                                    <h2 className="font-black text-[#261B16] text-xs uppercase tracking-wider">
-                                                        Revenue by Category
-                                                    </h2>
-                                                    <span className="text-[10px] text-stone-400">All-time</span>
-                                                </div>
-                                                {reports.sales_by_category?.length === 0 ? (
-                                                    <p className="text-xs text-stone-400 text-center py-4">No category sales recorded.</p>
-                                                ) : (
-                                                    <div className="space-y-3.5">
-                                                        {reports.sales_by_category?.map((item, idx) => {
-                                                            const maxCatRevenue = Math.max(...(reports.sales_by_category.map(s => parseFloat(s.total))));
-                                                            const pct = maxCatRevenue > 0 ? (parseFloat(item.total) / maxCatRevenue) * 100 : 0;
-                                                            return (
-                                                                <div key={idx}>
-                                                                    <div className="flex justify-between items-center mb-1 text-[11px]">
-                                                                        <span className="font-bold text-stone-700">{item.category}</span>
-                                                                        <span className="font-black text-[#261B16] font-serif">£{parseFloat(item.total).toFixed(2)}</span>
-                                                                    </div>
-                                                                    <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                                                                        <div className="bg-gradient-to-r from-amber-600 to-amber-700 h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }} />
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            {/* Best Selling Treats */}
                                             {reports.top_products?.length > 0 && (
                                                 <div className="bg-white border border-stone-200/70 rounded-xl p-5 shadow-xs">
                                                     <div className="flex items-center justify-between mb-3">
