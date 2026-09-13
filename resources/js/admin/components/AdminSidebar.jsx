@@ -14,18 +14,18 @@ export default function AdminSidebar({
             <div>
                 <div className={`flex items-center ${collapsed ? 'flex-col space-y-4' : 'justify-between'} mb-8`}>
                     {!collapsed ? (
-                        <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => onTabChange('dashboard')}>
-                            <div className="w-8 h-8 rounded-lg bg-neutral-950 text-white flex items-center justify-center font-black shadow-sm shrink-0">
-                                P
+                        <div className="flex items-center space-x-3 cursor-pointer" onClick={() => onTabChange('dashboard')}>
+                            <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-white flex items-center justify-center font-black shadow-md shadow-amber-500/20 shrink-0 text-sm tracking-tighter">
+                                SS
                             </div>
                             <div className="text-left leading-none">
-                                <span className="text-sm font-black tracking-widest text-neutral-950 block">PUDDING</span>
-                                <span className="text-[9px] text-[#C5A880] font-bold tracking-wider uppercase block mt-0.5">Admin Portal</span>
+                                <span className="text-sm font-black tracking-wider text-neutral-900 block">SWEET SPOT</span>
+                                <span className="text-[9px] text-amber-600 font-extrabold tracking-widest uppercase block mt-1">Management Portal</span>
                             </div>
                         </div>
                     ) : (
-                        <div className="flex items-center justify-center cursor-pointer w-8 h-8 rounded-lg bg-neutral-950 text-white flex items-center justify-center font-black shadow-sm" onClick={() => onTabChange('dashboard')}>
-                            P
+                        <div className="flex items-center justify-center cursor-pointer w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 text-white flex items-center justify-center font-black shadow-md shadow-amber-500/20 text-sm" onClick={() => onTabChange('dashboard')}>
+                            SS
                         </div>
                     )}
                     <button
@@ -60,14 +60,14 @@ export default function AdminSidebar({
                                             onClick={() => onTabChange(item.id)}
                                             className={`w-full flex items-center transition-all ${
                                                 collapsed ? 'justify-center p-3 relative' : 'gap-3 px-3.5 py-2.5'
-                                            } text-[13px] font-bold rounded-lg ${
+                                            } text-[13px] font-bold rounded-xl ${
                                                 isActive
-                                                    ? 'bg-neutral-950 text-white shadow-sm'
-                                                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
+                                                    ? 'bg-neutral-900 text-white shadow-sm ring-1 ring-neutral-800'
+                                                    : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-100/70'
                                             }`}
                                             title={collapsed ? item.label : undefined}
                                         >
-                                            <span className={`shrink-0 ${isActive ? 'text-white' : 'text-neutral-400'}`}>{item.icon}</span>
+                                            <span className={`shrink-0 transition-colors ${isActive ? 'text-amber-400' : 'text-neutral-400 group-hover:text-neutral-700'}`}>{item.icon}</span>
                                             {!collapsed && (
                                                 <>
                                                     <span className="flex-grow text-left">{item.label}</span>

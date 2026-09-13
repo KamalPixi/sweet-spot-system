@@ -6,7 +6,8 @@ import AdminTopbar from '../components/AdminTopbar';
 import { 
     LayoutDashboard, ClipboardList, FolderTree, Mail, Settings, 
     BarChart3, ShoppingBag, Users, Trash2, Loader2, ArrowLeft, 
-    Calendar, Phone, MapPin, Eye, DollarSign, ShoppingCart, User
+    Calendar, Phone, MapPin, Eye, DollarSign, ShoppingCart, User,
+    QrCode, Printer, Clock
 } from 'lucide-react';
 
 const formatCurrency = (value) => `£${parseFloat(value || 0).toFixed(2)}`;
@@ -44,6 +45,9 @@ export default function AdminCustomerDetailPage() {
             label: 'Operations',
             items: [
                 { id: 'orders', label: 'Orders', icon: <ClipboardList size={16} /> },
+                { id: 'tables', label: 'Tables & QR', icon: <QrCode size={16} /> },
+                { id: 'printers', label: 'Cloud Printers', icon: <Printer size={16} /> },
+                { id: 'collection-slots', label: 'Collection Slots', icon: <Clock size={16} /> },
             ],
         },
         {

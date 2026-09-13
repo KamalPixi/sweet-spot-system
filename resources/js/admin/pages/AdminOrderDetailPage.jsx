@@ -23,6 +23,14 @@ import {
     X,
     ArrowLeft,
     Bell,
+    Printer,
+    Truck,
+    QrCode,
+    ExternalLink,
+    Navigation,
+    Clock,
+    CheckCircle2,
+    Send,
 } from 'lucide-react';
 
 const formatCurrency = (value) => `£${parseFloat(value || 0).toFixed(2)}`;
@@ -59,6 +67,60 @@ export default function AdminOrderDetailPage() {
     const unreadNotificationCountRef = useRef(0);
     const hasLoadedNotificationsRef = useRef(false);
     const { playNotificationSound } = useNotificationSound();
+    const [printing, setPrinting] = useState(false);
+    const [dispatchingUber, setDispatchingUber] = useState(false);
+
+    const handlePrintTicket = async () => {
+        if (!order?.id) return;
+        setPrinting(true);
+        try {
+            const res = await fetch(`/api/admin/orders/${order.id}/print`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success('Print job enqueued! The printer will print immediately.');
+                fetchOrder();
+            } else {
+                toast.error(d.message || 'Failed to trigger print.');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Print request failed.');
+        } finally {
+            setPrinting(false);
+        }
+    };
+
+    const handleDispatchUber = async () => {
+        if (!order?.id) return;
+        setDispatchingUber(true);
+        try {
+            const res = await fetch(`/api/admin/orders/${order.id}/dispatch-uber`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success('Uber Direct courier dispatched!');
+                fetchOrder();
+            } else {
+                toast.error(d.message || 'Failed to dispatch Uber courier.');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Courier dispatch failed.');
+        } finally {
+            setDispatchingUber(false);
+        }
+    };
 
     const orderStatusMeta = {
         pending: { label: 'Pending', classes: 'bg-amber-50 text-amber-700 border-amber-100' },
@@ -322,6 +384,9 @@ export default function AdminOrderDetailPage() {
             label: 'Operations',
             items: [
                 { id: 'orders', label: 'Orders', icon: <ClipboardList size={16} /> },
+                { id: 'tables', label: 'Tables & QR', icon: <QrCode size={16} /> },
+                { id: 'printers', label: 'Cloud Printers', icon: <Printer size={16} /> },
+                { id: 'collection-slots', label: 'Collection Slots', icon: <Clock size={16} /> },
             ],
         },
         {
@@ -404,7 +469,7 @@ export default function AdminOrderDetailPage() {
                                 <ArrowLeft size={14} />
                                 Back
                             </button>
-                            <p className="text-xs font-bold text-[#C5A880] uppercase tracking-widest mb-1">Pudding London · Admin Portal</p>
+                            <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-1">Sweet Spot · Order Management</p>
                             <h1 className="text-3xl font-black text-neutral-900 tracking-tight">{orderNumber || 'Order Details'}</h1>
                             <p className="text-sm text-neutral-400 mt-1">
                                 {order ? formatDateTime(order.created_at) : 'Review order status, payment, and item details.'}
@@ -413,6 +478,15 @@ export default function AdminOrderDetailPage() {
 
                         {order && (
                             <div className="flex flex-wrap items-center gap-2">
+                                <button
+                                    type="button"
+                                    onClick={handlePrintTicket}
+                                    disabled={printing}
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+                                >
+                                    <Printer size={14} className="text-amber-400" />
+                                    <span>{printing ? 'Enqueuing Print...' : order.print_count > 0 ? `Reprint Receipt (x${order.print_count})` : 'Print Kitchen Receipt'}</span>
+                                </button>
                                 <div className={`inline-flex px-2.5 py-1 text-[10px] font-bold rounded-full border capitalize ${orderStatusMeta[order.status]?.classes || 'bg-neutral-100 text-neutral-500 border-neutral-200'}`}>
                                     {orderStatusMeta[order.status]?.label || order.status}
                                 </div>
@@ -451,20 +525,33 @@ export default function AdminOrderDetailPage() {
                                 </div>
                                 <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-sm">
                                     <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Fulfilment</p>
-                                    <p className="text-sm font-bold text-neutral-900 mt-1">
-                                        {order.type === 'delivery' ? 'Home Delivery' : 'Store Collection'}
-                                    </p>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <p className="text-sm font-bold text-neutral-900">
+                                            {order.type === 'dine_in' 
+                                                ? `Dine-In Table ${order.table_number || 'N/A'}` 
+                                                : order.type === 'delivery' 
+                                                    ? 'Home Delivery' 
+                                                    : 'Store Collection'}
+                                        </p>
+                                        {order.type === 'dine_in' && (
+                                            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 text-[9px] font-black uppercase tracking-wider">
+                                                Table #{order.table_number}
+                                            </span>
+                                        )}
+                                    </div>
                                     <p className="text-xs text-neutral-500 mt-1">
-                                        {order.type === 'delivery'
-                                            ? `${order.delivery_address?.postcode || 'No postcode'}${order.delivery_address?.city ? `, ${order.delivery_address.city}` : ''}`
-                                            : formatDateTime(order.collection_time)}
+                                        {order.type === 'dine_in'
+                                            ? 'Customer seated in store'
+                                            : order.type === 'delivery'
+                                                ? `${order.delivery_address?.postcode || 'No postcode'}${order.delivery_address?.city ? `, ${order.delivery_address.city}` : ''}`
+                                                : formatDateTime(order.collection_time)}
                                     </p>
                                 </div>
                                 <div className="bg-white border border-neutral-200 rounded-xl p-4 shadow-sm">
-                                    <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Actions</p>
-                                    <div className="grid grid-cols-1 gap-3 mt-2">
+                                    <p className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Actions & Status</p>
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 mt-2">
                                         <div>
-                                            <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1">Order Status</label>
+                                            <label className="block text-[9px] font-bold uppercase tracking-wider text-neutral-400 mb-1">Order</label>
                                             <select
                                                 value={order.status}
                                                 onChange={(e) => handleUpdateOrderStatus(e.target.value)}
@@ -534,6 +621,59 @@ export default function AdminOrderDetailPage() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {order.type === 'delivery' && (
+                                        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm space-y-3">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <Truck size={16} className="text-neutral-900" />
+                                                    <h2 className="text-sm font-bold text-neutral-900">Uber Direct Delivery</h2>
+                                                </div>
+                                                <span className="px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-800 text-[10px] font-black uppercase tracking-wider">
+                                                    {order.uber_status || 'Pending Dispatch'}
+                                                </span>
+                                            </div>
+
+                                            {order.uber_delivery_id ? (
+                                                <div className="p-3 bg-neutral-50 rounded-xl space-y-2 border border-neutral-100 text-xs">
+                                                    <div className="flex justify-between">
+                                                        <span className="text-neutral-400">Tracking Ref:</span>
+                                                        <span className="font-mono font-bold text-neutral-800">{order.uber_delivery_id}</span>
+                                                    </div>
+                                                    {order.uber_courier_name && (
+                                                        <div className="flex justify-between">
+                                                            <span className="text-neutral-400">Courier:</span>
+                                                            <span className="font-bold text-neutral-800">{order.uber_courier_name} {order.uber_courier_phone ? `(${order.uber_courier_phone})` : ''}</span>
+                                                        </div>
+                                                    )}
+                                                    {order.uber_tracking_url && (
+                                                        <a
+                                                            href={order.uber_tracking_url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 pt-1"
+                                                        >
+                                                            <span>Live Courier Map</span>
+                                                            <ExternalLink size={12} />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <div className="space-y-2">
+                                                    <p className="text-xs text-neutral-500">No courier dispatched yet for this order.</p>
+                                                    <button
+                                                        type="button"
+                                                        onClick={handleDispatchUber}
+                                                        disabled={dispatchingUber}
+                                                        className="w-full py-2.5 px-4 bg-neutral-950 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                                    >
+                                                        <Truck size={14} className="text-amber-400" />
+                                                        <span>{dispatchingUber ? 'Dispatching Courier...' : 'Dispatch Uber Direct Courier'}</span>
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     {order.notes && (
                                         <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">

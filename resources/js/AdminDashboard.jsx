@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import { useApp } from './AppContext';
 import AdminSidebar from './admin/components/AdminSidebar';
 import AdminTopbar from './admin/components/AdminTopbar';
+import AdminTablesTab from './admin/components/AdminTablesTab';
+import AdminPrintersTab from './admin/components/AdminPrintersTab';
 import useRealtimeChannel from './hooks/useRealtimeChannel';
 import useNotificationSound from './hooks/useNotificationSound';
 import { getEchoSocketId } from './lib/realtime';
@@ -11,7 +13,7 @@ import {
     LayoutDashboard, ClipboardList, FolderTree, Egg, Mail, Settings, 
     ArrowLeft, LogOut, Loader2, AlertCircle, Plus, Edit, Trash, Check, X, ShieldAlert, ChevronLeft, ChevronRight, BarChart3,
     Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, Bell, RefreshCw, ChevronDown, Upload, Clock,
-    Store, MapPin, Truck, Trophy, Globe,
+    Store, MapPin, Truck, Trophy, Globe, QrCode, Printer,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
@@ -106,6 +108,7 @@ export default function AdminDashboard() {
     const [notificationsLoading, setNotificationsLoading] = useState(false);
     const [accountMenuOpen, setAccountMenuOpen] = useState(false);
     const [updatingOrders, setUpdatingOrders] = useState({}); // { [orderId]: string }
+    const [printingOrderId, setPrintingOrderId] = useState(null);
     const [fadingOrders, setFadingOrders] = useState({}); // { [orderId]: boolean }
     const [highlightedOrders, setHighlightedOrders] = useState({}); // { [orderId]: boolean }
 
@@ -206,6 +209,8 @@ export default function AdminDashboard() {
     const adminPathByTab = {
         dashboard: '/admin',
         orders: '/admin/orders',
+        tables: '/admin/tables',
+        printers: '/admin/printers',
         reports: '/admin/reports',
         categories: '/admin/categories',
         products: '/admin/products',
@@ -224,6 +229,8 @@ export default function AdminDashboard() {
         const section = match[1];
         if (section === 'dashboard') return 'dashboard';
         if (section === 'orders') return 'orders';
+        if (section === 'tables') return 'tables';
+        if (section === 'printers') return 'printers';
         if (section === 'reports') return 'reports';
         if (section === 'categories') return 'categories';
         if (section === 'products') return 'products';
@@ -712,6 +719,33 @@ export default function AdminDashboard() {
             setError('Failed to update payment status.');
         } finally {
             setUpdatingOrders(prev => ({ ...prev, [orderId]: null }));
+        }
+    };
+
+    // Fast inline print trigger for orders table
+    const handlePrintOrderTicket = async (orderId) => {
+        setPrintingOrderId(orderId);
+        try {
+            const res = await fetch(`/api/admin/orders/${orderId}/print`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success('Print job queued for kitchen printer!');
+                // Update print count in local state
+                setOrders(prev => prev.map(o => o.id === orderId ? { ...o, print_count: (o.print_count || 0) + 1, printed_at: new Date().toISOString() } : o));
+            } else {
+                toast.error(d.message || 'Failed to trigger print.');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Print request failed.');
+        } finally {
+            setPrintingOrderId(null);
         }
     };
 
@@ -1517,6 +1551,7 @@ export default function AdminDashboard() {
         unpaid: orders.filter(o => o.payment_status === 'unpaid').length,
         delivery: orders.filter(o => o.type === 'delivery').length,
         collection: orders.filter(o => o.type === 'collection').length,
+        dine_in: orders.filter(o => o.type === 'dine_in').length,
     };
     const groupedOrders = filteredOrders.reduce((groups, order) => {
         let key = order.status;
@@ -1534,6 +1569,7 @@ export default function AdminDashboard() {
         cancelled: 'Cancelled Orders',
         delivery: 'Home Delivery',
         collection: 'Store Collection',
+        dine_in: 'Dine-In Table Orders',
         unpaid: 'Unpaid Orders',
         paid: 'Paid Orders',
         failed: 'Failed Payments',
@@ -1559,6 +1595,8 @@ export default function AdminDashboard() {
         settings: 'Store Configs',
         trash: 'Trash Bin',
         collectionSlots: 'Collection Slots',
+        tables: 'Tables & QR Ordering',
+        printers: 'Cloud Printers & Queue',
     }[activeTab] || 'Dashboard';
     const trashCount = (trash.categories?.length || 0) + (trash.products?.length || 0) + (trash.customers?.length || 0);
     const sidebarSections = [
@@ -1573,6 +1611,8 @@ export default function AdminDashboard() {
             label: 'Operations',
             items: [
                 { id: 'orders', label: 'Orders', icon: <ClipboardList size={16} />, badge: orderSummary.active || null, badgeTone: 'amber' },
+                { id: 'tables', label: 'Tables & QR', icon: <QrCode size={16} /> },
+                { id: 'printers', label: 'Cloud Printers', icon: <Printer size={16} /> },
                 { id: 'collectionSlots', label: 'Collection Slots', icon: <Clock size={16} /> },
             ],
         },
@@ -1657,7 +1697,7 @@ export default function AdminDashboard() {
                             const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
                             const totalOrders = reports.orders_count.pending + reports.orders_count.preparing + reports.orders_count.ready + reports.orders_count.completed + (reports.orders_count.cancelled || 0);
                             const activeOrdersCount = reports.orders_count.pending + reports.orders_count.preparing + reports.orders_count.ready;
-                            const fulfillmentTotal = (reports.fulfillment_split?.delivery || 0) + (reports.fulfillment_split?.collection || 0);
+                            const fulfillmentTotal = (reports.fulfillment_split?.delivery || 0) + (reports.fulfillment_split?.collection || 0) + (reports.fulfillment_split?.dine_in || 0);
 
                             const statusConfig = {
                                 pending:   { label: 'Pending',   color: 'bg-amber-400' },
@@ -1672,7 +1712,7 @@ export default function AdminDashboard() {
                                     {/* Header */}
                                     <div className="flex items-start justify-between">
                                         <div>
-                                            <p className="text-xs font-bold text-[#C5A880] uppercase tracking-widest mb-1">Pudding London · Admin Portal</p>
+                                            <p className="text-xs font-bold text-amber-600 uppercase tracking-widest mb-1">Sweet Spot System · Store Management</p>
                                             <h1 className="text-3xl font-black text-neutral-900 tracking-tight">
                                                 {greeting}, {user?.name?.split(' ')[0] || 'Admin'} 👋
                                             </h1>
@@ -1738,15 +1778,15 @@ export default function AdminDashboard() {
                                                 sub: reports.orders_count.ready > 0 ? 'Awaiting customer collection' : 'No collections pending',
                                             },
                                             {
-                                                label: 'Completed Today',
+                                                label: 'Completed',
                                                 value: reports.orders_count.completed,
-                                                sub: 'Fully fulfilled orders',
+                                                sub: 'All-time fulfilled orders',
                                             },
-                                        ].map((card, idx) => (
-                                            <div key={idx} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest leading-snug block mb-3">{card.label}</span>
-                                                <div className="text-3xl font-black text-neutral-900 tracking-tight">{card.value}</div>
-                                                <div className="text-[11px] text-neutral-400 mt-1.5">{card.sub}</div>
+                                        ].map(card => (
+                                            <div key={card.label} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
+                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">{card.label}</span>
+                                                <span className="text-3xl font-black text-neutral-900 block mt-2">{card.value}</span>
+                                                <span className="text-[11px] text-neutral-400 mt-1 block">{card.sub}</span>
                                             </div>
                                         ))}
                                     </div>
@@ -1785,7 +1825,7 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        {/* Delivery vs Collection */}
+                                        {/* Fulfillment Split (3-Way: Delivery, Collection, Dine-In) */}
                                         <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
                                             <h2 className="text-sm font-bold text-neutral-800 mb-5">Fulfilment Split</h2>
                                             {fulfillmentTotal === 0 ? (
@@ -1794,7 +1834,8 @@ export default function AdminDashboard() {
                                                 <div className="space-y-4">
                                                     {[
                                                         { label: 'Home Delivery', key: 'delivery', icon: Truck, color: 'bg-neutral-900' },
-                                                        { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-[#C5A880]' },
+                                                        { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-amber-600' },
+                                                        { label: 'Dine-In Table', key: 'dine_in', icon: QrCode, color: 'bg-emerald-600' },
                                                     ].map(f => {
                                                         const count = reports.fulfillment_split?.[f.key] || 0;
                                                         const pct = fulfillmentTotal > 0 ? Math.round((count / fulfillmentTotal) * 100) : 0;
@@ -1947,7 +1988,7 @@ export default function AdminDashboard() {
                             const maxCategorySales = Math.max(...categoryRows.map(item => parseFloat(item.total || 0)), 1);
                             const collectionRows = reports.collection_hours || [];
                             const maxCollectionCount = Math.max(...collectionRows.map(item => parseInt(item.count || 0, 10)), 1);
-                            const fulfillmentTotal = (period.fulfillment_split?.delivery || 0) + (period.fulfillment_split?.collection || 0);
+                            const fulfillmentTotal = (period.fulfillment_split?.delivery || 0) + (period.fulfillment_split?.collection || 0) + (period.fulfillment_split?.dine_in || 0);
 
                             const rangeOptions = [
                                 { id: 'today', label: 'Today' },
@@ -2075,7 +2116,8 @@ export default function AdminDashboard() {
                                                 <div className="space-y-4">
                                                     {[
                                                         { label: 'Delivery', count: period.fulfillment_split?.delivery || 0, color: 'bg-neutral-900' },
-                                                        { label: 'Collection', count: period.fulfillment_split?.collection || 0, color: 'bg-[#C5A880]' },
+                                                        { label: 'Collection', count: period.fulfillment_split?.collection || 0, color: 'bg-amber-600' },
+                                                        { label: 'Dine-In Table', count: period.fulfillment_split?.dine_in || 0, color: 'bg-emerald-600' },
                                                     ].map(item => {
                                                         const pct = Math.round((item.count / fulfillmentTotal) * 100);
                                                         return (
@@ -2284,8 +2326,9 @@ export default function AdminDashboard() {
                                                 className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
                                             >
                                                 <option value="all">All Types</option>
-                                                <option value="delivery">Delivery</option>
+                                                <option value="delivery">Home Delivery</option>
                                                 <option value="collection">Collection</option>
+                                                <option value="dine_in">Dine-In Table</option>
                                             </select>
                                             <select
                                                 value={orderPaymentFilter}
@@ -2309,7 +2352,7 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
                                         <button onClick={() => { setOrderStatusFilter('pending'); setOrderGroupMode('status'); }} className="text-left bg-amber-50 border border-amber-100 rounded-lg p-3 hover:bg-amber-100 transition-colors">
                                             <span className="font-black text-amber-800 block">{orderSummary.pending}</span>
                                             <span className="text-amber-700">Pending</span>
@@ -2325,6 +2368,10 @@ export default function AdminDashboard() {
                                         <button onClick={() => { setOrderTypeFilter('collection'); setOrderGroupMode('type'); }} className="text-left bg-neutral-50 border border-neutral-200 rounded-lg p-3 hover:bg-neutral-100 transition-colors">
                                             <span className="font-black text-neutral-900 block">{orderSummary.collection}</span>
                                             <span className="text-neutral-600">Collection</span>
+                                        </button>
+                                        <button onClick={() => { setOrderTypeFilter('dine_in'); setOrderGroupMode('type'); }} className="text-left bg-emerald-50 border border-emerald-100 rounded-lg p-3 hover:bg-emerald-100 transition-colors">
+                                            <span className="font-black text-emerald-800 block">{orderSummary.dine_in}</span>
+                                            <span className="text-emerald-700">Dine-In Table</span>
                                         </button>
                                     </div>
                                 </div>
@@ -2396,13 +2443,33 @@ export default function AdminDashboard() {
                                                                             <p className="text-[10px] text-neutral-400 mt-0.5">{order.customer?.phone || order.customer?.email || 'No contact saved'}</p>
                                                                         </td>
                                                                         <td className="py-4 px-5 min-w-44">
-                                                                            <span className="font-semibold block">{order.type === 'delivery' ? 'Home Delivery' : 'Store Collection'}</span>
+                                                                            <div className="flex items-center gap-2">
+                                                                                <span className="font-semibold block">
+                                                                                    {order.type === 'dine_in'
+                                                                                        ? 'Dine-In Table'
+                                                                                        : order.type === 'delivery'
+                                                                                            ? 'Home Delivery'
+                                                                                            : 'Store Collection'}
+                                                                                </span>
+                                                                                {order.type === 'dine_in' && (
+                                                                                    <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-black">
+                                                                                        #{order.table_number || '?'}
+                                                                                    </span>
+                                                                                )}
+                                                                            </div>
                                                                             <span className="text-[10px] text-neutral-400 mt-0.5 block">
-                                                                                {order.type === 'delivery'
-                                                                                    ? `${order.delivery_address?.postcode || 'No postcode'}${order.delivery_address?.city ? `, ${order.delivery_address.city}` : ''}`
-                                                                                : formatDateTime(order.collection_time)
+                                                                                {order.type === 'dine_in'
+                                                                                    ? 'Direct table scan'
+                                                                                    : order.type === 'delivery'
+                                                                                        ? `${order.delivery_address?.postcode || 'No postcode'}${order.delivery_address?.city ? `, ${order.delivery_address.city}` : ''}`
+                                                                                        : formatDateTime(order.collection_time)
                                                                                 }
                                                                             </span>
+                                                                            {order.type === 'delivery' && order.uber_status && (
+                                                                                <span className="inline-block mt-1 px-1.5 py-0.5 rounded bg-neutral-100 text-neutral-700 text-[9px] font-bold uppercase tracking-wider">
+                                                                                    Uber: {order.uber_status}
+                                                                                </span>
+                                                                            )}
                                                                         </td>
                                                                          <td className="py-4 px-5 min-w-56">
                                                                              <div className="space-y-1">
@@ -2467,10 +2534,27 @@ export default function AdminDashboard() {
                                                                             )}
                                                                         </td>
                                                                          <td className="py-4 px-5">
-                                                                             <div className="flex justify-end">
+                                                                             <div className="flex items-center justify-end gap-1.5">
+                                                                                 <button
+                                                                                     type="button"
+                                                                                     onClick={() => handlePrintOrderTicket(order.id)}
+                                                                                     disabled={printingOrderId === order.id}
+                                                                                     className={`p-2 border rounded-lg transition-all flex items-center justify-center ${
+                                                                                         order.print_count > 0 
+                                                                                             ? 'bg-emerald-50/60 border-emerald-200 text-emerald-700 hover:bg-emerald-100' 
+                                                                                             : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-900 hover:text-neutral-950'
+                                                                                     }`}
+                                                                                     title={order.print_count > 0 ? `Reprint Ticket (${order.print_count}x)` : 'Print Ticket on Star TSP100'}
+                                                                                 >
+                                                                                     {printingOrderId === order.id ? (
+                                                                                         <Loader2 size={14} className="animate-spin text-amber-600" />
+                                                                                     ) : (
+                                                                                         <Printer size={14} />
+                                                                                     )}
+                                                                                 </button>
                                                                                  <button
                                                                                      onClick={() => navigate(`/admin/orders/${order.order_number}`)}
-                                                                                     className="p-2 bg-neutral-50 border border-neutral-200 text-neutral-600 hover:text-[#8e5233] hover:border-[#8e5233]/40 hover:bg-[#8e5233]/5 rounded-lg transition-all flex items-center justify-center"
+                                                                                     className="p-2 bg-neutral-50 border border-neutral-200 text-neutral-600 hover:text-neutral-900 hover:border-neutral-950 rounded-lg transition-all flex items-center justify-center"
                                                                                      title="View Order Details"
                                                                                  >
                                                                                      <Eye size={14} />
@@ -4794,6 +4878,16 @@ export default function AdminDashboard() {
                                     })}
                                 </div>
                             </div>
+                        )}
+
+                        {/* 11. TABLES & QR CODE ORDERING TAB */}
+                        {activeTab === 'tables' && (
+                            <AdminTablesTab orders={orders} />
+                        )}
+
+                        {/* 12. STAR CLOUDPRNT PRINTERS & QUEUE TAB */}
+                        {activeTab === 'printers' && (
+                            <AdminPrintersTab token={token} />
                         )}
                     </>
                 )}

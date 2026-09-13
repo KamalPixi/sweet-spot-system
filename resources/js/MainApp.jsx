@@ -294,11 +294,11 @@ function TitleUpdater() {
             title = 'My Account Center | Pudding London';
         } else if (path.startsWith('/admin')) {
             if (path === '/admin/login') {
-                title = 'Admin Login | Pudding London';
+                title = 'Admin Login | Sweet Spot System';
             } else {
                 const subPath = path.split('/')[2] || 'dashboard';
                 const adminSection = subPath.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
-                title = `Admin ${adminSection} | Pudding London`;
+                title = `Admin ${adminSection} | Sweet Spot System`;
             }
         }
         
@@ -341,6 +341,8 @@ export default function MainApp() {
                         <Route path="/admin/dashboard" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/orders" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/orders/:orderNumber" element={<RequireAdmin><AdminOrderDetailPage /></RequireAdmin>} />
+                        <Route path="/admin/tables" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
+                        <Route path="/admin/printers" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/collection-slots" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/reports" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/categories" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />

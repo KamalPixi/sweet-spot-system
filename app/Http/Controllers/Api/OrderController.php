@@ -360,6 +360,7 @@ class OrderController extends Controller
         // Fulfillment type split
         $deliveryOrders    = Order::where('type', 'delivery')->count();
         $collectionOrders  = Order::where('type', 'collection')->count();
+        $dineInOrders      = Order::where('type', 'dine_in')->count();
 
         // Customers
         $totalCustomers    = \App\Models\Customer::count();
@@ -490,6 +491,7 @@ class OrderController extends Controller
         $periodFulfillmentSplit = [
             'delivery' => (clone $periodOrdersQuery)->where('type', 'delivery')->count(),
             'collection' => (clone $periodOrdersQuery)->where('type', 'collection')->count(),
+            'dine_in' => (clone $periodOrdersQuery)->where('type', 'dine_in')->count(),
         ];
 
         return response()->json([
@@ -513,6 +515,7 @@ class OrderController extends Controller
                 'fulfillment_split' => [
                     'delivery'   => $deliveryOrders,
                     'collection' => $collectionOrders,
+                    'dine_in'    => $dineInOrders,
                 ],
                 'recent_orders'      => $recentOrders,
                 'sales_by_category'  => $salesByCategory,

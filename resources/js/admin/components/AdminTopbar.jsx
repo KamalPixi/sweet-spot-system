@@ -29,9 +29,9 @@ export default function AdminTopbar({
                 <div className="flex items-center gap-3 min-w-0">
                     <div>
                         <p className="text-[9px] font-bold text-neutral-400 uppercase tracking-widest leading-none mb-1">{sectionLabel}</p>
-                        <div className="flex flex-wrap items-center gap-2">
-                            <h1 className="text-base font-black text-neutral-950 tracking-tight leading-none">Pudding London Admin</h1>
-                            <span className="px-2 py-0.5 rounded-full bg-neutral-950 text-white text-[9px] font-bold uppercase tracking-wider">{adminRole}</span>
+                        <div className="flex flex-wrap items-center gap-2.5">
+                            <h1 className="text-base font-black text-neutral-900 tracking-tight leading-none">Sweet Spot Admin</h1>
+                            <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[9px] font-bold uppercase tracking-wider">{adminRole}</span>
                         </div>
                     </div>
                 </div>

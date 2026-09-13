@@ -15,7 +15,7 @@ class AdminOrderFilterRequest extends FormRequest
     {
         return [
             'status' => 'nullable|in:all,pending,paid,preparing,ready,completed,cancelled,incomplete,awaiting_payment',
-            'type' => 'nullable|in:all,delivery,collection',
+            'type' => 'nullable|in:all,delivery,collection,dine_in',
         ];
     }
 }
