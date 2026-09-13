@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { 
     Bell, ChevronDown, LogOut, RefreshCw, Users, X, Sparkles, Clock, 
     CheckCircle2, Plus, QrCode, Printer, ExternalLink, ShieldCheck, 
-    Activity, Store, Search
+    Activity, Store, Search, Menu
 } from 'lucide-react';
 
 export default function AdminTopbar({
@@ -29,37 +29,51 @@ export default function AdminTopbar({
     activeTab,
     onTabChange,
     orderSummary = {},
+    onToggleSidebar,
 }) {
     const [quickActionsOpen, setQuickActionsOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-30 pt-2.5 lg:pt-3 pr-2.5 lg:pr-3 pl-0 pb-1.5 bg-[#F5EFEB]/90 backdrop-blur-md">
-            {/* Top Bar Floating Curved Card */}
-            <div className="bg-surface rounded-2xl border border-stone-200/60 shadow-xs px-4 lg:px-5 py-2 flex items-center justify-between gap-3.5">
-                {/* Left: Atelier Identity & Section Breadcrumb */}
-                <div className="flex items-center gap-3.5 min-w-0">
-                    <div className="flex items-center gap-3">
+        <header className="sticky top-0 z-30 pt-2.5 lg:pt-3 px-2.5 sm:pl-0 sm:pr-2.5 lg:pr-3 pb-1.5 bg-[#F5EFEB]/90 backdrop-blur-md">
+            {/* Top Bar Floating Curved Card - 3-Column Grid for True Center Lock */}
+            <div className="bg-surface rounded-2xl border border-stone-200/60 shadow-xs px-3 sm:px-4 lg:px-5 py-2 grid grid-cols-2 xl:grid-cols-[1fr_auto_1fr] items-center gap-3">
+                {/* Left: Hamburger (Mobile) + Atelier Identity & Section Breadcrumb */}
+                <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 pr-2">
+                    {/* Mobile Hamburger Toggle */}
+                    {onToggleSidebar && (
+                        <button
+                            type="button"
+                            onClick={onToggleSidebar}
+                            className="md:hidden p-2 rounded-xl bg-canvas hover:bg-stone-200/60 text-primary transition-colors cursor-pointer shrink-0"
+                            title="Toggle Menu"
+                            aria-label="Toggle navigation menu"
+                        >
+                            <Menu size={17} />
+                        </button>
+                    )}
+
+                    <div className="flex items-center gap-2 sm:gap-3 min-w-0 overflow-hidden">
                         {/* Status Icon Pillar */}
                         <div className="w-8 h-8 rounded-xl bg-primary text-accent flex items-center justify-center font-black text-xs shadow-xs shrink-0">
                             <Store size={15} className="text-accent" />
                         </div>
-                        <div className="min-w-0">
-                            <div className="flex items-center gap-2 leading-none mb-1">
-                                <span className="text-[11px] font-black text-primary uppercase tracking-wider font-mono">
-                                    SWEET SPOT ATELIER
+                        <div className="min-w-0 overflow-hidden">
+                            <div className="flex items-center gap-1.5 sm:gap-2 leading-none mb-1 overflow-x-auto scrollbar-none whitespace-nowrap">
+                                <span className="text-[10px] sm:text-[11px] font-black text-primary uppercase tracking-wider font-mono shrink-0">
+                                    SWEET SPOT
                                 </span>
-                                <span className="text-stone-300 text-[10px]">/</span>
-                                <span className="text-[10px] font-bold text-stone-500 uppercase tracking-widest truncate">
+                                <span className="text-stone-300 text-[10px] shrink-0">/</span>
+                                <span className="text-[9.5px] sm:text-[10px] font-bold text-stone-500 uppercase tracking-widest truncate">
                                     {sectionLabel}
                                 </span>
                             </div>
-                            <div className="flex items-center gap-2">
-                                <span className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                            <div className="flex items-center gap-1.5 sm:gap-2 whitespace-nowrap">
+                                <span className="hidden xs:flex items-center gap-1 text-[10px] text-stone-400 font-medium shrink-0">
                                     <Clock size={10} className="text-stone-400" />
                                     {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} GMT
                                 </span>
-                                <span className="w-1 h-1 rounded-full bg-stone-300" />
-                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-primary bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full">
+                                <span className="hidden xs:inline-block w-1 h-1 rounded-full bg-stone-300 shrink-0" />
+                                <span className="inline-flex items-center gap-1 text-[9px] sm:text-[10px] font-bold text-primary bg-emerald-50 border border-emerald-200/80 px-2 py-0.5 rounded-full shrink-0">
                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
                                     Store Live
                                 </span>
@@ -68,8 +82,8 @@ export default function AdminTopbar({
                     </div>
                 </div>
 
-                {/* Center / Operational Quick Hub (Desktop) */}
-                <div className="hidden xl:flex items-center gap-2">
+                {/* Center / Operational Quick Hub (Always Centered in Grid) */}
+                <div className="hidden xl:flex items-center justify-center gap-2">
                     {/* Active Queue Action Button */}
                     <button
                         type="button"
@@ -114,7 +128,7 @@ export default function AdminTopbar({
                 </div>
 
                 {/* Right Actions Deck: New Action, Sync, Notifications, Profile */}
-                <div className="flex items-center gap-2 sm:gap-2.5">
+                <div className="flex items-center justify-end gap-2 sm:gap-2.5">
                     {/* Primary "+ Quick Action" Dropdown */}
                     <div className="relative">
                         <button
@@ -124,11 +138,12 @@ export default function AdminTopbar({
                                 setNotificationsOpen(false);
                                 setAccountMenuOpen(false);
                             }}
-                            className="flex items-center gap-2 px-3.5 py-2 rounded-xl bg-secondary hover:bg-secondary-hover active:scale-98 text-white text-xs font-bold tracking-tight transition-all duration-150 shadow-xs cursor-pointer"
+                            className="flex items-center gap-1.5 sm:gap-2 p-2 sm:px-3.5 sm:py-2 rounded-xl bg-secondary hover:bg-secondary-hover active:scale-98 text-white text-xs font-bold tracking-tight transition-all duration-150 shadow-xs cursor-pointer shrink-0"
+                            title="Quick Actions"
                         >
-                            <Plus size={14} className="stroke-[3] text-white" />
+                            <Plus size={15} className="stroke-[3] text-white shrink-0" />
                             <span className="hidden sm:inline">New Action</span>
-                            <ChevronDown size={12} className={`text-white/80 transition-transform duration-200 ${quickActionsOpen ? 'rotate-180' : ''}`} />
+                            <ChevronDown size={12} className={`hidden sm:inline text-white/80 transition-transform duration-200 ${quickActionsOpen ? 'rotate-180' : ''}`} />
                         </button>
 
                         {quickActionsOpen && (
@@ -210,7 +225,7 @@ export default function AdminTopbar({
                                 setAccountMenuOpen(false);
                                 setQuickActionsOpen(false);
                             }}
-                            className={`relative flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs ${
+                            className={`relative flex items-center gap-1.5 p-2 md:px-3 md:py-2 rounded-xl border text-xs font-semibold transition-all cursor-pointer shadow-2xs shrink-0 ${
                                 notificationsOpen
                                     ? 'bg-surface border-primary text-primary ring-1 ring-primary/20'
                                     : 'bg-surface hover:bg-stone-50 border-stone-200/80 text-stone-700 hover:text-primary hover:border-stone-400'

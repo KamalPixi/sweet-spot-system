@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, LogOut, Sparkles, User } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogOut, Sparkles, User, X } from 'lucide-react';
 
 export default function AdminSidebar({
     collapsed,
@@ -12,13 +12,32 @@ export default function AdminSidebar({
     userEmail = 'alex.morgan@email.com',
     adminRole = 'Store Admin',
 }) {
+    const handleItemClick = (tabId) => {
+        onTabChange(tabId);
+        // On mobile, automatically close drawer after clicking a link
+        if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            onToggleCollapsed();
+        }
+    };
     return (
-        <aside
-            className={`transition-all duration-300 ${
-                collapsed ? 'w-[76px] p-2' : 'w-[268px] p-2.5 lg:p-3'
-            } flex flex-col justify-between h-screen sticky top-0 shrink-0 bg-[#F5EFEB] select-none z-20`}
-        >
-            <div className="flex flex-col h-full overflow-hidden space-y-3">
+        <>
+            {/* Mobile Backdrop Overlay */}
+            {!collapsed && (
+                <div
+                    onClick={onToggleCollapsed}
+                    className="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-40 md:hidden transition-opacity"
+                    aria-hidden="true"
+                />
+            )}
+
+            <aside
+                className={`transition-all duration-300 ${
+                    collapsed
+                        ? 'max-md:-translate-x-full md:w-[76px] md:p-2'
+                        : 'max-md:translate-x-0 max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 md:w-[268px] p-2.5 lg:p-3'
+                } flex flex-col justify-between h-screen sticky top-0 shrink-0 bg-[#F5EFEB] select-none z-30 max-md:w-[280px]`}
+            >
+                <div className="flex flex-col h-full overflow-hidden space-y-3">
                 {/* 1. Dark Emerald / Forest Profile Hero Card (as in Ember reference) */}
                 {!collapsed ? (
                     <div className="relative overflow-hidden rounded-2xl bg-[#132B25] text-white p-4 shadow-sm">
@@ -31,13 +50,18 @@ export default function AdminSidebar({
                                 <User size={18} className="text-[#132B25]" />
                             </div>
 
-                            {/* Collapse Toggle Button */}
+                            {/* Collapse / Close Toggle Button */}
                             <button
                                 onClick={onToggleCollapsed}
                                 className="p-1 rounded-md text-emerald-300/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
-                                title="Collapse Menu"
+                                title="Close Menu"
                             >
-                                <ChevronLeft size={14} />
+                                <span className="md:hidden">
+                                    <X size={16} />
+                                </span>
+                                <span className="hidden md:inline">
+                                    <ChevronLeft size={14} />
+                                </span>
                             </button>
                         </div>
 
@@ -93,7 +117,7 @@ export default function AdminSidebar({
                                     return (
                                         <button
                                             key={item.id}
-                                            onClick={() => onTabChange(item.id)}
+                                            onClick={() => handleItemClick(item.id)}
                                             className={`w-full flex items-center transition-all duration-150 ${
                                                 collapsed ? 'justify-center p-2.5 relative' : 'gap-3 px-3.5 py-2.5'
                                             } text-[12.5px] font-semibold rounded-xl cursor-pointer ${
@@ -145,7 +169,7 @@ export default function AdminSidebar({
                     {/* Bottom Links: Profile & Log Out */}
                     <div className="pt-2 border-t border-stone-100 space-y-0.5">
                         <button
-                            onClick={() => onTabChange('profile')}
+                            onClick={() => handleItemClick('profile')}
                             className={`w-full flex items-center transition-colors ${
                                 collapsed ? 'justify-center p-2.5' : 'gap-3 px-3.5 py-2'
                             } text-[12px] font-semibold text-stone-600 hover:text-stone-950 hover:bg-stone-50 rounded-xl cursor-pointer`}
@@ -167,6 +191,7 @@ export default function AdminSidebar({
                     </div>
                 </div>
             </div>
-        </aside>
+            </aside>
+        </>
     );
 }

@@ -4,6 +4,8 @@ import toast from 'react-hot-toast';
 import { useApp } from './AppContext';
 import AdminSidebar from './admin/components/AdminSidebar';
 import AdminTopbar from './admin/components/AdminTopbar';
+import AdminTable from './admin/components/AdminTable';
+import { AdminStatCard, AdminStatGrid } from './admin/components/AdminStatCard';
 import AdminTablesTab from './admin/components/AdminTablesTab';
 import AdminPrintersTab from './admin/components/AdminPrintersTab';
 import useRealtimeChannel from './hooks/useRealtimeChannel';
@@ -12,7 +14,7 @@ import { getEchoSocketId } from './lib/realtime';
 import { 
     LayoutDashboard, ClipboardList, FolderTree, Egg, Mail, Settings, 
     ArrowLeft, LogOut, Loader2, AlertCircle, Plus, Edit, Trash, Check, X, ShieldAlert, ChevronLeft, ChevronRight, BarChart3,
-    Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, Bell, RefreshCw, ChevronDown, Upload, Clock,
+    Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, User, Bell, RefreshCw, ChevronDown, Upload, Clock,
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, Sparkles, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat
 } from 'lucide-react';
@@ -82,7 +84,12 @@ export default function AdminDashboard() {
     const location = useLocation();
     const { adminToken: token, adminUser: user, login, logout } = useApp();
 
-    const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+    const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+        if (typeof window !== 'undefined') {
+            return window.innerWidth < 768;
+        }
+        return false;
+    });
 
     const [activeTab, setActiveTab] = useState('dashboard');
     const [loading, setLoading] = useState(false);
@@ -1693,9 +1700,10 @@ export default function AdminDashboard() {
                         setProdFormOpen(false);
                     }}
                     orderSummary={orderSummary}
+                    onToggleSidebar={() => setSidebarCollapsed(prev => !prev)}
                 />
 
-                <div className="pt-2 pr-2.5 lg:pr-3 pl-0 pb-8">
+                <div className="pt-2 px-2.5 sm:pl-0 sm:pr-2.5 lg:pr-3 pb-8">
                 {loading && !catFormOpen && !prodFormOpen ? (
                     <div className="flex items-center justify-center py-24">
                         <Loader2 className="animate-spin text-neutral-950" size={40} />
@@ -2630,11 +2638,11 @@ export default function AdminDashboard() {
 
                         {/* 3. CATEGORIES CRUD TAB */}
                         {activeTab === 'categories' && (
-                            <div className="space-y-8">
-                                <div className="flex justify-between items-center">
+                            <div className="space-y-6">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
-                                        <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Manage Categories</h1>
-                                        <p className="text-xs text-neutral-500 mt-1">Configure and organize product classification groups for your customers.</p>
+                                        <h1 className="text-2xl lg:text-3xl font-serif font-black text-primary tracking-tight">Manage Categories</h1>
+                                        <p className="text-xs text-stone-500 mt-1">Configure and organize culinary classification collections for your atelier storefront.</p>
                                     </div>
                                     {!catFormOpen && (
                                         <button 
@@ -2650,9 +2658,9 @@ export default function AdminDashboard() {
                                                 setCatStatus(true);
                                                 setCatOrder(0);
                                             }}
-                                            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-[#261B16] font-black px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-lg shadow-sm cursor-pointer hover:-translate-y-0.5"
+                                            className="bg-secondary hover:bg-secondary-hover active:scale-98 text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-xl shadow-xs cursor-pointer hover:-translate-y-0.5 shrink-0 self-start sm:self-auto"
                                         >
-                                            <Plus size={14} className="stroke-[2.5]" />
+                                            <Plus size={15} className="stroke-[3]" />
                                             <span>Add Category</span>
                                         </button>
                                     )}
@@ -2881,48 +2889,47 @@ export default function AdminDashboard() {
                                 ) : (
                                     /* Category List View with Stats Bar, Filters and Pagination */
                                     <div className="space-y-6">
-                                        {/* Minimalist Stats Cards row */}
-                                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                                            <div className="bg-white border border-neutral-200 p-5 rounded-xl shadow-sm text-left">
-                                                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">Total Categories</span>
-                                                <span className="text-2xl font-extrabold text-neutral-900 block mt-1">{categories.length}</span>
-                                                <span className="text-[10px] text-neutral-500 mt-1 block">Configured in store catalog</span>
-                                            </div>
-                                            <div className="bg-white border border-neutral-200 p-5 rounded-xl shadow-sm text-left">
-                                                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">Active Categories</span>
-                                                <span className="text-2xl font-extrabold text-neutral-900 block mt-1">
-                                                    {categories.filter(c => c.status === true || c.status === 1).length}
-                                                </span>
-                                                <span className="text-[10px] text-emerald-600 font-medium mt-1 block flex items-center gap-1">
-                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                                                    Visible on client storefront
-                                                </span>
-                                            </div>
-                                            <div className="bg-white border border-neutral-200 p-5 rounded-xl shadow-sm text-left">
-                                                <span className="text-[10px] text-neutral-400 font-bold uppercase tracking-wider block">Categorized Products</span>
-                                                <span className="text-2xl font-extrabold text-neutral-900 block mt-1">
-                                                    {products.filter(p => p.category_id).length}
-                                                </span>
-                                                <span className="text-[10px] text-neutral-500 mt-1 block">Linked items in category catalog</span>
-                                            </div>
-                                        </div>
+                                        {/* Compact Category Stats Cards row */}
+                                        <AdminStatGrid columns={3}>
+                                            <AdminStatCard
+                                                label="Total Categories"
+                                                value={categories.length}
+                                                sub="Configured in store catalog"
+                                                icon={FolderTree}
+                                            />
+                                            <AdminStatCard
+                                                label="Active Categories"
+                                                value={categories.filter(c => c.status === true || c.status === 1).length}
+                                                sub="Visible on storefront"
+                                                badge={
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block animate-pulse" />
+                                                }
+                                                icon={Sparkles}
+                                            />
+                                            <AdminStatCard
+                                                label="Categorized Products"
+                                                value={products.filter(p => p.category_id).length}
+                                                sub="Linked items in catalog"
+                                                icon={Layers}
+                                            />
+                                        </AdminStatGrid>
 
                                         {/* Search & Filters Toolbar */}
-                                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-white border border-neutral-200 p-4 rounded-xl shadow-sm">
+                                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
                                             {/* Left side: Search input */}
                                             <div className="relative flex-grow max-w-md">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
                                                 <input 
                                                     type="text"
                                                     value={catQuery}
                                                     onChange={(e) => setCatQuery(e.target.value)}
                                                     placeholder="Search categories by name..."
-                                                    className="w-full bg-white border border-neutral-300 pl-10 pr-10 py-2.5 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    className="w-full bg-canvas/60 border border-stone-200/80 pl-10 pr-10 py-2 text-xs text-primary focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-xl transition-colors"
                                                 />
                                                 {catQuery && (
                                                     <button 
                                                         onClick={() => setCatQuery('')} 
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 p-1 rounded-full hover:bg-neutral-50 transition-colors"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-primary p-1 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
                                                     >
                                                         <X size={12} />
                                                     </button>
@@ -2930,8 +2937,8 @@ export default function AdminDashboard() {
                                             </div>
 
                                             {/* Right side: Status filtering and results count */}
-                                            <div className="flex items-center justify-between sm:justify-start gap-4 shrink-0">
-                                                <div className="flex bg-neutral-100 p-1 rounded-lg border border-neutral-200">
+                                            <div className="flex items-center justify-between sm:justify-start gap-3 shrink-0">
+                                                <div className="flex bg-canvas p-1 rounded-xl border border-stone-200/60">
                                                     {[
                                                         { label: 'All', value: 'all' },
                                                         { label: 'Active', value: 'active' },
@@ -2941,128 +2948,116 @@ export default function AdminDashboard() {
                                                             key={tab.value}
                                                             type="button"
                                                             onClick={() => setCatStatusFilter(tab.value)}
-                                                            className={`px-3.5 py-1.5 rounded-md text-[10px] font-bold transition-all uppercase tracking-wider ${
+                                                            className={`px-3 py-1 rounded-lg text-[10px] font-bold transition-all uppercase tracking-wider cursor-pointer ${
                                                                 catStatusFilter === tab.value
-                                                                    ? 'bg-white text-neutral-950 shadow-xs border border-neutral-200'
-                                                                    : 'text-neutral-500 hover:text-neutral-950 bg-transparent'
+                                                                    ? 'bg-primary text-white shadow-2xs'
+                                                                    : 'text-stone-500 hover:text-primary bg-transparent'
                                                             }`}
                                                         >
                                                             {tab.label}
                                                         </button>
                                                     ))}
                                                 </div>
-                                                <span className="text-[11px] font-bold text-neutral-400 tracking-tight hidden sm:inline">
+                                                <span className="text-[11px] font-bold text-stone-400 tracking-tight hidden sm:inline">
                                                     Showing {filteredCategories.length} of {categories.length}
                                                 </span>
                                             </div>
                                         </div>
 
-                                        {filteredCategories.length === 0 ? (
-                                            <div className="bg-white border border-neutral-200 p-12 rounded-xl text-center shadow-sm">
-                                                <p className="text-neutral-400 text-sm">No categories found matching your query and filter criteria.</p>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                {/* Category Grid */}
-                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-left">
-                                                    {currentCategories.map(cat => (
-                                                        <div key={cat.id} className="group bg-white border border-neutral-200 p-4 rounded-xl shadow-sm hover:border-neutral-900 hover:shadow-md transition-all duration-300 hover:-translate-y-1 flex flex-col justify-between relative overflow-hidden">
-                                                            <div>
-                                                                {/* Card Image and Absolute Badges */}
-                                                                <div className="relative h-32 w-full rounded-lg overflow-hidden border border-neutral-100 bg-neutral-50 shrink-0 mb-4">
-                                                                    <img 
-                                                                        src={getImageUrl(cat)} 
-                                                                        alt={cat.name}
-                                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                                                                        onError={(e) => {
-                                                                            e.target.src = "/images/placeholder.svg";
-                                                                        }}
-                                                                    />
-                                                                    {/* Dark gradient overlay on bottom of image for readability */}
-                                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent pointer-events-none" />
-
-                                                                    {/* Top Row Badges */}
-                                                                    <div className="absolute top-2.5 left-2.5 right-2.5 flex justify-between items-center pointer-events-none">
-                                                                        <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-neutral-950/80 backdrop-blur-xs text-white border border-white/10 shadow-xs">
-                                                                            Order: {cat.order}
-                                                                        </span>
-                                                                        
-                                                                        {cat.status ? (
-                                                                            <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 shadow-xs flex items-center gap-1">
-                                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                                                                                Active
-                                                                            </span>
-                                                                        ) : (
-                                                                            <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-neutral-100 text-neutral-500 border border-neutral-200 shadow-xs">
-                                                                                Disabled
-                                                                            </span>
-                                                                        )}
-                                                                    </div>
-                                                                </div>
-
-                                                                {/* Text details */}
-                                                                <div className="text-left px-1">
-                                                                    <h3 className="font-extrabold text-neutral-900 text-base tracking-tight leading-snug group-hover:text-neutral-950 transition-colors truncate">
-                                                                        {cat.name}
-                                                                    </h3>
-                                                                    <span className="text-[10px] text-neutral-400 font-mono mt-0.5 block truncate">
-                                                                        /categories/{cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
-                                                                    </span>
-                                                                </div>
+                                        <AdminTable
+                                            title="Categories Directory"
+                                            countText={`Showing ${filteredCategories.length === 0 ? 0 : (catCurrentPage - 1) * catPerPage + 1}-${Math.min(catCurrentPage * catPerPage, filteredCategories.length)} of ${filteredCategories.length}`}
+                                            emptyMessage="No categories found matching your query and filter criteria."
+                                            data={currentCategories}
+                                            keyField="id"
+                                            pagination={totalCatPages > 1 ? {
+                                                currentPage: catCurrentPage,
+                                                totalPages: totalCatPages,
+                                                onPageChange: (page) => setCatCurrentPage(page)
+                                            } : undefined}
+                                            columns={[
+                                                {
+                                                    header: "Category",
+                                                    render: (cat) => (
+                                                        <div className="flex items-center space-x-3.5 min-w-56">
+                                                            <div className="relative w-12 h-12 rounded-xl overflow-hidden border border-stone-200/60 bg-stone-50 shrink-0">
+                                                                <img 
+                                                                    src={getImageUrl(cat)} 
+                                                                    alt={cat.name}
+                                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                                                    onError={(e) => {
+                                                                        e.target.src = "/images/placeholder.svg";
+                                                                    }}
+                                                                />
                                                             </div>
-
-                                                            {/* Bottom metrics and actions bar */}
-                                                            <div className="flex items-center justify-between border-t border-neutral-100 pt-3 mt-4 px-1 shrink-0">
-                                                                <div className="flex items-center text-neutral-500 space-x-1.5">
-                                                                    <Layers size={12} className="text-neutral-400" />
-                                                                    <span className="text-[11px] font-bold text-neutral-600">
-                                                                        {products.filter(p => p.category_id === cat.id).length} products
-                                                                    </span>
-                                                                </div>
-
-                                                                <div className="flex space-x-1.5">
-                                                                    <button 
-                                                                        onClick={() => handleEditCategoryClick(cat)}
-                                                                        className="p-1.5 bg-white border border-neutral-200 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-50 hover:border-neutral-800 transition-all rounded-lg shadow-xs"
-                                                                        title="Edit Category"
-                                                                    >
-                                                                        <Edit size={13} />
-                                                                    </button>
-                                                                    <button 
-                                                                        onClick={() => handleDeleteCategory(cat.id)}
-                                                                        className="p-1.5 bg-white border border-neutral-200 text-neutral-500 hover:text-red-650 hover:bg-red-50 hover:border-red-200 transition-all rounded-lg shadow-xs"
-                                                                        title="Delete Category"
-                                                                    >
-                                                                        <Trash size={13} />
-                                                                    </button>
-                                                                </div>
+                                                            <div className="min-w-0">
+                                                                <span className="font-serif font-black text-primary block text-sm leading-snug group-hover:text-secondary transition-colors truncate">
+                                                                    {cat.name}
+                                                                </span>
+                                                                <span className="text-[10px] text-stone-400 font-mono truncate block mt-0.5">
+                                                                    /categories/{cat.slug || cat.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')}
+                                                                </span>
                                                             </div>
                                                         </div>
-                                                    ))}
+                                                    )
+                                                },
+                                                {
+                                                    header: "Sequence",
+                                                    render: (cat) => (
+                                                        <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-stone-100 text-stone-600 border border-stone-200/70 inline-block font-mono">
+                                                            Seq #{cat.order}
+                                                        </span>
+                                                    )
+                                                },
+                                                {
+                                                    header: "Products",
+                                                    render: (cat) => {
+                                                        const count = products.filter(p => p.category_id === cat.id).length;
+                                                        return (
+                                                            <div className="flex items-center text-stone-600 space-x-1.5">
+                                                                <Layers size={13} className="text-stone-400" />
+                                                                <span className="text-[11px] font-bold">
+                                                                    {count} {count === 1 ? 'item' : 'items'}
+                                                                </span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                },
+                                                {
+                                                    header: "Status",
+                                                    render: (cat) => (
+                                                        cat.status ? (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1.5">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block animate-pulse"></span>
+                                                                Active
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-stone-100 text-stone-400 border border-stone-200 inline-block">
+                                                                Disabled
+                                                            </span>
+                                                        )
+                                                    )
+                                                }
+                                            ]}
+                                            actions={(cat) => (
+                                                <div className="flex justify-end space-x-1.5">
+                                                    <button 
+                                                        onClick={() => handleEditCategoryClick(cat)}
+                                                        className="p-2 bg-canvas hover:bg-stone-200/60 text-stone-700 hover:text-primary transition-all rounded-xl cursor-pointer"
+                                                        title="Edit Category"
+                                                    >
+                                                        <Edit size={13} />
+                                                    </button>
+                                                    <button 
+                                                        onClick={() => handleDeleteCategory(cat.id)}
+                                                        className="p-2 bg-canvas hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-all rounded-xl cursor-pointer"
+                                                        title="Delete Category"
+                                                    >
+                                                        <Trash size={13} />
+                                                    </button>
                                                 </div>
-
-                                                {/* Pagination Controls */}
-                                                {totalCatPages > 1 && (
-                                                    <div className="flex justify-between items-center pt-6 border-t border-neutral-200 mt-6 w-full text-xs font-semibold text-neutral-600">
-                                                        <button 
-                                                            onClick={() => setCatCurrentPage(prev => Math.max(prev - 1, 1))}
-                                                            disabled={catCurrentPage === 1}
-                                                            className="px-3.5 py-2 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                        >
-                                                            Previous
-                                                        </button>
-                                                        <span>Page {catCurrentPage} of {totalCatPages}</span>
-                                                        <button 
-                                                            onClick={() => setCatCurrentPage(prev => Math.min(prev + 1, totalCatPages))}
-                                                            disabled={catCurrentPage === totalCatPages}
-                                                            className="px-3.5 py-2 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                        >
-                                                            Next
-                                                        </button>
-                                                    </div>
-                                                )}
-                                            </>
-                                        )}
+                                            )}
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -3070,18 +3065,18 @@ export default function AdminDashboard() {
 
                         {/* 4. PRODUCTS CRUD TAB */}
                         {activeTab === 'products' && (
-                            <div className="space-y-8">
-                                <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4">
+                            <div className="space-y-6">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
-                                        <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Manage Products</h1>
-                                        <p className="text-xs text-neutral-500 mt-1">Search, filter, and maintain the storefront product catalogue.</p>
+                                        <h1 className="text-2xl lg:text-3xl font-serif font-black text-primary tracking-tight">Manage Products</h1>
+                                        <p className="text-xs text-stone-500 mt-1">Search, curate, and maintain the handcrafted catalogue for your storefront.</p>
                                     </div>
                                     {!prodFormOpen && (
                                         <button 
                                             onClick={handleAddProductClick}
-                                            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-[#261B16] font-black px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-lg shadow-sm cursor-pointer hover:-translate-y-0.5"
+                                            className="bg-secondary hover:bg-secondary-hover active:scale-98 text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-xl shadow-xs cursor-pointer hover:-translate-y-0.5 shrink-0 self-start sm:self-auto"
                                         >
-                                            <Plus size={14} className="stroke-[2.5]" />
+                                            <Plus size={15} className="stroke-[3]" />
                                             <span>Add Product</span>
                                         </button>
                                     )}
@@ -3488,24 +3483,39 @@ export default function AdminDashboard() {
                                 ) : (
                                     /* Product list rendering */
                                     <div className="space-y-6">
-                                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                            {[
-                                                { label: 'Total Products', value: productSummary.total, sub: 'Configured catalogue items' },
-                                                { label: 'Active', value: productSummary.active, sub: 'Visible on storefront' },
-                                                { label: 'Inactive', value: productSummary.inactive, sub: 'Hidden from customers' },
-                                                { label: 'With Variations', value: productSummary.withVariations, sub: 'Multiple sizes/options' },
-                                            ].map(card => (
-                                                <div key={card.label} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">{card.label}</span>
-                                                    <span className="text-2xl font-black text-neutral-900 block mt-2">{card.value}</span>
-                                                    <span className="text-[11px] text-neutral-400 mt-1 block">{card.sub}</span>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        <AdminStatGrid columns={4}>
+                                            <AdminStatCard
+                                                label="Total Products"
+                                                value={productSummary.total}
+                                                sub="Configured catalogue items"
+                                                icon={ShoppingBag}
+                                            />
+                                            <AdminStatCard
+                                                label="Active"
+                                                value={productSummary.active}
+                                                sub="Visible on storefront"
+                                                badge={
+                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block animate-pulse" />
+                                                }
+                                                icon={Eye}
+                                            />
+                                            <AdminStatCard
+                                                label="Inactive"
+                                                value={productSummary.inactive}
+                                                sub="Hidden from customers"
+                                                icon={EyeOff}
+                                            />
+                                            <AdminStatCard
+                                                label="With Variations"
+                                                value={productSummary.withVariations}
+                                                sub="Multiple sizes/options"
+                                                icon={Layers}
+                                            />
+                                        </AdminStatGrid>
 
-                                        <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-white border border-neutral-200 p-4 rounded-xl shadow-sm">
+                                        <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
                                             <div className="relative flex-grow max-w-xl">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
                                                 <input
                                                     type="text"
                                                     value={prodQuery}
@@ -3513,8 +3523,8 @@ export default function AdminDashboard() {
                                                         setProdCurrentPage(1);
                                                         setProdQuery(e.target.value);
                                                     }}
-                                                    placeholder="Search products, categories, descriptions, or variations"
-                                                    className="w-full bg-white border border-neutral-300 pl-10 pr-10 py-2.5 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    placeholder="Search products, categories, descriptions, or variations..."
+                                                    className="w-full bg-canvas/60 border border-stone-200/80 pl-10 pr-10 py-2 text-xs text-primary focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-xl transition-colors"
                                                 />
                                                 {prodQuery && (
                                                     <button
@@ -3522,7 +3532,7 @@ export default function AdminDashboard() {
                                                             setProdCurrentPage(1);
                                                             setProdQuery('');
                                                         }}
-                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 p-1 rounded-full hover:bg-neutral-50 transition-colors"
+                                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-primary p-1 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
                                                     >
                                                         <X size={12} />
                                                     </button>
@@ -3536,7 +3546,7 @@ export default function AdminDashboard() {
                                                         setProdCurrentPage(1);
                                                         setProdCategoryFilter(e.target.value);
                                                     }}
-                                                    className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                                    className="bg-canvas border border-stone-200/80 px-3 py-2 focus:bg-white focus:outline-none text-[11px] font-bold text-stone-700 focus:border-primary rounded-xl cursor-pointer"
                                                 >
                                                     <option value="all">All Categories</option>
                                                     {productCategoryOptions.map(category => (
@@ -3549,7 +3559,7 @@ export default function AdminDashboard() {
                                                         setProdCurrentPage(1);
                                                         setProdStatusFilter(e.target.value);
                                                     }}
-                                                    className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                                    className="bg-canvas border border-stone-200/80 px-3 py-2 focus:bg-white focus:outline-none text-[11px] font-bold text-stone-700 focus:border-primary rounded-xl cursor-pointer"
                                                 >
                                                     <option value="all">All Statuses</option>
                                                     <option value="active">Active</option>
@@ -3561,7 +3571,7 @@ export default function AdminDashboard() {
                                                         setProdCurrentPage(1);
                                                         setProdTypeFilter(e.target.value);
                                                     }}
-                                                    className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                                    className="bg-canvas border border-stone-200/80 px-3 py-2 focus:bg-white focus:outline-none text-[11px] font-bold text-stone-700 focus:border-primary rounded-xl cursor-pointer"
                                                 >
                                                     <option value="all">All Types</option>
                                                     <option value="simple">Simple</option>
@@ -3570,117 +3580,101 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        <div className="bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden text-left w-full">
-                                            <div className="px-5 py-4 border-b border-neutral-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-                                                <h2 className="font-bold text-neutral-800 text-sm">Product Catalogue</h2>
-                                                <span className="text-[11px] font-bold text-neutral-400">
-                                                    Showing {productMeta.from || 0}-{productMeta.to || 0} of {productMeta.total}
-                                                </span>
-                                            </div>
-                                            {products.length === 0 ? (
-                                                <p className="text-neutral-400 text-sm py-12 text-center">No products match the current search and filters.</p>
-                                            ) : (
-                                                <>
-                                                    <div className="overflow-x-auto">
-                                                        <table className="w-full text-xs">
-                                                            <thead>
-                                                                <tr className="border-b border-neutral-200 bg-neutral-50/70 text-neutral-500 uppercase tracking-wider font-bold text-[10px]">
-                                                                    <th className="py-3.5 px-6 text-left font-bold">Product</th>
-                                                                    <th className="py-3.5 px-6 text-left font-bold">Category</th>
-                                                                    <th className="py-3.5 px-6 text-left font-bold">Type</th>
-                                                                    <th className="py-3.5 px-6 text-left font-bold">Price</th>
-                                                                    <th className="py-3.5 px-6 text-left font-bold">Status</th>
-                                                                    <th className="py-3.5 px-6 text-right font-bold">Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody className="divide-y divide-neutral-200 text-neutral-700">
-                                                                {products.map(prod => {
-                                                                    const startingPrice = prod.has_variations && prod.variations?.length > 0
-                                                                        ? Math.min(...prod.variations.map(v => parseFloat(v.price || 0)))
-                                                                        : parseFloat(prod.base_price || 0);
-                                                                    return (
-                                                                        <tr key={prod.id} className="hover:bg-neutral-50/50 transition-colors">
-                                                                            <td className="py-4 px-6">
-                                                                                <div className="flex items-center space-x-3 min-w-56">
-                                                                                    <img
-                                                                                        src={getImageUrl(prod)}
-                                                                                        alt={prod.name}
-                                                                                        className="w-11 h-11 object-cover border border-neutral-200 shrink-0 rounded-lg"
-                                                                                        onError={(e) => {
-                                                                                            e.target.src = "/images/placeholder.svg";
-                                                                                        }}
-                                                                                    />
-                                                                                    <div className="min-w-0">
-                                                                                        <span className="font-extrabold text-neutral-900 block text-sm leading-snug truncate">{prod.name}</span>
-                                                                                        <span className="text-[10px] text-neutral-400 font-mono truncate block mt-0.5">/product/{prod.slug}</span>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </td>
-                                                                            <td className="py-4 px-6 font-semibold">{prod.category?.name || <span className="text-neutral-300 italic">No category</span>}</td>
-                                                                            <td className="py-4 px-6 text-neutral-500">
-                                                                                {prod.has_variations ? (
-                                                                                    <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-50 text-blue-700 border border-blue-100">Variations ({prod.variations?.length || 0})</span>
-                                                                                ) : (
-                                                                                    <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-neutral-100 text-neutral-500 border border-neutral-200">Simple</span>
-                                                                                )}
-                                                                            </td>
-                                                                            <td className="py-4 px-6 font-bold text-neutral-900">
-                                                                                {prod.has_variations ? `from £${startingPrice.toFixed(2)}` : `£${startingPrice.toFixed(2)}`}
-                                                                            </td>
-                                                                            <td className="py-4 px-6">
-                                                                                {prod.status ? (
-                                                                                    <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">Active</span>
-                                                                                ) : (
-                                                                                    <span className="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-neutral-100 text-neutral-400 border border-neutral-200">Inactive</span>
-                                                                                )}
-                                                                            </td>
-                                                                            <td className="py-4 px-6 text-right">
-                                                                                <div className="flex justify-end space-x-2">
-                                                                                    <button
-                                                                                        onClick={() => handleEditProductClick(prod)}
-                                                                                        className="p-2 bg-white border border-neutral-200 text-neutral-600 hover:text-neutral-950 hover:bg-neutral-50 hover:border-neutral-800 transition-colors rounded-lg"
-                                                                                        title="Edit Product"
-                                                                                    >
-                                                                                        <Edit size={12} />
-                                                                                    </button>
-                                                                                    <button
-                                                                                        onClick={() => handleDeleteProduct(prod.id)}
-                                                                                        className="p-2 bg-white border border-neutral-200 text-neutral-500 hover:text-red-650 hover:bg-red-50 hover:border-red-200 transition-colors rounded-lg"
-                                                                                        title="Delete Product"
-                                                                                    >
-                                                                                        <Trash size={12} />
-                                                                                    </button>
-                                                                                </div>
-                                                                            </td>
-                                                                        </tr>
-                                                                    );
-                                                                })}
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-
-                                                    {productMeta.last_page > 1 && (
-                                                        <div className="flex justify-between items-center px-5 py-4 border-t border-neutral-100 text-xs font-semibold text-neutral-600">
-                                                            <button
-                                                                onClick={() => setProdCurrentPage(prev => Math.max(prev - 1, 1))}
-                                                                disabled={prodCurrentPage === 1}
-                                                                className="px-3.5 py-2 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                            >
-                                                                Previous
-                                                            </button>
-                                                            <span>Page {productMeta.current_page || prodCurrentPage} of {productMeta.last_page}</span>
-                                                            <button
-                                                                onClick={() => setProdCurrentPage(prev => Math.min(prev + 1, productMeta.last_page))}
-                                                                disabled={prodCurrentPage === productMeta.last_page}
-                                                                className="px-3.5 py-2 bg-white border border-neutral-200 rounded-lg hover:bg-neutral-50 hover:text-neutral-900 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                                            >
-                                                                Next
-                                                            </button>
+                                        <AdminTable
+                                            title="Product Catalogue"
+                                            countText={`Showing ${productMeta.from || 0}-${productMeta.to || 0} of ${productMeta.total}`}
+                                            emptyMessage="No products match the current search and filters."
+                                            data={products}
+                                            keyField="id"
+                                            pagination={productMeta.last_page > 1 ? {
+                                                currentPage: productMeta.current_page || prodCurrentPage,
+                                                totalPages: productMeta.last_page,
+                                                onPageChange: (page) => setProdCurrentPage(page)
+                                            } : undefined}
+                                            columns={[
+                                                {
+                                                    header: "Product",
+                                                    render: (prod) => (
+                                                        <div className="flex items-center space-x-3 min-w-56">
+                                                            <img
+                                                                src={getImageUrl(prod)}
+                                                                alt={prod.name}
+                                                                className="w-11 h-11 object-cover border border-stone-200/60 shrink-0 rounded-xl"
+                                                                onError={(e) => {
+                                                                    e.target.src = "/images/placeholder.svg";
+                                                                }}
+                                                            />
+                                                            <div className="min-w-0">
+                                                                <span className="font-serif font-black text-primary block text-sm leading-snug group-hover:text-secondary transition-colors truncate">{prod.name}</span>
+                                                                <span className="text-[10px] text-stone-400 font-mono truncate block mt-0.5">/product/{prod.slug}</span>
+                                                            </div>
                                                         </div>
-                                                    )}
-                                                </>
+                                                    )
+                                                },
+                                                {
+                                                    header: "Category",
+                                                    render: (prod) => (
+                                                        <span className="font-semibold text-stone-700">
+                                                            {prod.category?.name || <span className="text-stone-300 italic">No category</span>}
+                                                        </span>
+                                                    )
+                                                },
+                                                {
+                                                    header: "Type",
+                                                    render: (prod) => (
+                                                        prod.has_variations ? (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-primary/10 text-primary border border-primary/20">Variations ({prod.variations?.length || 0})</span>
+                                                        ) : (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-stone-100 text-stone-500 border border-stone-200">Simple</span>
+                                                        )
+                                                    )
+                                                },
+                                                {
+                                                    header: "Price",
+                                                    render: (prod) => {
+                                                        const startingPrice = prod.has_variations && prod.variations?.length > 0
+                                                            ? Math.min(...prod.variations.map(v => parseFloat(v.price || 0)))
+                                                            : parseFloat(prod.base_price || 0);
+                                                        return (
+                                                            <span className="font-black text-primary">
+                                                                {prod.has_variations ? `from £${startingPrice.toFixed(2)}` : `£${startingPrice.toFixed(2)}`}
+                                                            </span>
+                                                        );
+                                                    }
+                                                },
+                                                {
+                                                    header: "Status",
+                                                    render: (prod) => (
+                                                        prod.status ? (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                                                Active
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-stone-100 text-stone-400 border border-stone-200">Inactive</span>
+                                                        )
+                                                    )
+                                                }
+                                            ]}
+                                            actions={(prod) => (
+                                                <div className="flex justify-end space-x-1.5">
+                                                    <button
+                                                        onClick={() => handleEditProductClick(prod)}
+                                                        className="p-2 bg-canvas hover:bg-stone-200/60 text-stone-700 hover:text-primary transition-all rounded-xl cursor-pointer"
+                                                        title="Edit Product"
+                                                    >
+                                                        <Edit size={13} />
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleDeleteProduct(prod.id)}
+                                                        className="p-2 bg-canvas hover:bg-rose-50 text-stone-400 hover:text-rose-600 transition-all rounded-xl cursor-pointer"
+                                                        title="Delete Product"
+                                                    >
+                                                        <Trash size={13} />
+                                                    </button>
+                                                </div>
                                             )}
-                                        </div>
+                                        />
                                     </div>
                                 )}
                             </div>
@@ -3688,154 +3682,164 @@ export default function AdminDashboard() {
 
                         {/* 5. CUSTOMERS TAB */}
                         {activeTab === 'customers' && (
-                            <div className="space-y-8">
-                                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                            <div className="space-y-6">
+                                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                                     <div>
-                                        <p className="text-xs font-bold text-[#C5A880] uppercase tracking-widest mb-1">Customer Management</p>
-                                        <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Customers</h1>
-                                        <p className="text-xs text-neutral-500 mt-1">Browse live customer accounts, guest profiles, and order history.</p>
+                                        <h1 className="text-2xl lg:text-3xl font-serif font-black text-primary tracking-tight">Customer Directory</h1>
+                                        <p className="text-xs text-stone-500 mt-1">Browse live customer accounts, guest profiles, and order history.</p>
                                     </div>
-                                    <div className="text-xs text-neutral-400">
-                                        Showing <span className="font-black text-neutral-900">{customers.length}</span> customers
+                                    <div className="text-[11px] font-bold text-stone-400">
+                                        Showing <span className="font-black text-primary">{customers.length}</span> customers
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                                    {[
-                                        { label: 'Total Customers', value: reports?.total_customers || customers.length, sub: 'Live customer records' },
-                                        { label: 'Registered', value: customers.filter(c => !c.is_guest).length, sub: 'Have login access' },
-                                        { label: 'Guests', value: customers.filter(c => c.is_guest).length, sub: 'Checkout-only profiles' },
-                                        { label: 'With Orders', value: customers.filter(c => c.orders_count > 0).length, sub: 'Placed at least one order' },
-                                    ].map(card => (
-                                        <div key={card.label} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">{card.label}</span>
-                                            <span className="text-3xl font-black text-neutral-900 block mt-2">{card.value}</span>
-                                            <span className="text-[11px] text-neutral-400 mt-1 block">{card.sub}</span>
-                                        </div>
-                                    ))}
-                                </div>
+                                <AdminStatGrid columns={4}>
+                                    <AdminStatCard
+                                        label="Total Customers"
+                                        value={reports?.total_customers || customers.length}
+                                        sub="Live customer records"
+                                        icon={Users}
+                                    />
+                                    <AdminStatCard
+                                        label="Registered"
+                                        value={customers.filter(c => !c.is_guest).length}
+                                        sub="Have login access"
+                                        icon={User}
+                                    />
+                                    <AdminStatCard
+                                        label="Guests"
+                                        value={customers.filter(c => c.is_guest).length}
+                                        sub="Checkout-only profiles"
+                                        icon={ShoppingBag}
+                                    />
+                                    <AdminStatCard
+                                        label="With Orders"
+                                        value={customers.filter(c => c.orders_count > 0).length}
+                                        sub="Placed at least one order"
+                                        icon={ClipboardList}
+                                    />
+                                </AdminStatGrid>
 
-                                <div className="bg-white border border-neutral-200 rounded-xl shadow-sm p-4 space-y-4">
-                                    <div className="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
-                                        <div className="relative flex-grow max-w-xl">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
-                                            <input
-                                                type="text"
-                                                value={customerQuery}
-                                                onChange={(e) => setCustomerQuery(e.target.value)}
-                                                placeholder="Search customer name, email, or phone"
-                                                className="w-full bg-white border border-neutral-300 pl-10 pr-10 py-2.5 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                            />
-                                            {customerQuery && (
-                                                <button
-                                                    onClick={() => setCustomerQuery('')}
-                                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-neutral-900 p-1 rounded-full hover:bg-neutral-50 transition-colors"
-                                                >
-                                                    <X size={12} />
-                                                </button>
-                                            )}
-                                        </div>
-
-                                        <div className="grid grid-cols-2 md:flex gap-2">
-                                            <select
-                                                value={customerTypeFilter}
-                                                onChange={(e) => setCustomerTypeFilter(e.target.value)}
-                                                className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
+                                    <div className="relative flex-grow max-w-xl">
+                                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
+                                        <input
+                                            type="text"
+                                            value={customerQuery}
+                                            onChange={(e) => setCustomerQuery(e.target.value)}
+                                            placeholder="Search customer name, email, or phone..."
+                                            className="w-full bg-canvas/60 border border-stone-200/80 pl-10 pr-10 py-2 text-xs text-primary focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-xl transition-colors"
+                                        />
+                                        {customerQuery && (
+                                            <button
+                                                onClick={() => setCustomerQuery('')}
+                                                className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-400 hover:text-primary p-1 rounded-full hover:bg-stone-100 transition-colors cursor-pointer"
                                             >
-                                                <option value="all">All Customers</option>
-                                                <option value="registered">Registered</option>
-                                                <option value="guest">Guest</option>
-                                            </select>
-                                            <select
-                                                value={customerSort}
-                                                onChange={(e) => setCustomerSort(e.target.value)}
-                                                className="bg-neutral-950 border border-neutral-950 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-white rounded-lg"
-                                            >
-                                                <option value="recent">Newest First</option>
-                                                <option value="name">Name</option>
-                                                <option value="orders">Most Orders</option>
-                                                <option value="spend">Highest Spend</option>
-                                            </select>
-                                        </div>
+                                                <X size={12} />
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="grid grid-cols-2 md:flex gap-2 shrink-0">
+                                        <select
+                                            value={customerTypeFilter}
+                                            onChange={(e) => setCustomerTypeFilter(e.target.value)}
+                                            className="bg-canvas border border-stone-200/80 px-3 py-2 focus:bg-white focus:outline-none text-[11px] font-bold text-stone-700 focus:border-primary rounded-xl cursor-pointer"
+                                        >
+                                            <option value="all">All Customers</option>
+                                            <option value="registered">Registered</option>
+                                            <option value="guest">Guest</option>
+                                        </select>
+                                        <select
+                                            value={customerSort}
+                                            onChange={(e) => setCustomerSort(e.target.value)}
+                                            className="bg-primary text-white border border-primary px-3 py-2 focus:outline-none text-[11px] font-bold rounded-xl cursor-pointer"
+                                        >
+                                            <option value="recent">Newest First</option>
+                                            <option value="name">Name</option>
+                                            <option value="orders">Most Orders</option>
+                                            <option value="spend">Highest Spend</option>
+                                        </select>
                                     </div>
                                 </div>
 
-                                <div className="bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
-                                    <div className="px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
-                                        <div>
-                                            <h2 className="font-bold text-neutral-800 text-sm">Customer List</h2>
-                                            <p className="text-[11px] text-neutral-400 mt-0.5">Live account data from checkout and customer login.</p>
-                                        </div>
-                                        <span className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">{customers.length} records</span>
-                                    </div>
-
-                                    {!customers.length ? (
-                                        <div className="py-16 text-center">
-                                            <Users size={32} className="text-neutral-200 mx-auto mb-3" />
-                                            <p className="text-neutral-400 text-sm font-medium">No customers found</p>
-                                        </div>
-                                    ) : (
-                                        <div className="overflow-x-auto">
-                                            <table className="w-full text-xs">
-                                                <thead>
-                                                    <tr className="bg-neutral-50 text-neutral-400 uppercase tracking-wider font-bold text-[10px] border-b border-neutral-100">
-                                                        <th className="py-3 px-5 text-left">Customer</th>
-                                                        <th className="py-3 px-5 text-left">Contact</th>
-                                                        <th className="py-3 px-5 text-left">Type</th>
-                                                        <th className="py-3 px-5 text-left">Orders</th>
-                                                        <th className="py-3 px-5 text-left">Spent</th>
-                                                        <th className="py-3 px-5 text-left">Last Order</th>
-                                                        <th className="py-3 px-5 text-left">Joined</th>
-                                                        <th className="py-3 px-5 text-right">Actions</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody className="divide-y divide-neutral-100">
-                                                    {customers.map(customer => (
-                                                        <tr 
-                                                            key={customer.id} 
-                                                            className="hover:bg-neutral-50/80 transition-colors cursor-pointer"
-                                                            onClick={() => navigate(`/admin/customers/${customer.id}`)}
-                                                        >
-                                                            <td className="py-3.5 px-5">
-                                                                <p className="font-bold text-neutral-800 hover:text-[#8e5233] transition-colors">{customer.full_name}</p>
-                                                                <p className="text-[10px] text-neutral-400 mt-0.5">#{customer.id}</p>
-                                                            </td>
-                                                            <td className="py-3.5 px-5">
-                                                                <p className="text-neutral-700">{customer.email || 'No email'}</p>
-                                                                <p className="text-[10px] text-neutral-400 mt-0.5">{customer.phone}</p>
-                                                            </td>
-                                                            <td className="py-3.5 px-5">
-                                                                {customer.is_guest ? (
-                                                                    <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-neutral-100 text-neutral-500 border border-neutral-200">Guest</span>
-                                                                ) : (
-                                                                    <span className="px-2 py-0.5 text-[9px] font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-100">Registered</span>
-                                                                )}
-                                                            </td>
-                                                            <td className="py-3.5 px-5 font-black text-neutral-900">{customer.orders_count || 0}</td>
-                                                            <td className="py-3.5 px-5 font-black text-neutral-900">{formatCurrency(customer.total_spent)}</td>
-                                                            <td className="py-3.5 px-5 text-neutral-500">{customer.last_order_at ? formatDateTime(customer.last_order_at) : 'No orders yet'}</td>
-                                                            <td className="py-3.5 px-5 text-neutral-500">{formatDateTime(customer.joined_at)}</td>
-                                                            <td className="py-3.5 px-5">
-                                                                <div className="flex justify-end">
-                                                                    <button
-                                                                        onClick={(e) => {
-                                                                            e.stopPropagation();
-                                                                            navigate(`/admin/customers/${customer.id}`);
-                                                                        }}
-                                                                        className="p-2 bg-neutral-50 border border-neutral-200 text-neutral-600 hover:text-[#8e5233] hover:border-[#8e5233]/40 hover:bg-[#8e5233]/5 rounded-lg transition-all flex items-center justify-center"
-                                                                        title="View Customer Details"
-                                                                    >
-                                                                        <Eye size={14} />
-                                                                    </button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    ))}
-                                                </tbody>
-                                            </table>
+                                <AdminTable
+                                    title="Customer Accounts"
+                                    countText={`${customers.length} records found`}
+                                    emptyMessage="No customers found matching your search criteria."
+                                    data={customers}
+                                    keyField="id"
+                                    columns={[
+                                        {
+                                            header: "Customer",
+                                            render: (customer) => (
+                                                <div>
+                                                    <p 
+                                                        className="font-serif font-black text-primary hover:text-secondary transition-colors cursor-pointer text-sm leading-snug"
+                                                        onClick={() => navigate(`/admin/customers/${customer.id}`)}
+                                                    >
+                                                        {customer.full_name}
+                                                    </p>
+                                                    <span className="text-[10px] text-stone-400 font-mono block mt-0.5">#{customer.id}</span>
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            header: "Contact",
+                                            render: (customer) => (
+                                                <div>
+                                                    <p className="font-semibold text-stone-700">{customer.email || <span className="text-stone-300 italic">No email</span>}</p>
+                                                    {customer.phone && <p className="text-[10px] text-stone-400 font-mono mt-0.5">{customer.phone}</p>}
+                                                </div>
+                                            )
+                                        },
+                                        {
+                                            header: "Type",
+                                            render: (customer) => (
+                                                customer.is_guest ? (
+                                                    <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-stone-100 text-stone-500 border border-stone-200">Guest</span>
+                                                ) : (
+                                                    <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-primary/10 text-primary border border-primary/20">Registered</span>
+                                                )
+                                            )
+                                        },
+                                        {
+                                            header: "Orders",
+                                            render: (customer) => (
+                                                <span className="font-serif font-black text-primary text-sm">{customer.orders_count || 0}</span>
+                                            )
+                                        },
+                                        {
+                                            header: "Spent",
+                                            render: (customer) => (
+                                                <span className="font-black text-primary">{formatCurrency(customer.total_spent)}</span>
+                                            )
+                                        },
+                                        {
+                                            header: "Last Order",
+                                            render: (customer) => (
+                                                <span className="text-stone-500 text-[11px]">{customer.last_order_at ? formatDateTime(customer.last_order_at) : 'No orders yet'}</span>
+                                            )
+                                        },
+                                        {
+                                            header: "Joined",
+                                            render: (customer) => (
+                                                <span className="text-stone-400 text-[11px]">{formatDateTime(customer.joined_at)}</span>
+                                            )
+                                        }
+                                    ]}
+                                    actions={(customer) => (
+                                        <div className="flex justify-end">
+                                            <button
+                                                onClick={() => navigate(`/admin/customers/${customer.id}`)}
+                                                className="p-2 bg-canvas hover:bg-stone-200/60 text-stone-700 hover:text-primary transition-all rounded-xl cursor-pointer"
+                                                title="View Customer Details"
+                                            >
+                                                <Eye size={13} />
+                                            </button>
                                         </div>
                                     )}
-                                </div>
+                                />
                             </div>
                         )}
 
