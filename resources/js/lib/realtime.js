@@ -44,17 +44,28 @@ const buildEcho = (token) => {
 export const acquireEcho = (token) => {
     if (!token) return null;
 
-    if (!echoInstance || currentToken !== token) {
-        if (echoInstance) {
-            echoInstance.disconnect();
-        }
-
-        echoInstance = buildEcho(token);
-        currentToken = token;
+    // Check if Reverb app key is configured
+    const reverbKey = import.meta.env.VITE_REVERB_APP_KEY;
+    if (!reverbKey || reverbKey === 'your_reverb_key') {
+        return null;
     }
 
-    consumerCount += 1;
-    return echoInstance;
+    try {
+        if (!echoInstance || currentToken !== token) {
+            if (echoInstance) {
+                echoInstance.disconnect();
+            }
+
+            echoInstance = buildEcho(token);
+            currentToken = token;
+        }
+
+        consumerCount += 1;
+        return echoInstance;
+    } catch (err) {
+        console.warn('[realtime] Could not initialize Echo, falling back to polling:', err);
+        return null;
+    }
 };
 
 export const getEchoSocketId = () => {
