@@ -98,7 +98,7 @@ export default function ResetPassword() {
                                 <div className="flex justify-center mb-3">
                                     <img 
                                         src={configs?.store_logo || "/images/logo-colored.png"} 
-                                        alt="Pudding London Logo" 
+                                        alt="Sweet Spot System Logo" 
                                         className="h-16 w-auto object-contain cursor-pointer"
                                         onClick={() => navigate('/')}
                                     />

@@ -37,13 +37,13 @@ export default function Footer({ onCategoryClick, navigate }) {
                 {/* Brand Info */}
                 <div className="col-span-12 md:col-span-4 space-y-4">
                     <div className="mb-2">
-                        <img src={configs?.store_logo_white || "/images/footer-logo.png"} alt="Pudding London" className="h-14 w-auto" />
+                        <img src={configs?.store_logo_white || "/images/footer-logo.png"} alt="Sweet Spot System" className="h-14 w-auto" />
                     </div>
                     <p className="text-white/40 font-light max-w-xs leading-relaxed">
                         Handcrafted daily in the heart of London. Indulge in artisanal cakes, braids, and specialty coffees.
                     </p>
                     <p className="text-white/30 text-[10px] font-light pt-2">
-                        &copy; 2026 Pudding London, by Captoirs Studio <span className="block mt-0.5">All rights reserved</span>
+                        &copy; 2026 Sweet Spot System, by Captoirs Studio <span className="block mt-0.5">All rights reserved</span>
                     </p>
                 </div>
 

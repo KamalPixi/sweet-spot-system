@@ -258,40 +258,40 @@ function TitleUpdater() {
     
     useEffect(() => {
         const path = location.pathname;
-        let title = 'Pudding London';
+        let title = 'Sweet Spot System';
         
         if (path === '/') {
-            title = configs?.seo_title || 'Handcrafted Cakes & Specialty Coffee | Pudding London';
+            title = configs?.seo_title || 'Handcrafted Cakes & Specialty Coffee | Sweet Spot System';
         } else if (path === '/delivery-setup') {
-            title = 'Setup Delivery | Pudding London';
+            title = 'Setup Delivery | Sweet Spot System';
         } else if (path === '/collection-setup') {
-            title = 'Setup Collection | Pudding London';
+            title = 'Setup Collection | Sweet Spot System';
         } else if (path === '/categories') {
-            title = 'Our Categories | Pudding London';
+            title = 'Our Categories | Sweet Spot System';
         } else if (path.startsWith('/categories/')) {
             const slug = path.split('/').pop();
             const categoryName = slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Category';
-            title = `${categoryName} | Pudding London`;
+            title = `${categoryName} | Sweet Spot System`;
         } else if (path === '/products') {
-            title = 'Shop Our Menu | Pudding London';
+            title = 'Shop Our Menu | Sweet Spot System';
         } else if (path.startsWith('/product/')) {
             const slug = path.split('/').pop();
             const productName = slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Product';
-            title = `${productName} | Pudding London`;
+            title = `${productName} | Sweet Spot System`;
         } else if (path === '/cart' || path === '/checkout') {
-            title = 'Secure Checkout | Pudding London';
+            title = 'Secure Checkout | Sweet Spot System';
         } else if (path.startsWith('/track')) {
-            title = 'Track Your Order | Pudding London';
+            title = 'Track Your Order | Sweet Spot System';
         } else if (path === '/payment/success') {
-            title = 'Order Successful! | Pudding London';
+            title = 'Order Successful! | Sweet Spot System';
         } else if (path === '/payment/failed') {
-            title = 'Payment Failed | Pudding London';
+            title = 'Payment Failed | Sweet Spot System';
         } else if (path === '/login') {
-            title = 'Sign In / Register | Pudding London';
+            title = 'Sign In / Register | Sweet Spot System';
         } else if (path === '/reset-password') {
-            title = 'Reset Password | Pudding London';
+            title = 'Reset Password | Sweet Spot System';
         } else if (path.startsWith('/account')) {
-            title = 'My Account Center | Pudding London';
+            title = 'My Account Center | Sweet Spot System';
         } else if (path.startsWith('/admin')) {
             if (path === '/admin/login') {
                 title = 'Admin Login | Sweet Spot System';

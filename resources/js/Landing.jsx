@@ -118,7 +118,7 @@ export default function Landing() {
                         </div>
 
                         <p className="text-white/70 text-base md:text-lg font-light tracking-wide max-w-md mb-10 leading-relaxed">
-                            Every dessert tells a story. Every bite is a moment of pure bliss at Pudding London.
+                            Every dessert tells a story. Every bite is a moment of pure bliss at Sweet Spot System.
                         </p>
                         
                         {/* Action Buttons */}
@@ -155,7 +155,7 @@ export default function Landing() {
             {/* Elegant Minimal Footer */}
             <footer className="w-full py-8 px-6 md:px-12 flex flex-col sm:flex-row justify-between items-center text-xs text-white/40 z-20">
                 <p className="mb-2 sm:mb-0">
-                    &copy; 2026 Pudding London, by Captoirs Studio
+                    &copy; 2026 Sweet Spot System, by Captoirs Studio
                 </p>
                 <p>
                     All rights reserved

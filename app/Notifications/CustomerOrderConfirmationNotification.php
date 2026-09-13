@@ -42,7 +42,7 @@ class CustomerOrderConfirmationNotification extends Notification
         $email = (new MailMessage)
             ->subject('Order Confirmation: ' . $this->order->order_number)
             ->greeting('Hello ' . ($notifiable->first_name ?: 'there') . '!')
-            ->line('Thank you for ordering with Pudding London. We have received your order.')
+            ->line('Thank you for ordering with Sweet Spot System. We have received your order.')
             ->line('**Order Number:** ' . $this->order->order_number)
             ->line('**Fulfilment Type:** ' . $fulfilmentText)
             ->line('**Total Amount:** £' . number_format((float) $this->order->total, 2));
@@ -53,13 +53,13 @@ class CustomerOrderConfirmationNotification extends Notification
 
         return $email
             ->action('Track Your Order', $orderUrl)
-            ->line('Thank you for choosing Pudding London!');
+            ->line('Thank you for choosing Sweet Spot System!');
     }
 
     public function toTextlocal(object $notifiable): string
     {
         return sprintf(
-            "Hi %s, your Pudding London order %s (£%s) is confirmed. Track it here: %s",
+            "Hi %s, your Sweet Spot order %s (£%s) is confirmed. Track it here: %s",
             $notifiable->first_name ?: 'there',
             $this->order->order_number,
             number_format((float) $this->order->total, 2),

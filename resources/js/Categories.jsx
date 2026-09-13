@@ -516,7 +516,7 @@ export default function Categories() {
                                         </h3>
                                         <BrandLine className="w-full max-w-sm my-4" />
                                         <p className="text-neutral-500 text-xs font-light tracking-wide max-w-sm mb-6 leading-relaxed">
-                                            Every dessert tells a story. Every bite is a moment of pure bliss at Pudding London.
+                                            Every dessert tells a story. Every bite is a moment of pure bliss at Sweet Spot System.
                                         </p>
                                         
                                         <form onSubmit={handleNewsletterSubmit} className="flex w-full bg-white rounded-full border border-neutral-200/80 p-1 pl-4 focus-within:border-[#8e5233] transition-all">
@@ -581,7 +581,7 @@ export default function Categories() {
                                         </h2>
                                         <BrandLine className="w-full my-4" />
                                         <p className="text-neutral-400 text-xs font-light leading-relaxed">
-                                            Every dessert tells a story. Every bite is a moment of pure bliss at Pudding London.
+                                            Every dessert tells a story. Every bite is a moment of pure bliss at Sweet Spot System.
                                         </p>
                                     </div>
 

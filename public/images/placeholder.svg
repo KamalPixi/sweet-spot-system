@@ -3,5 +3,5 @@
   <rect width="600" height="600" fill="#FDFBF7"/>
   
   <!-- Text -->
-  <text x="300" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="bold" fill="#A89485" text-anchor="middle" letter-spacing="4">PUDDING LONDON</text>
+  <text x="300" y="310" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="bold" fill="#A89485" text-anchor="middle" letter-spacing="4">SWEET SPOT SYSTEM</text>
 </svg>

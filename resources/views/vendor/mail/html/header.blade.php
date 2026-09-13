@@ -1,6 +1,6 @@
 @php
     $storeLogo = \App\Models\StoreConfig::where('key', 'store_logo')->value('value');
-    $storeName = \App\Models\StoreConfig::where('key', 'store_name')->value('value') ?: 'Pudding London';
+    $storeName = \App\Models\StoreConfig::where('key', 'store_name')->value('value') ?: 'Sweet Spot System';
 @endphp
 @props(['url'])
 <tr>

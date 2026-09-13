@@ -35,7 +35,7 @@ class TextlocalChannel
         }
 
         $apiKey = config('services.textlocal.key') ?: env('TEXTLOCAL_API_KEY');
-        $sender = config('services.textlocal.sender') ?: env('TEXTLOCAL_SENDER', 'PuddingLdn');
+        $sender = config('services.textlocal.sender') ?: env('TEXTLOCAL_SENDER', 'SweetSpot');
 
         if (empty($apiKey) || $apiKey === 'your_api_key_here') {
             Log::info("SMS SIMULATION [Textlocal] to {$cleanPhone} (Sender: {$sender}): {$message}");

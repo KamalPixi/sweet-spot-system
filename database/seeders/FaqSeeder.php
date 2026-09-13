@@ -43,7 +43,7 @@ class FaqSeeder extends Seeder
             ],
             [
                 'question' => 'Can I place a large order for events or parties?',
-                'answer' => 'Yes, we cater for events, corporate functions, and private parties. Please contact us at least 48 hours in advance via info@puddinglondon.com.',
+                'answer' => 'Yes, we cater for events, corporate functions, and private parties. Please contact us at least 48 hours in advance via info@sweetspot.co.uk.',
                 'sort_order' => 6,
             ],
             [

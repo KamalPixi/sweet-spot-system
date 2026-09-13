@@ -57,7 +57,7 @@ class OrderController extends Controller
             $stripeSecret = config('services.stripe.secret');
 
             if ($order->payment_method === 'stripe' || $order->payment_method === 'mock_stripe') {
-                if ($stripeSecret && !str_starts_with($stripeSecret, 'sk_test_pudding_london_placeholder')) {
+                if ($stripeSecret && !str_starts_with($stripeSecret, 'sk_test_sweet_spot_placeholder')) {
                     \Stripe\Stripe::setApiKey($stripeSecret);
                     
                     $intent = \Stripe\PaymentIntent::create([
@@ -184,7 +184,7 @@ class OrderController extends Controller
         // Sync payment status with Stripe if it is still unpaid and is Stripe payment
         if ($order->payment_status === 'unpaid' && $order->payment_transaction_id && str_starts_with($order->payment_transaction_id, 'pi_')) {
             $stripeSecret = config('services.stripe.secret');
-            if ($stripeSecret && !str_starts_with($stripeSecret, 'sk_test_pudding_london_placeholder')) {
+            if ($stripeSecret && !str_starts_with($stripeSecret, 'sk_test_sweet_spot_placeholder')) {
                 try {
                     \Stripe\Stripe::setApiKey($stripeSecret);
                     $intent = \Stripe\PaymentIntent::retrieve($order->payment_transaction_id);

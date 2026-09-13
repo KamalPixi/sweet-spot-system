@@ -19,7 +19,7 @@ class AdminSeeder extends Seeder
     {
         // 1. Create Default Admin User
         User::updateOrCreate(
-            ['email' => 'admin@pudding.london'],
+            ['email' => 'admin@sweetspot.co.uk'],
             [
                 'name' => 'Admin Staff',
                 'password' => bcrypt('password'),
@@ -28,7 +28,7 @@ class AdminSeeder extends Seeder
 
         // 2. Create Store Configurations
         $configs = [
-            'store_name' => 'Pudding London',
+            'store_name' => 'Sweet Spot System',
             'store_postcode' => 'W1D 1AN', // Soho, London
             'store_delivery_radius_miles' => '3.0',
             'store_delivery_charge_per_mile' => '1.50',
@@ -36,7 +36,7 @@ class AdminSeeder extends Seeder
             'store_address' => '10 Soho Street, London',
             'store_latitude' => '51.5133',
             'store_longitude' => '-0.1307',
-            'store_email' => 'contact@pudding.london',
+            'store_email' => 'contact@sweetspot.co.uk',
             'store_phone' => '+44 20 7123 4567',
             'store_logo' => '/storage/brand_logo.png',
             'store_logo_white' => '/storage/brand_logo_white.png',

@@ -6,7 +6,7 @@ import { X, MapPin, Loader2, AlertCircle, Calendar, Clock, ArrowLeft } from 'luc
 
 const UK_TIME_ZONE = 'Europe/London';
 const DEFAULT_STORE_LOCATION = {
-    name: 'Pudding London',
+    name: 'Sweet Spot System',
     address: '10 Soho Street, London',
     postcode: 'W1D 1AN',
     lat: 51.5133,

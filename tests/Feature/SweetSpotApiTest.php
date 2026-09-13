@@ -14,7 +14,7 @@ use App\Models\NewsletterSubscriber;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
-class PuddingApiTest extends TestCase
+class SweetSpotApiTest extends TestCase
 {
     use RefreshDatabase;
 
@@ -23,7 +23,7 @@ class PuddingApiTest extends TestCase
         parent::setUp();
 
         // Seed basic operational configurations
-        StoreConfig::create(['key' => 'store_name', 'value' => 'Pudding London Test']);
+        StoreConfig::create(['key' => 'store_name', 'value' => 'Sweet Spot System Test']);
         StoreConfig::create(['key' => 'store_postcode', 'value' => 'W1D 1AN']); // Soho
         StoreConfig::create(['key' => 'store_delivery_radius_miles', 'value' => '5.0']);
         StoreConfig::create(['key' => 'store_delivery_base_fee', 'value' => '2.50']);
@@ -80,7 +80,7 @@ class PuddingApiTest extends TestCase
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonPath('data.store_name', 'Pudding London Test')
+            ->assertJsonPath('data.store_name', 'Sweet Spot System Test')
             ->assertJsonPath('data.store_postcode', 'W1D 1AN');
     }
 

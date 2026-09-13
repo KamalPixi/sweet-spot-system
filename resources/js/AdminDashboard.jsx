@@ -4287,7 +4287,7 @@ export default function AdminDashboard() {
                                                             type="text" 
                                                             value={settingsForm.seo_title || ''}
                                                             onChange={(e) => setSettingsForm({ ...settingsForm, seo_title: e.target.value })}
-                                                            placeholder="e.g. Handcrafted Cakes & Specialty Coffee | Pudding London"
+                                                            placeholder="e.g. Handcrafted Cakes & Specialty Coffee | Sweet Spot System"
                                                             className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
                                                         />
                                                         <p className="text-[10px] text-neutral-400 mt-1">Shown in browser tab and search engine results. Keeps it under 60 characters.</p>

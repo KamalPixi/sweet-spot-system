@@ -32,6 +32,6 @@
         <env name="PULSE_ENABLED" value="false"/>
         <env name="TELESCOPE_ENABLED" value="false"/>
         <env name="NIGHTWATCH_ENABLED" value="false"/>
-        <env name="STRIPE_SECRET" value="sk_test_pudding_london_placeholder"/>
+        <env name="STRIPE_SECRET" value="sk_test_sweet_spot_placeholder"/>
     </php>
 </phpunit>

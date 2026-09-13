@@ -17,10 +17,10 @@ const getImageUrl = (url) => {
 };
 
 // Initialize Stripe JS SDK client instance
-const stripePublishableKey = import.meta.env.VITE_STRIPE_KEY || 'pk_test_pudding_london_placeholder';
+const stripePublishableKey = import.meta.env.VITE_STRIPE_KEY || 'pk_test_sweet_spot_placeholder';
 const stripePromise = loadStripe(stripePublishableKey);
 
-const isRealStripeConfigured = stripePublishableKey && !stripePublishableKey.startsWith('pk_test_pudding_london_placeholder');
+const isRealStripeConfigured = stripePublishableKey && !stripePublishableKey.startsWith('pk_test_sweet_spot_placeholder');
 const UK_TIME_ZONE = 'Europe/London';
 
 const parseCollectionDateTime = (slot) => {

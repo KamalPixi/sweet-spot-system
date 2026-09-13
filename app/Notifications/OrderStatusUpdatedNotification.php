@@ -70,14 +70,14 @@ class OrderStatusUpdatedNotification extends Notification
             ->line("Your order status has been updated for order: **{$this->order->order_number}**.")
             ->line("The order status is now: **{$status}**.")
             ->action('Track Your Order', $orderUrl)
-            ->line('Thank you for choosing Pudding London!');
+            ->line('Thank you for choosing Sweet Spot System!');
     }
 
     public function toTextlocal(object $notifiable): string
     {
         $status = $this->getFriendlyStatus();
         return sprintf(
-            "Hi %s, your Pudding London order %s is now %s. Track status here: %s",
+            "Hi %s, your Sweet Spot order %s is now %s. Track status here: %s",
             $notifiable->first_name ?: 'there',
             $this->order->order_number,
             $status,

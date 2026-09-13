@@ -222,7 +222,7 @@ class CustomerAuthController extends Controller
             $customer->notify(new \App\Notifications\CustomerResetPasswordNotification($resetUrl));
 
             // Log the email in development
-            \Illuminate\Support\Facades\Log::info("--- PUDDING LONDON PASSWORD RESET EMAIL ---");
+            \Illuminate\Support\Facades\Log::info("--- SWEET SPOT SYSTEM PASSWORD RESET EMAIL ---");
             \Illuminate\Support\Facades\Log::info("To: {$input}");
             \Illuminate\Support\Facades\Log::info("Reset Link: {$resetUrl}");
             \Illuminate\Support\Facades\Log::info("------------------------------------------");
@@ -236,7 +236,7 @@ class CustomerAuthController extends Controller
             ]);
 
             // Log the SMS in development
-            \Illuminate\Support\Facades\Log::info("--- PUDDING LONDON PASSWORD RESET SMS ---");
+            \Illuminate\Support\Facades\Log::info("--- SWEET SPOT SYSTEM PASSWORD RESET SMS ---");
             \Illuminate\Support\Facades\Log::info("To: {$input}");
             \Illuminate\Support\Facades\Log::info("Reset Code: {$code}");
             \Illuminate\Support\Facades\Log::info("-----------------------------------------");

@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: pudding_london_app
+    container_name: sweet_spot_app
     restart: unless-stopped
     ports:
       - "80:80"
@@ -19,9 +19,9 @@ services:
       - DB_CONNECTION=pgsql
       - DB_HOST=db
       - DB_PORT=5432
-      - DB_DATABASE=pudding_london
-      - DB_USERNAME=pudding_user
-      - DB_PASSWORD=pudding_secure_pass
+      - DB_DATABASE=sweet_spot
+      - DB_USERNAME=sweet_spot_user
+      - DB_PASSWORD=sweet_spot_secure_pass
       - APP_KEY=base64:3cO6/JmmDT9NQ+FEXEOtg9H0XeJgyx5xi+R6hZxKF1A=
       - REVERB_APP_ID=864560
       - REVERB_APP_KEY=mlt7q9koubgb3va3pkys
@@ -36,12 +36,12 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: pudding_london_db
+    container_name: sweet_spot_db
     restart: unless-stopped
     environment:
-      - POSTGRES_DB=pudding_london
-      - POSTGRES_USER=pudding_user
-      - POSTGRES_PASSWORD=pudding_secure_pass
+      - POSTGRES_DB=sweet_spot
+      - POSTGRES_USER=sweet_spot_user
+      - POSTGRES_PASSWORD=sweet_spot_secure_pass
     volumes:
       - postgres_data:/var/lib/postgresql/data
 

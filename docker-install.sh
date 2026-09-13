@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Pudding London Docker Install Script
+# Sweet Spot System Docker Install Script
 # Colors for output
 GREEN='\033[0;32m'
 BLUE='\033[0;34m'
@@ -10,7 +10,7 @@ NC='\033[0;35m' # No Color
 CLEAR='\033[0m'
 
 echo -e "${BLUE}===============================================${CLEAR}"
-echo -e "${BLUE}   Pudding London - Docker Install Assistant   ${CLEAR}"
+echo -e "${BLUE}   Sweet Spot System - Docker Install Assistant   ${CLEAR}"
 echo -e "${BLUE}===============================================${CLEAR}"
 
 # Check if Docker is installed and running
@@ -33,9 +33,9 @@ if [ ! -f .env ]; then
   sed -i '' 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/g' .env 2>/dev/null || sed -i 's/DB_CONNECTION=sqlite/DB_CONNECTION=pgsql/g' .env
   sed -i '' 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env 2>/dev/null || sed -i 's/DB_HOST=127.0.0.1/DB_HOST=db/g' .env
   sed -i '' 's/DB_PORT=3306/DB_PORT=5432/g' .env 2>/dev/null || sed -i 's/DB_PORT=3306/DB_PORT=5432/g' .env
-  sed -i '' 's/DB_DATABASE=laravel/DB_DATABASE=pudding_london/g' .env 2>/dev/null || sed -i 's/DB_DATABASE=laravel/DB_DATABASE=pudding_london/g' .env
-  sed -i '' 's/DB_USERNAME=root/DB_USERNAME=pudding_user/g' .env 2>/dev/null || sed -i 's/DB_USERNAME=root/DB_USERNAME=pudding_user/g' .env
-  sed -i '' 's/DB_PASSWORD=/DB_PASSWORD=pudding_secure_pass/g' .env 2>/dev/null || sed -i 's/DB_PASSWORD=/DB_PASSWORD=pudding_secure_pass/g' .env
+  sed -i '' 's/DB_DATABASE=laravel/DB_DATABASE=sweet_spot/g' .env 2>/dev/null || sed -i 's/DB_DATABASE=laravel/DB_DATABASE=sweet_spot/g' .env
+  sed -i '' 's/DB_USERNAME=root/DB_USERNAME=sweet_spot_user/g' .env 2>/dev/null || sed -i 's/DB_USERNAME=root/DB_USERNAME=sweet_spot_user/g' .env
+  sed -i '' 's/DB_PASSWORD=/DB_PASSWORD=sweet_spot_secure_pass/g' .env 2>/dev/null || sed -i 's/DB_PASSWORD=/DB_PASSWORD=sweet_spot_secure_pass/g' .env
 else
   echo -e "${GREEN}.env file already exists. Skipping copy.${CLEAR}"
 fi
@@ -56,12 +56,12 @@ echo -e "${YELLOW}Seeding database (Admin, categories, products, FAQs)...${CLEAR
 docker compose exec app php artisan db:seed --force
 
 echo -e "${GREEN}===============================================${CLEAR}"
-echo -e "${GREEN}   Setup Complete! Pudding London is Running!  ${CLEAR}"
+echo -e "${GREEN}   Setup Complete! Sweet Spot System is Running!  ${CLEAR}"
 echo -e "${GREEN}===============================================${CLEAR}"
 echo -e "${BLUE}  🌐 HTTP Web URL:        http://localhost${CLEAR}"
 echo -e "${BLUE}  🔒 HTTPS Web URL:       https://localhost${CLEAR}"
 echo -e ""
 echo -e "${YELLOW}Default Admin Credentials:${CLEAR}"
-echo -e "  - Email:    admin@pudding.london"
+echo -e "  - Email:    admin@sweetspot.co.uk"
 echo -e "  - Password: adminpassword"
 echo -e "==============================================="
