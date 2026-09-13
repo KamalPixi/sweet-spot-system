@@ -1855,111 +1855,57 @@ export default function AdminDashboard() {
                                         ))}
                                     </div>
 
-                                    {/* Order Pipeline Timeline & 3-Way Fulfilment Hub */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
-                                        {/* Kitchen Pipeline Flow */}
-                                        <div className="lg:col-span-2 bg-white border border-stone-200/70 rounded-xl p-5 md:p-6 shadow-xs">
+                                    {/* 3-Way Fulfilment Split Card */}
+                                    <div className="bg-white border border-stone-200/70 rounded-xl p-5 md:p-6 shadow-xs flex flex-col justify-between">
+                                        <div>
                                             <div className="flex items-center justify-between mb-4">
                                                 <div>
                                                     <h2 className="text-xs font-black uppercase tracking-wider text-[#261B16]">
-                                                        Kitchen Order Pipeline
+                                                        Fulfillment Channels
                                                     </h2>
-                                                    <p className="text-[10.5px] text-stone-400 mt-0.5">Real-time status progression of all order batches</p>
+                                                    <p className="text-[10.5px] text-stone-400 mt-0.5">3-Way split across dining formats</p>
                                                 </div>
-                                                <span className="text-[10px] font-bold text-stone-500 bg-stone-100/80 px-2 py-0.5 rounded-md">
-                                                    {totalOrders} Total Orders
+                                                <span className="text-[9.5px] font-black text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-md">
+                                                    Triple-Channel
                                                 </span>
                                             </div>
 
-                                            {/* Stacked Progress Bar */}
-                                            <div className="flex gap-1 mb-4 h-2.5 rounded-full overflow-hidden bg-stone-100 p-0.5 border border-stone-200/60">
-                                                {Object.entries(reports.orders_count).map(([key, count]) => {
-                                                    const cfg = statusConfig[key];
-                                                    const pct = totalOrders > 0 ? (count / totalOrders) * 100 : 0;
-                                                    return pct > 0 ? (
-                                                        <div
-                                                            key={key}
-                                                            className={`${cfg.color} h-full rounded-full transition-all duration-300`}
-                                                            style={{ width: `${pct}%` }}
-                                                            title={`${cfg.label}: ${count} (${Math.round(pct)}%)`}
-                                                        />
-                                                    ) : null;
-                                                })}
-                                            </div>
-
-                                            {/* Legend Chips */}
-                                            <div className="grid grid-cols-2 sm:grid-cols-5 gap-2 pt-2 border-t border-stone-100">
-                                                {Object.entries(reports.orders_count).map(([key, count]) => {
-                                                    const cfg = statusConfig[key];
-                                                    const pct = totalOrders > 0 ? Math.round((count / totalOrders) * 100) : 0;
-                                                    return (
-                                                        <div key={key} className="bg-[#FAF7F2]/60 rounded-lg p-2.5 border border-stone-200/40 text-left">
-                                                            <div className="flex items-center gap-1.5 mb-1">
-                                                                <div className={`w-2 h-2 rounded-full ${cfg.color}`} />
-                                                                <span className="text-[10.5px] text-stone-500 font-bold truncate">{cfg.label}</span>
+                                            {fulfillmentTotal === 0 ? (
+                                                <p className="text-xs text-stone-400 text-center py-4">No fulfillment data recorded yet.</p>
+                                            ) : (
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                    {[
+                                                        { label: 'Home Delivery (Uber Direct)', key: 'delivery', icon: Truck, color: 'bg-[#261B16]', badgeBg: 'bg-stone-100 text-stone-800' },
+                                                        { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-amber-600', badgeBg: 'bg-amber-50 text-amber-800' },
+                                                        { label: 'Dine-In (Table QR)', key: 'dine_in', icon: QrCode, color: 'bg-emerald-600', badgeBg: 'bg-emerald-50 text-emerald-800' },
+                                                    ].map(f => {
+                                                        const count = reports.fulfillment_split?.[f.key] || 0;
+                                                        const pct = fulfillmentTotal > 0 ? Math.round((count / fulfillmentTotal) * 100) : 0;
+                                                        return (
+                                                            <div key={f.key} className="bg-[#FAF7F2]/60 border border-stone-200/50 rounded-lg p-3">
+                                                                <div className="flex justify-between items-center mb-1.5">
+                                                                    <span className="text-xs font-bold text-stone-700 flex items-center gap-1.5">
+                                                                        <f.icon size={13} className="text-amber-700 shrink-0" />
+                                                                        {f.label}
+                                                                    </span>
+                                                                    <span className="text-xs font-black text-[#261B16]">
+                                                                        {count}{' '}
+                                                                        <span className="text-[10px] font-semibold text-stone-400">({pct}%)</span>
+                                                                    </span>
+                                                                </div>
+                                                                <div className="w-full bg-stone-200/70 h-1.5 rounded-full overflow-hidden">
+                                                                    <div className={`${f.color} h-full rounded-full transition-all duration-300`} style={{ width: `${pct}%` }} />
+                                                                </div>
                                                             </div>
-                                                            <div className="flex items-baseline justify-between">
-                                                                <span className="text-base font-black text-[#261B16]">{count}</span>
-                                                                <span className="text-[9.5px] text-stone-400 font-semibold">{pct}%</span>
-                                                            </div>
-                                                        </div>
-                                                    );
-                                                })}
-                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            )}
                                         </div>
 
-                                        {/* 3-Way Fulfilment Split Card */}
-                                        <div className="bg-white border border-stone-200/70 rounded-xl p-5 md:p-6 shadow-xs flex flex-col justify-between">
-                                            <div>
-                                                <div className="flex items-center justify-between mb-4">
-                                                    <div>
-                                                        <h2 className="text-xs font-black uppercase tracking-wider text-[#261B16]">
-                                                            Fulfillment Channels
-                                                        </h2>
-                                                        <p className="text-[10.5px] text-stone-400 mt-0.5">3-Way split across dining formats</p>
-                                                    </div>
-                                                    <span className="text-[9.5px] font-black text-amber-700 bg-amber-50 border border-amber-200/60 px-2 py-0.5 rounded-md">
-                                                        Triple-Channel
-                                                    </span>
-                                                </div>
-
-                                                {fulfillmentTotal === 0 ? (
-                                                    <p className="text-xs text-stone-400 text-center py-8">No fulfillment data recorded yet.</p>
-                                                ) : (
-                                                    <div className="space-y-3">
-                                                        {[
-                                                            { label: 'Home Delivery (Uber Direct)', key: 'delivery', icon: Truck, color: 'bg-[#261B16]', badgeBg: 'bg-stone-100 text-stone-800' },
-                                                            { label: 'Store Collection', key: 'collection', icon: Store, color: 'bg-amber-600', badgeBg: 'bg-amber-50 text-amber-800' },
-                                                            { label: 'Dine-In (Table QR)', key: 'dine_in', icon: QrCode, color: 'bg-emerald-600', badgeBg: 'bg-emerald-50 text-emerald-800' },
-                                                        ].map(f => {
-                                                            const count = reports.fulfillment_split?.[f.key] || 0;
-                                                            const pct = fulfillmentTotal > 0 ? Math.round((count / fulfillmentTotal) * 100) : 0;
-                                                            return (
-                                                                <div key={f.key} className="bg-[#FAF7F2]/60 border border-stone-200/50 rounded-lg p-2.5">
-                                                                    <div className="flex justify-between items-center mb-1.5">
-                                                                        <span className="text-xs font-bold text-stone-700 flex items-center gap-1.5">
-                                                                            <f.icon size={13} className="text-amber-700 shrink-0" />
-                                                                            {f.label}
-                                                                        </span>
-                                                                        <span className="text-xs font-black text-[#261B16]">
-                                                                            {count}{' '}
-                                                                            <span className="text-[10px] font-semibold text-stone-400">({pct}%)</span>
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="w-full bg-stone-200/70 h-1.5 rounded-full overflow-hidden">
-                                                                        <div className={`${f.color} h-full rounded-full transition-all duration-300`} style={{ width: `${pct}%` }} />
-                                                                    </div>
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                )}
-                                            </div>
-
-                                            <div className="pt-3.5 mt-2 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
-                                                <span>Table scan & courier live</span>
-                                                <span className="font-bold text-amber-700 cursor-pointer hover:underline" onClick={() => setActiveTab('tables')}>Manage Tables →</span>
-                                            </div>
+                                        <div className="pt-3 mt-3 border-t border-stone-100 flex items-center justify-between text-[11px] text-stone-500">
+                                            <span>Real-time multichannel split: Home Delivery, Store Pickup & Dine-in QR scan</span>
+                                            <span className="font-bold text-amber-700 cursor-pointer hover:underline" onClick={() => setActiveTab('tables')}>Manage Tables →</span>
                                         </div>
                                     </div>
 
