@@ -1,5 +1,9 @@
-import React from 'react';
-import { Bell, ChevronDown, LogOut, RefreshCw, Users, X, Sparkles, Clock, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { 
+    Bell, ChevronDown, LogOut, RefreshCw, Users, X, Sparkles, Clock, 
+    CheckCircle2, Plus, QrCode, Printer, ExternalLink, ShieldCheck, 
+    Activity, Store, Search
+} from 'lucide-react';
 
 export default function AdminTopbar({
     sectionLabel,
@@ -22,75 +26,213 @@ export default function AdminTopbar({
     onLogout,
     onNotificationClick,
     formatNotificationTime,
+    activeTab,
+    onTabChange,
+    orderSummary = {},
 }) {
+    const [quickActionsOpen, setQuickActionsOpen] = useState(false);
+
     return (
-        <header className="sticky top-0 z-30 px-6 lg:px-8 py-3 bg-[#FAF7F2]/90 backdrop-blur-md border-b border-stone-200/70 shadow-[0_4px_20px_-10px_rgba(180,140,110,0.05)]">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                {/* Left Title & Section Breadcrumb */}
-                <div className="flex items-center gap-3 min-w-0">
-                    <div>
-                        <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-[10px] font-extrabold text-amber-700/80 uppercase tracking-[0.15em] leading-none">
-                                {sectionLabel}
-                            </span>
-                            <span className="text-stone-300 text-[10px]">•</span>
-                            <span className="text-[10px] font-medium text-stone-500 flex items-center gap-1">
-                                <Clock size={10} className="text-stone-400" />
-                                {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} GMT
-                            </span>
+        <header className="sticky top-0 z-30 bg-[#261B16] text-[#FFF9F2] border-b border-[#3D2C24] shadow-[0_4px_24px_rgba(0,0,0,0.18)]">
+            {/* Top Bar Container */}
+            <div className="px-5 lg:px-7 py-2.5 flex items-center justify-between gap-4">
+                {/* Left: Atelier Command Identity & Section Breadcrumb */}
+                <div className="flex items-center gap-3.5 min-w-0">
+                    <div className="flex items-center gap-3">
+                        {/* Status Icon Pillar */}
+                        <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-black text-xs shadow-inner shadow-amber-900/30 shrink-0">
+                            <Store size={15} className="text-amber-100" />
                         </div>
-                        <div className="flex flex-wrap items-center gap-2.5">
-                            <h1 className="text-lg font-serif font-black text-[#261B16] tracking-tight leading-none">
-                                Sweet Spot Management
-                            </h1>
-                            <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20 text-[9.5px] font-extrabold uppercase tracking-wider">
-                                {adminRole}
-                            </span>
+                        <div className="min-w-0">
+                            <div className="flex items-center gap-2 leading-none mb-1">
+                                <span className="text-[11px] font-black text-amber-400 uppercase tracking-wider font-mono">
+                                    SWEET SPOT ATELIER
+                                </span>
+                                <span className="text-stone-600 text-[10px]">/</span>
+                                <span className="text-[10px] font-bold text-stone-300 uppercase tracking-widest truncate">
+                                    {sectionLabel}
+                                </span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="flex items-center gap-1 text-[10px] text-stone-400 font-medium">
+                                    <Clock size={10} className="text-amber-500/80" />
+                                    {new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} GMT
+                                </span>
+                                <span className="w-1 h-1 rounded-full bg-stone-600" />
+                                <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/70 border border-emerald-500/30 px-2 py-0.5 rounded-md">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                                    Store Live
+                                </span>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                {/* Right Actions: Notifications, Refresh, User Profile */}
-                <div className="flex flex-wrap items-center gap-2 sm:gap-2.5">
-                    {/* Live Sync Beacon */}
-                    <div className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/80 border border-stone-200/60 shadow-xs text-[10.5px] font-semibold text-stone-600">
-                        <span className="relative flex h-2 w-2">
-                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                        </span>
-                        <span>Live Sync</span>
+                {/* Center / Operational Quick Hub (Desktop) */}
+                <div className="hidden xl:flex items-center gap-2">
+                    {/* Active Queue Action Button */}
+                    <button
+                        type="button"
+                        onClick={onOpenOrders}
+                        className="group flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#33241D] hover:bg-[#3D2C23] border border-[#4D382D] text-xs font-bold text-stone-200 hover:text-white transition-all duration-150 cursor-pointer shadow-xs"
+                        title="View Live Kitchen Orders"
+                    >
+                        <Activity size={13} className="text-amber-400 group-hover:scale-110 transition-transform" />
+                        <span>Live Orders</span>
+                        {orderSummary?.active > 0 ? (
+                            <span className="px-1.5 py-0.5 rounded-md bg-amber-500 text-[#261B16] text-[10px] font-black font-mono">
+                                {orderSummary.active}
+                            </span>
+                        ) : (
+                            <span className="px-1.5 py-0.5 rounded-md bg-stone-800 text-stone-400 text-[10px] font-mono">
+                                0
+                            </span>
+                        )}
+                    </button>
+
+                    {/* Quick Table Floorplan Button */}
+                    <button
+                        type="button"
+                        onClick={() => onTabChange && onTabChange('tables')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#33241D] hover:bg-[#3D2C23] border border-[#4D382D] text-xs font-bold text-stone-200 hover:text-white transition-all duration-150 cursor-pointer shadow-xs"
+                        title="Floorplan & Table QR Codes"
+                    >
+                        <QrCode size={13} className="text-amber-400" />
+                        <span>Tables QR</span>
+                    </button>
+
+                    {/* Star CloudPRNT Queue Button */}
+                    <button
+                        type="button"
+                        onClick={() => onTabChange && onTabChange('printers')}
+                        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#33241D] hover:bg-[#3D2C23] border border-[#4D382D] text-xs font-bold text-stone-200 hover:text-white transition-all duration-150 cursor-pointer shadow-xs"
+                        title="Star TSP100 Cloud Printing"
+                    >
+                        <Printer size={13} className="text-amber-400" />
+                        <span>Star TSP100</span>
+                    </button>
+                </div>
+
+                {/* Right Actions Deck: New Action, Sync, Notifications, Profile */}
+                <div className="flex items-center gap-2 sm:gap-2.5">
+                    {/* Primary "+ Quick Action" Dropdown */}
+                    <div className="relative">
+                        <button
+                            type="button"
+                            onClick={() => {
+                                setQuickActionsOpen(prev => !prev);
+                                setNotificationsOpen(false);
+                                setAccountMenuOpen(false);
+                            }}
+                            className="flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-[#261B16] text-xs font-black tracking-tight transition-all duration-150 shadow-sm cursor-pointer"
+                        >
+                            <Plus size={14} className="stroke-[3]" />
+                            <span className="hidden sm:inline">New Action</span>
+                            <ChevronDown size={12} className={`transition-transform duration-200 ${quickActionsOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {quickActionsOpen && (
+                            <div className="absolute right-0 top-full mt-2 w-52 bg-white text-[#261B16] border border-stone-200 rounded-lg shadow-2xl overflow-hidden z-50 animate-fadeIn">
+                                <div className="px-3 py-2 bg-[#FAF7F2] border-b border-stone-200/80">
+                                    <span className="text-[9.5px] font-black uppercase tracking-wider text-amber-800">
+                                        Quick Operations
+                                    </span>
+                                </div>
+                                <div className="p-1 space-y-0.5">
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setQuickActionsOpen(false);
+                                            onTabChange && onTabChange('products');
+                                        }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-amber-900 transition-colors text-left cursor-pointer"
+                                    >
+                                        <Plus size={13} className="text-amber-600" />
+                                        <span>Create Product</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setQuickActionsOpen(false);
+                                            onTabChange && onTabChange('categories');
+                                        }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-amber-900 transition-colors text-left cursor-pointer"
+                                    >
+                                        <Plus size={13} className="text-amber-600" />
+                                        <span>Create Category</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setQuickActionsOpen(false);
+                                            onTabChange && onTabChange('tables');
+                                        }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-stone-800 hover:bg-amber-50 hover:text-amber-900 transition-colors text-left cursor-pointer"
+                                    >
+                                        <QrCode size={13} className="text-amber-600" />
+                                        <span>Add Dine-In Table</span>
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setQuickActionsOpen(false);
+                                            window.open('/', '_blank');
+                                        }}
+                                        className="w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-bold text-stone-600 hover:bg-stone-100 hover:text-stone-900 transition-colors text-left cursor-pointer border-t border-stone-100"
+                                    >
+                                        <span className="flex items-center gap-2">
+                                            <ExternalLink size={13} />
+                                            <span>View Storefront</span>
+                                        </span>
+                                        <span className="text-[9px] text-stone-400">Live</span>
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Notifications Button & Dropdown */}
+                    {/* Sync / Refresh Button */}
+                    <button
+                        type="button"
+                        onClick={onRefresh}
+                        className="p-2 rounded-lg bg-[#33241D] hover:bg-[#3D2C23] border border-[#4D382D] text-stone-300 hover:text-white transition-all cursor-pointer shadow-xs"
+                        title="Refresh live metrics"
+                    >
+                        <RefreshCw size={14} />
+                    </button>
+
+                    {/* Activity & Notifications Button */}
                     <div className="relative">
                         <button
                             type="button"
                             onClick={() => {
                                 setNotificationsOpen(prev => !prev);
                                 setAccountMenuOpen(false);
+                                setQuickActionsOpen(false);
                             }}
-                            className={`relative flex items-center gap-2 bg-white/90 border rounded-lg px-3 py-2 text-[11px] font-bold transition-all shadow-xs cursor-pointer ${
+                            className={`relative flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-xs font-bold transition-all cursor-pointer shadow-xs ${
                                 notificationsOpen
-                                    ? 'border-[#261B16] text-[#261B16] bg-white ring-1 ring-stone-300'
-                                    : 'border-stone-200/80 text-stone-700 hover:border-stone-400 hover:text-stone-950 hover:bg-white'
+                                    ? 'bg-[#3D2C23] border-amber-500/80 text-amber-300 ring-1 ring-amber-500/50'
+                                    : 'bg-[#33241D] hover:bg-[#3D2C23] border-[#4D382D] text-stone-300 hover:text-white'
                             }`}
                             title="Open notifications"
                         >
-                            <Bell size={14} className="text-amber-700/80" />
-                            <span className="hidden sm:inline">Activity</span>
+                            <Bell size={14} className={unreadNotificationCount > 0 ? 'text-amber-400' : 'text-stone-400'} />
+                            <span className="hidden md:inline">Activity</span>
                             {unreadNotificationCount > 0 && (
-                                <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center border-2 border-[#FAF7F2] shadow-xs">
+                                <span className="min-w-4 h-4 px-1 rounded-full bg-rose-600 text-white text-[9px] font-black flex items-center justify-center shadow-sm">
                                     {unreadNotificationCount}
                                 </span>
                             )}
                         </button>
 
+                        {/* Notifications Dropdown Panel */}
                         {notificationsOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-[370px] max-w-[calc(100vw-2rem)] bg-white border border-stone-200 rounded-lg shadow-xl overflow-hidden z-50 animate-fadeIn">
-                                <div className="px-4 py-3 bg-[#FAF7F2]/80 border-b border-stone-200/70 flex items-center justify-between">
+                            <div className="absolute right-0 top-full mt-2 w-[380px] max-w-[calc(100vw-2rem)] bg-white text-[#261B16] border border-stone-200 rounded-lg shadow-2xl overflow-hidden z-50 animate-fadeIn">
+                                <div className="px-4 py-3 bg-[#FAF7F2] border-b border-stone-200/80 flex items-center justify-between">
                                     <div>
-                                        <h2 className="text-xs font-black text-[#261B16] uppercase tracking-wider">Atelier Notifications</h2>
-                                        <p className="text-[10px] text-stone-500 mt-0.5">{unreadNotificationCount} unread updates</p>
+                                        <h2 className="text-xs font-black text-[#261B16] uppercase tracking-wider">Atelier Activity Log</h2>
+                                        <p className="text-[10px] text-stone-500 mt-0.5">{unreadNotificationCount} unread events</p>
                                     </div>
                                     <div className="flex items-center gap-3">
                                         {unreadNotificationCount > 0 && (
@@ -123,7 +265,7 @@ export default function AdminTopbar({
                                         <div className="px-5 py-10 text-center">
                                             <Bell size={24} className="mx-auto text-stone-300 mb-2" />
                                             <p className="text-xs font-bold text-stone-600">All caught up!</p>
-                                            <p className="text-[10px] text-stone-400 mt-1">Orders and store events will arrive in real time.</p>
+                                            <p className="text-[10px] text-stone-400 mt-1">Orders, courier dispatches, and table scans arrive here live.</p>
                                         </div>
                                     ) : (
                                         <div>
@@ -134,8 +276,8 @@ export default function AdminTopbar({
                                                     <div
                                                         key={notification.id}
                                                         onClick={() => onNotificationClick(notification)}
-                                                        className={`group w-full text-left px-4 py-3 hover:bg-[#FAF7F2]/60 transition-colors flex items-start justify-between gap-3 cursor-pointer ${
-                                                            isUnread ? 'bg-amber-50/40' : 'bg-white'
+                                                        className={`group w-full text-left px-4 py-3 hover:bg-[#FAF7F2]/80 transition-colors flex items-start justify-between gap-3 cursor-pointer ${
+                                                            isUnread ? 'bg-amber-50/50' : 'bg-white'
                                                         }`}
                                                     >
                                                         <div className="flex items-start gap-3 min-w-0 flex-grow">
@@ -178,58 +320,52 @@ export default function AdminTopbar({
                         )}
                     </div>
 
-                    {/* Refresh Button */}
-                    <button
-                        type="button"
-                        onClick={onRefresh}
-                        className="p-2 bg-white/90 border border-stone-200/80 rounded-lg text-stone-500 hover:text-[#261B16] hover:border-stone-400 hover:bg-white transition-all shadow-xs cursor-pointer"
-                        title="Refresh store metrics"
-                    >
-                        <RefreshCw size={14} />
-                    </button>
-
-                    {/* User Profile Menu */}
+                    {/* Admin Profile Command Menu */}
                     <div className="relative">
                         <button
                             type="button"
                             onClick={() => {
                                 setAccountMenuOpen(prev => !prev);
                                 setNotificationsOpen(false);
+                                setQuickActionsOpen(false);
                             }}
-                            className={`flex items-center gap-2 bg-white/90 border rounded-lg px-2.5 py-1.5 transition-all shadow-xs cursor-pointer ${
+                            className={`flex items-center gap-2.5 px-2.5 py-1.5 rounded-lg border transition-all cursor-pointer shadow-xs ${
                                 accountMenuOpen
-                                    ? 'border-[#261B16] ring-1 ring-stone-300 bg-white'
-                                    : 'border-stone-200/80 hover:border-stone-400 hover:bg-white'
+                                    ? 'bg-[#3D2C23] border-amber-500/80 ring-1 ring-amber-500/50'
+                                    : 'bg-[#33241D] hover:bg-[#3D2C23] border-[#4D382D]'
                             }`}
                             title="Open account menu"
                         >
-                            <div className="w-6 h-6 rounded bg-gradient-to-br from-[#D97706] to-[#78350F] text-white flex items-center justify-center text-[10.5px] font-serif font-black shrink-0 shadow-xs">
-                                {adminDisplayName[0].toUpperCase()}
+                            <div className="w-6 h-6 rounded-md bg-gradient-to-br from-amber-400 to-amber-600 text-[#261B16] flex items-center justify-center text-[11px] font-serif font-black shrink-0 shadow-xs">
+                                {adminDisplayName[0]?.toUpperCase() || 'A'}
                             </div>
                             <div className="text-left min-w-0 hidden sm:block">
-                                <p className="text-[11px] font-black text-[#261B16] truncate max-w-36 leading-tight">{adminDisplayName}</p>
-                                <p className="text-[9px] text-stone-400 truncate max-w-36 leading-tight">{userEmail || adminRole}</p>
+                                <p className="text-[11px] font-black text-white truncate max-w-28 leading-tight">{adminDisplayName}</p>
+                                <p className="text-[9px] text-amber-400/90 truncate max-w-28 leading-tight font-mono">{adminRole}</p>
                             </div>
                             <ChevronDown
                                 size={12}
-                                className={`text-stone-400 shrink-0 transition-transform duration-200 ${accountMenuOpen ? 'rotate-180 text-stone-800' : ''}`}
+                                className={`text-stone-400 shrink-0 transition-transform duration-200 ${accountMenuOpen ? 'rotate-180 text-white' : ''}`}
                             />
                         </button>
 
                         {accountMenuOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-64 bg-white border border-stone-200 rounded-lg shadow-xl overflow-hidden z-50 animate-fadeIn">
-                                <div className="px-4 py-3 bg-[#FAF7F2]/80 border-b border-stone-200/70">
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-white text-[#261B16] border border-stone-200 rounded-lg shadow-2xl overflow-hidden z-50 animate-fadeIn">
+                                <div className="px-4 py-3 bg-[#FAF7F2] border-b border-stone-200/80">
                                     <p className="text-xs font-black text-[#261B16] truncate">{adminDisplayName}</p>
                                     <p className="text-[10px] text-stone-500 truncate mt-0.5">{userEmail}</p>
-                                    <span className="inline-flex mt-2 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-800 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider">
+                                    <span className="inline-flex mt-2 px-2.5 py-0.5 rounded-md bg-amber-500/10 text-amber-800 border border-amber-500/20 text-[9px] font-bold uppercase tracking-wider">
                                         {adminRole}
                                     </span>
                                 </div>
                                 <div className="p-1.5">
                                     <button
                                         type="button"
-                                        onClick={onOpenProfile}
-                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 hover:bg-[#FAF7F2] hover:text-[#261B16] transition-colors text-left cursor-pointer"
+                                        onClick={() => {
+                                            setAccountMenuOpen(false);
+                                            onOpenProfile();
+                                        }}
+                                        className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-stone-700 hover:bg-amber-50 hover:text-amber-900 transition-colors text-left cursor-pointer"
                                     >
                                         <Users size={13} className="text-amber-700" />
                                         Admin Profile
@@ -238,7 +374,10 @@ export default function AdminTopbar({
                                 <div className="p-1.5 border-t border-stone-100">
                                     <button
                                         type="button"
-                                        onClick={onLogout}
+                                        onClick={() => {
+                                            setAccountMenuOpen(false);
+                                            onLogout();
+                                        }}
                                         className="w-full flex items-center gap-2.5 px-3 py-2 rounded-md text-xs font-bold text-rose-600 hover:bg-rose-50 transition-colors text-left cursor-pointer"
                                     >
                                         <LogOut size={13} />
@@ -253,3 +392,4 @@ export default function AdminTopbar({
         </header>
     );
 }
+

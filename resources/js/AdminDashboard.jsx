@@ -1682,6 +1682,14 @@ export default function AdminDashboard() {
                     onLogout={handleLogout}
                     onNotificationClick={handleNotificationClick}
                     formatNotificationTime={formatNotificationTime}
+                    activeTab={activeTab}
+                    onTabChange={(tab) => {
+                        navigate(adminPathByTab[tab] || '/admin');
+                        setActiveTab(tab);
+                        setCatFormOpen(false);
+                        setProdFormOpen(false);
+                    }}
+                    orderSummary={orderSummary}
                 />
 
                 <div className="p-8">
@@ -1732,20 +1740,20 @@ export default function AdminDashboard() {
                                             </div>
 
                                             {/* Quick Operational Shortcuts */}
-                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-2 shrink-0">
+                                            <div className="flex flex-wrap md:flex-col lg:flex-row gap-2.5 shrink-0">
                                                 <button
                                                     onClick={() => setActiveTab('tables')}
-                                                    className="px-3.5 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 active:bg-amber-600 text-[#261B16] text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 shadow-xs cursor-pointer"
+                                                    className="px-4 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-[#261B16] text-xs font-black tracking-tight transition-all duration-200 flex items-center gap-2 shadow-md shadow-amber-950/40 cursor-pointer border border-amber-400/40 hover:-translate-y-0.5"
                                                 >
-                                                    <QrCode size={13} />
+                                                    <QrCode size={14} className="stroke-[2.5]" />
                                                     <span>Table QR Floorplan</span>
                                                 </button>
                                                 <button
                                                     onClick={() => setActiveTab('printers')}
-                                                    className="px-3.5 py-2 rounded-lg bg-white/10 hover:bg-white/20 active:bg-white/15 text-white border border-white/15 text-xs font-semibold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer"
+                                                    className="px-4 py-2.5 rounded-lg bg-[#33241D]/90 hover:bg-[#3D2C23] active:bg-[#281B15] text-[#FFF9F2] border border-[#523B2E] text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-sm hover:-translate-y-0.5"
                                                 >
-                                                    <Printer size={13} className="text-amber-400" />
-                                                    <span>Star CloudPRNT</span>
+                                                    <Printer size={14} className="text-amber-400" />
+                                                    <span>Star TSP100 CloudPRNT</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -2719,9 +2727,9 @@ export default function AdminDashboard() {
                                                 setCatStatus(true);
                                                 setCatOrder(0);
                                             }}
-                                            className="bg-neutral-950 text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-colors hover:bg-neutral-800 rounded-lg shadow-sm"
+                                            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-[#261B16] font-black px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-lg shadow-sm cursor-pointer hover:-translate-y-0.5"
                                         >
-                                            <Plus size={14} />
+                                            <Plus size={14} className="stroke-[2.5]" />
                                             <span>Add Category</span>
                                         </button>
                                     )}
@@ -3148,9 +3156,9 @@ export default function AdminDashboard() {
                                     {!prodFormOpen && (
                                         <button 
                                             onClick={handleAddProductClick}
-                                            className="bg-neutral-950 text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-colors hover:bg-neutral-800 rounded-lg"
+                                            className="bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 active:from-amber-600 active:to-amber-700 text-[#261B16] font-black px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-lg shadow-sm cursor-pointer hover:-translate-y-0.5"
                                         >
-                                            <Plus size={14} />
+                                            <Plus size={14} className="stroke-[2.5]" />
                                             <span>Add Product</span>
                                         </button>
                                     )}
