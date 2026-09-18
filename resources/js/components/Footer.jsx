@@ -31,69 +31,122 @@ export default function Footer({ onCategoryClick, navigate }) {
         }
     };
 
+    // Brand logo: prefer database white logo, or our extracted Sweet Spot logo
+    const brandLogo = configs?.store_logo_white || "/images/sweet-spot-footer-logo.png";
+
+    // Products: either categories or curated fallback matching design
+    const defaultProducts = ['Cakes', 'Coffee', 'French Pastries', 'Drinks'];
+    const displayProducts = categoriesList.length > 0 
+        ? categoriesList 
+        : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
+
     return (
-        <footer className="w-full bg-[#8F5336] text-white/80 pt-20 md:pt-24 pb-12 px-6 md:px-12 rounded-none z-20">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 text-left text-xs">
-                {/* Brand Info */}
-                <div className="col-span-12 md:col-span-4 space-y-4">
-                    <div className="mb-2">
-                        <img src={configs?.store_logo_white || "/images/footer-logo.png"} alt="Sweet Spot System" className="h-14 w-auto" />
+        <footer className="w-full bg-primary text-white py-14 sm:py-16 md:py-20 px-6 md:px-12 lg:px-20 z-20 border-t border-white/5">
+            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 text-left">
+                {/* Column 1: Brand & Copyright */}
+                <div className="col-span-12 md:col-span-4 flex flex-col justify-between space-y-8">
+                    <div>
+                        <div className="cursor-pointer inline-block" onClick={() => navigate ? navigate('/') : (window.location.href = '/')}>
+                            <img 
+                                src={brandLogo} 
+                                alt="Sweet Spot" 
+                                className="h-12 sm:h-14 w-auto object-contain"
+                            />
+                        </div>
                     </div>
-                    <p className="text-white/40 font-light max-w-xs leading-relaxed">
-                        Handcrafted daily in the heart of London. Indulge in artisanal cakes, braids, and specialty coffees.
-                    </p>
-                    <p className="text-white/30 text-[10px] font-light pt-2">
-                        &copy; 2026 Sweet Spot System, by Captoirs Studio <span className="block mt-0.5">All rights reserved</span>
-                    </p>
+                    
+                    <div className="text-[12px] sm:text-[13px] text-white/50 font-light leading-relaxed">
+                        <p>&copy; 2026 SweetSpot Bake, by Captoirs Studio</p>
+                        <p className="mt-0.5">All rights reserved</p>
+                    </div>
                 </div>
 
-                {/* Shop details */}
-                <div className="col-span-12 sm:col-span-4 md:col-span-3 space-y-3">
-                    <h4 className="text-white font-bold uppercase tracking-wider text-[10px] border-b border-white/10 pb-2">
+                {/* Column 2: Shop details */}
+                <div className="col-span-12 sm:col-span-4 md:col-span-3 space-y-3.5">
+                    <h4 className="text-white font-medium text-sm sm:text-base tracking-normal">
                         Shop
                     </h4>
-                    <div className="space-y-1.5 text-white/60 font-light">
-                        {address && <p>{address}</p>}
-                        {postcode && <p>{postcode}</p>}
-                        {email && <p className="pt-2">Email: <a href={`mailto:${email}`} className="hover:text-white transition-colors">{email}</a></p>}
-                        {phone && <p>Phone: {phone}</p>}
+                    <div className="space-y-2.5 text-white/60 text-xs sm:text-[13px] font-light leading-relaxed">
+                        <p className="leading-snug">
+                            {address ? (
+                                <>
+                                    {address}
+                                    {postcode && <span className="block mt-0.5">{postcode}</span>}
+                                </>
+                            ) : (
+                                <>
+                                    Random address<br />
+                                    text in two lines
+                                </>
+                            )}
+                        </p>
+                        <p className="pt-1">
+                            Email: <a href={`mailto:${email || 'info@sweetspotbake.com'}`} className="hover:text-white transition-colors">{email || 'info@sweetspotbake.com'}</a>
+                        </p>
+                        <p>
+                            Phone: <a href={`tel:${phone || '+44 1234 567 891'}`} className="hover:text-white transition-colors">{phone || '+44 1234 567 891'}</a>
+                        </p>
                     </div>
                 </div>
 
-                {/* Links - Only show if categories exist in the database */}
-                {categoriesList.length > 0 && (
-                    <div className="col-span-12 sm:col-span-4 md:col-span-3 space-y-3">
-                        <h4 className="text-white font-bold uppercase tracking-wider text-[10px] border-b border-white/10 pb-2">
-                            Our Products
-                        </h4>
-                        <div className="space-y-1.5 text-white/60 font-light flex flex-col items-start gap-1">
-                            {categoriesList.map(cat => (
-                                <button 
-                                    key={cat.id} 
-                                    onClick={() => handleCategoryClick(cat)}
-                                    className="hover:text-white transition-colors text-left focus:outline-none cursor-pointer bg-transparent border-none p-0 text-white/60 text-xs font-light"
-                                >
-                                    {cat.name}
-                                </button>
-                            ))}
-                        </div>
+                {/* Column 3: Our products */}
+                <div className="col-span-12 sm:col-span-4 md:col-span-3 space-y-3.5">
+                    <h4 className="text-white font-medium text-sm sm:text-base tracking-normal">
+                        Our products
+                    </h4>
+                    <div className="space-y-2 text-white/60 text-xs sm:text-[13px] font-light flex flex-col items-start">
+                        {displayProducts.map((prod, idx) => (
+                            <button 
+                                key={prod.id || idx} 
+                                onClick={() => handleCategoryClick(prod)}
+                                className="hover:text-white transition-colors text-left focus:outline-none cursor-pointer bg-transparent border-none p-0 text-white/60 text-xs sm:text-[13px] font-light"
+                            >
+                                {prod.name}
+                            </button>
+                        ))}
                     </div>
-                )}
+                </div>
 
-                {/* Socials - Only show if social links are configured in the database */}
-                {hasSocialLinks && (
-                    <div className="col-span-12 sm:col-span-4 md:col-span-2 space-y-3">
-                        <h4 className="text-white font-bold uppercase tracking-wider text-[10px] border-b border-white/10 pb-2">
-                            Follow Us
-                        </h4>
-                        <div className="space-y-1.5 text-white/60 font-light flex flex-col">
-                            {instagram && <a href={instagram} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Instagram</a>}
-                            {tiktok && <a href={tiktok} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">TikTok</a>}
-                            {facebook && <a href={facebook} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Facebook</a>}
-                            {twitter && <a href={twitter} target="_blank" rel="noreferrer" className="hover:text-white transition-colors">Twitter</a>}
-                        </div>
+                {/* Column 4: Follow Us */}
+                <div className="col-span-12 sm:col-span-4 md:col-span-2 space-y-3.5">
+                    <h4 className="text-white font-medium text-sm sm:text-base tracking-normal">
+                        Follow Us
+                    </h4>
+                    <div className="space-y-2 text-white/60 text-xs sm:text-[13px] font-light flex flex-col">
+                        <a 
+                            href={instagram || 'https://instagram.com'} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="hover:text-white transition-colors"
+                        >
+                            Instagram
+                        </a>
+                        <a 
+                            href={tiktok || 'https://tiktok.com'} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="hover:text-white transition-colors"
+                        >
+                            Tiktok
+                        </a>
+                        <a 
+                            href={facebook || 'https://facebook.com'} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="hover:text-white transition-colors"
+                        >
+                            Facebook
+                        </a>
+                        <a 
+                            href={twitter || 'https://twitter.com'} 
+                            target="_blank" 
+                            rel="noreferrer" 
+                            className="hover:text-white transition-colors"
+                        >
+                            Twitter
+                        </a>
                     </div>
-                )}
+                </div>
             </div>
         </footer>
     );

@@ -5,28 +5,34 @@
 @source '../../storage/framework/views/*.php';
 
 @theme {
-    --font-sans: 'Inter', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
-        'Segoe UI Symbol', 'Noto Color Emoji';
-    --font-serif: 'Inter', ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+    --font-sans: 'Plus Jakarta Sans', 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-serif: 'Playfair Display', Georgia, Cambria, serif;
+    --font-script: 'Dancing Script', cursive;
 
-    /* Single source of truth color tokens (Ember / Dark Forest & Terracotta aesthetic) */
-    --color-primary: #132B25;
-    --color-primary-hover: #1D3F37;
-    --color-primary-light: #1C3B33;
-    --color-secondary: #C84C1C;
-    --color-secondary-hover: #AF3E15;
-    --color-secondary-light: #FBF1EC;
-    --color-canvas: #F5EFEB;
-    --color-surface: #FFFFFF;
-    --color-accent: #E4C586;
-    --color-accent-hover: #D8B774;
-    --color-accent-light: #FBF7EE;
+    /* Single source of truth color tokens for Sweet Spot */
+    --color-primary: #24161b;
+    --color-primary-hover: #321d25;
+    --color-primary-light: #3f222d;
+    --color-secondary: #f43f5e;
+    --color-secondary-hover: #e11d48;
+    --color-secondary-light: #fcf3f5;
+    --color-canvas: #fdfaf5;
+    --color-surface: #ffffff;
+    --color-accent: #e5b582;
+    --color-accent-hover: #d49f69;
+    --color-accent-light: #fdf8f3;
+}
+
+:root {
+    --brand-primary: #24161b;
+    --brand-secondary: #f43f5e;
+    --brand-bg: #fdfaf5;
 }
 
 html {
-    background-color: #8F5336; /* Matches the brand brown header during top overscroll */
+    background-color: var(--brand-primary); /* Matches the brand header during top overscroll */
 }
 
 body {
-    background-color: #fdfaf5; /* Default warm background for the page content */
+    background-color: #ffffff;
 }

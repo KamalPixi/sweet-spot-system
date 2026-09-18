@@ -21,8 +21,8 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
         setIsCartOpen(true);
     };
     return (
-        <div className="bg-[#8F5336]">
-            <div className="w-full h-[72px] md:h-[80px] bg-[#8F5336] relative overflow-hidden">
+        <div className="bg-primary">
+            <div className="w-full h-[72px] md:h-[80px] bg-primary relative overflow-hidden">
                 <header className="w-full h-full px-4 md:px-12 flex justify-between items-center z-30 bg-transparent relative transform translate-y-[2px]">
                     <button 
                         onClick={() => setIsMenuOpen(true)} 
@@ -32,8 +32,16 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                         <Menu size={24} strokeWidth={1.5} />
                     </button>
 
-                    <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex items-center justify-center" onClick={() => navigate('/')}>
-                        <Logo />
+                    <div 
+                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex flex-col items-center select-none" 
+                        onClick={() => navigate('/')}
+                    >
+                        <span className="font-extrabold text-white text-base sm:text-lg tracking-wider uppercase leading-none font-sans">
+                            Sweet
+                        </span>
+                        <span className="font-light text-rose-300 text-xs sm:text-sm tracking-widest uppercase leading-none font-sans">
+                            Spot
+                        </span>
                     </div>
 
                     <div className="flex items-center space-x-0 md:space-x-4">
