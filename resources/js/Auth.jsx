@@ -159,7 +159,7 @@ export default function Auth({ defaultMode = 'login' }) {
                     user={user}
                 />
 
-                <div className="w-full mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-6 pt-6 pb-10 md:px-12 md:pt-8 md:pb-16" style={{ background: 'linear-gradient(to bottom, #f4edd9 0%, #ffffff 15%, #ffffff 85%, #f7f2e4 100%)' }}>
+                <div className="w-full mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-6 pt-8 pb-12 md:px-12 md:pt-10 md:pb-20 bg-gradient-to-b from-[#FCF3F5] via-white to-[#FCF3F5]">
                     <div className="max-w-md mx-auto w-full flex flex-col items-start gap-4 animate-fadeIn">
                         {/* Back button */}
                         <button 
@@ -170,55 +170,59 @@ export default function Auth({ defaultMode = 'login' }) {
                                     navigate('/categories');
                                 }
                             }} 
-                            className="text-xs font-bold uppercase tracking-wider text-neutral-500 hover:text-[#8F5336] flex items-center gap-1.5 transition-colors cursor-pointer pl-3 bg-transparent border-none"
+                            className="text-xs font-semibold uppercase tracking-wider text-neutral-500 hover:text-neutral-900 flex items-center gap-1.5 transition-colors cursor-pointer pl-1 bg-transparent border-none"
                         >
                             <ArrowLeft size={14} />
                             <span>Go Back</span>
                         </button>
 
-                        <div className="w-full bg-white border border-neutral-200/60 p-8 md:p-10 rounded-[24px] shadow-xl shadow-[#8e5233]/5 relative overflow-hidden text-left mt-2">
+                        <div className="w-full bg-white border border-rose-100/80 p-8 md:p-10 rounded-[32px] shadow-xl shadow-rose-950/5 relative overflow-hidden text-left mt-1">
                             <div className="text-center mb-8">
                                 <div className="flex justify-center mb-3">
-                                    <img 
-                                        src={configs?.store_logo || "/images/logo-colored.png"} 
-                                        alt="Sweet Spot System Logo" 
-                            className="h-16 w-auto object-contain cursor-pointer"
-                            onClick={() => navigate('/')}
-                        />
-                    </div>
-                    <h2 className="text-2xl font-serif font-bold text-[#8F5336] mt-4">
-                        {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : mode === 'forgot_password' ? 'Reset Password' : mode === 'verify_code' ? 'Verify Reset Code' : 'Admin Portal'}
-                    </h2>
-                    <p className="text-neutral-500 text-xs mt-1">
-                        {mode === 'login' ? 'Sign in to track your orders and checkout faster.' : mode === 'register' ? 'Register in seconds to start ordering.' : mode === 'forgot_password' ? 'Enter your registered email or phone number to reset your password.' : mode === 'verify_code' ? `Enter the 6-digit code sent to ${forgotInput} and choose a new password.` : 'Access Admin reports and manage products.'}
-                    </p>
-                </div>
+                                    <div 
+                                        onClick={() => navigate('/')}
+                                        className="cursor-pointer inline-block bg-primary px-4 py-2 rounded-2xl shadow-xs"
+                                    >
+                                        <img 
+                                            src="/logo-white-sweetspot.png" 
+                                            alt="Sweet Spot" 
+                                            className="h-10 w-auto object-contain"
+                                        />
+                                    </div>
+                                </div>
+                                <h2 className="text-2xl sm:text-3xl font-extrabold text-[#111111] tracking-tight mt-4">
+                                    {mode === 'login' ? 'Welcome Back' : mode === 'register' ? 'Create Account' : mode === 'forgot_password' ? 'Reset Password' : mode === 'verify_code' ? 'Verify Reset Code' : 'Admin Portal'}
+                                </h2>
+                                <p className="text-neutral-500 text-xs mt-1.5 font-light leading-relaxed max-w-xs mx-auto">
+                                    {mode === 'login' ? 'Sign in to track your orders and checkout faster.' : mode === 'register' ? 'Register in seconds to start ordering.' : mode === 'forgot_password' ? 'Enter your registered email or phone number to reset your password.' : mode === 'verify_code' ? `Enter the 6-digit code sent to ${forgotInput} and choose a new password.` : 'Access Admin reports and manage products.'}
+                                </p>
+                            </div>
 
-                {/* Tabs */}
-                {mode !== 'admin' && mode !== 'forgot_password' && mode !== 'verify_code' && (
-                    <div className="flex bg-white/60 backdrop-blur-xs p-1 rounded-xl border border-neutral-200/80 mb-6">
-                        <button 
-                            onClick={() => { setMode('login'); setError(null); }}
-                            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                                mode === 'login' 
-                                    ? 'bg-[#8e5233] text-white shadow-sm shadow-[#8e5233]/10' 
-                                    : 'text-neutral-500 hover:text-neutral-700'
-                            }`}
-                        >
-                            Sign In
-                        </button>
-                        <button 
-                            onClick={() => { setMode('register'); setError(null); }}
-                            className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer ${
-                                mode === 'register' 
-                                    ? 'bg-[#8e5233] text-white shadow-sm shadow-[#8e5233]/10' 
-                                    : 'text-neutral-500 hover:text-neutral-700'
-                            }`}
-                        >
-                            Sign Up
-                        </button>
-                    </div>
-                )}
+                            {/* Tabs */}
+                            {mode !== 'admin' && mode !== 'forgot_password' && mode !== 'verify_code' && (
+                                <div className="flex bg-neutral-100 p-1 rounded-full border border-neutral-200/60 mb-6">
+                                    <button 
+                                        onClick={() => { setMode('login'); setError(null); }}
+                                        className={`flex-1 py-2 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+                                            mode === 'login' 
+                                                ? 'bg-neutral-900 text-white shadow-xs' 
+                                                : 'text-neutral-500 hover:text-neutral-800'
+                                        }`}
+                                    >
+                                        Sign In
+                                    </button>
+                                    <button 
+                                        onClick={() => { setMode('register'); setError(null); }}
+                                        className={`flex-1 py-2 text-xs font-semibold rounded-full transition-all cursor-pointer ${
+                                            mode === 'register' 
+                                                ? 'bg-neutral-900 text-white shadow-xs' 
+                                                : 'text-neutral-500 hover:text-neutral-800'
+                                        }`}
+                                    >
+                                        Sign Up
+                                    </button>
+                                </div>
+                            )}
 
                 <form onSubmit={handleSubmit} className="w-full">
                     {/* First and Last name (Register only) */}
@@ -511,7 +515,7 @@ export default function Auth({ defaultMode = 'login' }) {
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="w-full bg-[#8e5233] hover:bg-[#723e25] disabled:bg-[#8e5233]/60 text-white font-bold py-3.5 rounded-xl transition-all text-xs flex items-center justify-center space-x-2 shadow-lg shadow-[#8e5233]/15 cursor-pointer mt-2"
+                            className="w-full bg-neutral-900 hover:bg-black disabled:bg-neutral-800 text-white font-medium py-3.5 rounded-full transition-all text-xs uppercase tracking-wider flex items-center justify-center space-x-2 shadow-lg shadow-neutral-900/10 cursor-pointer mt-3"
                         >
                             {loading ? (
                                 <Loader2 size={14} className="animate-spin" />
@@ -520,7 +524,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                     {mode === 'login' 
                                         ? 'Sign In' 
                                         : mode === 'register' 
-                                            ? 'Sign Up' 
+                                            ? 'Create Account' 
                                             : mode === 'forgot_password' 
                                                 ? 'Send Reset Instructions' 
                                                 : mode === 'verify_code' 
@@ -536,7 +540,7 @@ export default function Auth({ defaultMode = 'login' }) {
                             <button 
                                 type="button" 
                                 onClick={() => { setMode('login'); setForgotSent(false); setError(null); }}
-                                className="text-xs text-neutral-500 hover:text-neutral-800 font-semibold hover:underline cursor-pointer"
+                                className="text-xs text-neutral-500 hover:text-neutral-900 font-semibold hover:underline cursor-pointer"
                             >
                                 Back to Sign In
                             </button>

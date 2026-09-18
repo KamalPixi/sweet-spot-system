@@ -67,21 +67,21 @@ export default function CartDrawer() {
                     }`}
                 >
                     {/* Header */}
-                    <div className="p-6 border-b border-[#8e5233]/15 flex justify-between items-center bg-[#8e5233]/5">
-                        <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#8e5233] text-white flex items-center justify-center">
-                                <img src="/images/icons/bag.png" alt="Cart" className="w-[15px] h-[15px] object-contain" style={{ filter: 'brightness(0) invert(1)' }} />
+                    <div className="p-6 border-b border-neutral-100 flex justify-between items-center bg-white">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full bg-rose-500 text-white flex items-center justify-center shadow-xs">
+                                <ShoppingBag size={18} />
                             </div>
                             <div>
-                                <h3 className="font-serif font-bold text-[#8e5233] text-base">Your Basket</h3>
-                                <span className="text-[10px] text-neutral-400 uppercase tracking-widest font-bold block">
+                                <h3 className="font-sans font-bold text-neutral-900 text-base">Your Basket</h3>
+                                <span className="text-[11px] text-neutral-400 uppercase tracking-widest font-semibold block">
                                     {cartItemCount} {cartItemCount === 1 ? 'item' : 'items'}
                                 </span>
                             </div>
                         </div>
                         <button 
                             onClick={() => setIsCartOpen(false)}
-                            className="w-8 h-8 rounded-full bg-white border border-[#8e5233]/20 flex items-center justify-center text-neutral-500 hover:text-[#8e5233] hover:border-[#8e5233] transition-colors cursor-pointer focus:outline-none"
+                            className="w-8 h-8 rounded-full bg-neutral-100 hover:bg-neutral-200 flex items-center justify-center text-neutral-500 hover:text-neutral-800 transition-colors cursor-pointer focus:outline-none"
                         >
                             <X size={16} />
                         </button>
@@ -91,23 +91,23 @@ export default function CartDrawer() {
                     <div className="flex-grow overflow-y-auto p-6 space-y-4 custom-scrollbar">
                         {cart.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center space-y-3 py-16">
-                                <div className="w-12 h-12 rounded-full border border-dashed border-[#8e5233]/40 flex items-center justify-center text-neutral-450">
-                                    <img src="/images/icons/bag.png" alt="Empty Cart" className="w-[20px] h-[20px] object-contain opacity-55" />
+                                <div className="w-14 h-14 rounded-full bg-neutral-100 flex items-center justify-center text-neutral-400">
+                                    <ShoppingBag size={24} className="opacity-50" />
                                 </div>
-                                <p className="text-neutral-400 text-xs font-light">Your shopping basket is empty.</p>
+                                <p className="text-neutral-500 text-xs font-light">Your shopping basket is empty.</p>
                                 <button 
-                                    onClick={() => setIsCartOpen(false)}
-                                    className="text-xs font-bold text-[#8e5233] hover:underline"
+                                    onClick={() => { setIsCartOpen(false); navigate('/categories'); }}
+                                    className="text-xs font-semibold text-rose-500 hover:text-rose-600 hover:underline cursor-pointer"
                                 >
                                     Explore our sweets
                                 </button>
                             </div>
                         ) : (
-                            <div className="divide-y divide-neutral-200/50">
+                            <div className="divide-y divide-neutral-100">
                                 {cart.map((item) => (
                                     <div key={item.key} className="py-4 first:pt-0 flex items-stretch gap-4 text-xs text-left">
                                         {/* Image */}
-                                        <div className="w-[72px] h-[72px] bg-[#eae2d5] rounded-xl overflow-hidden shrink-0 border border-neutral-200/60">
+                                        <div className="w-[72px] h-[72px] bg-neutral-100 rounded-2xl overflow-hidden shrink-0 border border-neutral-200/70">
                                             <img 
                                                 src={getImageUrl(item.image)} 
                                                 alt={item.name} 
@@ -132,19 +132,19 @@ export default function CartDrawer() {
                                             </div>
                                             
                                             {/* Quantity Pill Selector */}
-                                            <div className="flex items-center border border-[#8e5233] bg-white rounded-full w-fit px-1.5 py-0.5 mt-1">
+                                            <div className="flex items-center border border-neutral-200 bg-white rounded-full w-fit px-1.5 py-0.5 mt-1 shadow-xs">
                                                 <button 
                                                     type="button"
                                                     onClick={(e) => { e.stopPropagation(); updateCartQty(item.key, item.quantity - 1); }}
-                                                    className="w-6 h-6 rounded-full text-[#8e5233] hover:bg-[#8e5233] hover:text-white flex items-center justify-center transition-colors font-bold cursor-pointer active:scale-90"
+                                                    className="w-6 h-6 rounded-full text-neutral-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors font-bold cursor-pointer active:scale-90"
                                                 >
                                                     <Minus size={10} />
                                                 </button>
-                                                <span className="px-2 text-[10px] font-bold text-neutral-750">{item.quantity}</span>
+                                                <span className="px-2.5 text-[11px] font-bold text-neutral-800">{item.quantity}</span>
                                                 <button 
                                                     type="button"
                                                     onClick={(e) => { e.stopPropagation(); updateCartQty(item.key, item.quantity + 1); }}
-                                                    className="w-6 h-6 rounded-full text-[#8e5233] hover:bg-[#8e5233] hover:text-white flex items-center justify-center transition-colors font-bold cursor-pointer active:scale-90"
+                                                    className="w-6 h-6 rounded-full text-neutral-600 hover:bg-rose-500 hover:text-white flex items-center justify-center transition-colors font-bold cursor-pointer active:scale-90"
                                                 >
                                                     <Plus size={10} />
                                                 </button>
@@ -156,14 +156,14 @@ export default function CartDrawer() {
                                             <button 
                                                 type="button"
                                                 onClick={() => removeFromCart(item.key)}
-                                                className="text-neutral-400 hover:text-red-500 transition-colors p-1 cursor-pointer flex items-center justify-center focus:outline-none -mr-1"
+                                                className="text-neutral-300 hover:text-rose-500 transition-colors p-1 cursor-pointer flex items-center justify-center focus:outline-none -mr-1"
                                                 title="Remove item"
                                             >
                                                 <Trash2 size={15} />
                                             </button>
                                             
                                             <div className="text-right">
-                                                <span className="font-serif font-semibold text-neutral-800 text-sm">
+                                                <span className="font-sans font-bold text-neutral-900 text-sm">
                                                     £{(item.price * item.quantity).toFixed(2)}
                                                 </span>
                                             </div>
@@ -176,16 +176,16 @@ export default function CartDrawer() {
 
                     {/* Footer / Summary Totals */}
                     {cart.length > 0 && (
-                        <div className="p-6 border-t border-[#8e5233]/15 bg-[#8e5233]/5 space-y-4">
+                        <div className="p-6 border-t border-neutral-100 bg-[#FCF3F5] space-y-4">
                             <div className="flex justify-between items-baseline text-left">
                                 <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider">Subtotal</span>
-                                <span className="font-serif font-bold text-xl text-[#8e5233]">
+                                <span className="font-sans font-extrabold text-xl text-neutral-900">
                                     £{cartSubtotal.toFixed(2)}
                                 </span>
                             </div>
                             {orderType === 'delivery' && (
-                                <p className="flex items-center gap-1.5 text-[10px] text-neutral-400 text-left">
-                                    <Truck size={11} className="shrink-0 text-[#8e5233]/70" />
+                                <p className="flex items-center gap-1.5 text-[11px] text-neutral-500 text-left">
+                                    <Truck size={12} className="shrink-0 text-rose-500" />
                                     Delivery charge will be calculated at checkout.
                                 </p>
                             )}
@@ -193,13 +193,13 @@ export default function CartDrawer() {
                             <div className="space-y-2">
                                 <button 
                                     onClick={handleCheckoutRedirect}
-                                    className="w-full bg-[#8e5233] hover:bg-[#723e25] text-white font-semibold rounded-xl py-3.5 flex items-center justify-center shadow-md shadow-[#8e5233]/10 transition-colors cursor-pointer font-serif text-sm tracking-wide"
+                                    className="w-full bg-neutral-900 hover:bg-black text-white font-medium rounded-full py-3.5 flex items-center justify-center shadow-lg shadow-neutral-900/10 transition-colors cursor-pointer text-xs uppercase tracking-wider"
                                 >
-                                    View Basket & Checkout
+                                    Proceed to Checkout
                                 </button>
                                 <button 
                                     onClick={() => setIsCartOpen(false)}
-                                    className="w-full bg-white hover:bg-neutral-50 text-[#8e5233] border border-[#8e5233]/30 font-semibold rounded-xl py-3 flex items-center justify-center transition-colors cursor-pointer text-xs uppercase tracking-wider"
+                                    className="w-full bg-white hover:bg-neutral-50 text-neutral-700 border border-neutral-200 font-medium rounded-full py-3 flex items-center justify-center transition-colors cursor-pointer text-xs uppercase tracking-wider"
                                 >
                                     Continue Shopping
                                 </button>

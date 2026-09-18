@@ -159,7 +159,7 @@ function GlobalSearchOverlay() {
             />
             
             {/* Search Input Bar */}
-            <div className="fixed top-0 inset-x-0 h-[88px] md:h-[96px] bg-[#8F5336]/95 z-50 px-6 md:px-12 flex items-center justify-between animate-fadeIn shadow-lg border-b border-white/5">
+            <div className="fixed top-0 inset-x-0 h-[88px] md:h-[96px] bg-primary/95 backdrop-blur-md z-50 px-6 md:px-12 flex items-center justify-between animate-fadeIn shadow-2xl border-b border-white/10">
                 <form 
                     onSubmit={(e) => {
                         e.preventDefault();
@@ -168,34 +168,34 @@ function GlobalSearchOverlay() {
                             setIsSearchOpen(false);
                         }
                     }}
-                    className="flex-grow max-w-md mx-auto relative flex items-center bg-white/10 rounded-full border border-white/20 px-5 py-2.5 focus-within:border-white transition-all"
+                    className="flex-grow max-w-lg mx-auto relative flex items-center bg-white/10 rounded-full border border-white/20 px-5 py-3 focus-within:border-rose-400 focus-within:bg-white/15 transition-all"
                 >
-                    <Search size={18} className="text-white/60 mr-3" />
+                    <Search size={18} className="text-white/60 mr-3 shrink-0" />
                     <input 
                         type="text" 
-                        placeholder="Search desserts..."
+                        placeholder="Search artisanal cakes, coffee, treats..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="bg-transparent text-sm w-full text-white placeholder-white/40 focus:outline-none"
+                        className="bg-transparent text-sm w-full text-white placeholder-white/40 focus:outline-none font-light"
                         autoFocus
                     />
                     {searchTerm && (
-                        <button type="button" onClick={() => setSearchTerm('')} className="text-white/60 hover:text-white">
+                        <button type="button" onClick={() => setSearchTerm('')} className="text-white/60 hover:text-white cursor-pointer ml-2">
                             <X size={14} />
                         </button>
                     )}
                 </form>
                 <button 
                     onClick={() => { setIsSearchOpen(false); setSearchTerm(''); }}
-                    className="ml-4 text-white/60 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+                    className="ml-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer flex-shrink-0"
                 >
-                    <X size={20} />
+                    <X size={18} />
                 </button>
             </div>
 
             {/* Global Search Results Dropdown Panel */}
             {searchTerm.trim() && (
-                <div className="fixed top-[88px] md:top-[96px] left-1/2 transform -translate-x-1/2 w-full max-w-md bg-[#29180e] border border-white/10 rounded-b-2xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[400px] animate-fadeIn">
+                <div className="fixed top-[88px] md:top-[96px] left-1/2 transform -translate-x-1/2 w-full max-w-lg bg-[#24161b] border border-white/15 rounded-b-3xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[420px] animate-fadeIn">
                     {filteredProducts.length > 0 ? (
                         <>
                             <div className="overflow-y-auto divide-y divide-white/5 flex-1 custom-scrollbar">
@@ -207,22 +207,22 @@ function GlobalSearchOverlay() {
                                             setIsSearchOpen(false);
                                             setSearchTerm('');
                                         }}
-                                        className="flex items-center p-4 hover:bg-white/5 cursor-pointer transition-colors"
+                                        className="flex items-center p-4 hover:bg-white/5 cursor-pointer transition-colors group"
                                     >
                                         <img 
                                             src={getImageUrl(product)} 
                                             alt={product.name}
-                                            className="w-12 h-12 object-cover rounded-lg border border-white/10"
+                                            className="w-13 h-13 object-cover rounded-xl border border-white/10 shrink-0"
                                             onError={(e) => {
                                                 e.target.src = "/images/placeholder.svg";
                                             }}
                                         />
                                         <div className="ml-4 flex-grow text-left">
-                                            <h4 className="text-sm font-semibold text-white leading-tight">{product.name}</h4>
-                                            <p className="text-xs text-white/40 mt-1 line-clamp-1 font-light">{product.description}</p>
+                                            <h4 className="text-sm font-semibold text-white group-hover:text-rose-300 transition-colors leading-tight">{product.name}</h4>
+                                            <p className="text-xs text-white/45 mt-1 line-clamp-1 font-light">{product.description}</p>
                                         </div>
                                         <div className="text-right ml-4 text-nowrap">
-                                            <span className="text-sm font-bold text-[#e1b382]">
+                                            <span className="text-sm font-bold text-rose-400">
                                                 £{(parseFloat(product.base_price) === 0 && product.variations?.length 
                                                     ? parseFloat(product.variations[0].price) 
                                                     : parseFloat(product.base_price || 0)).toFixed(2)}
@@ -236,13 +236,13 @@ function GlobalSearchOverlay() {
                                     navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
                                     setIsSearchOpen(false);
                                 }}
-                                className="w-full bg-white/[0.02] hover:bg-white/10 text-[#e1b382] hover:text-white text-xs font-bold py-3 text-center transition-colors border-t border-white/5 cursor-pointer focus:outline-none shrink-0"
+                                className="w-full bg-white/[0.04] hover:bg-rose-500 hover:text-white text-rose-300 text-xs font-semibold py-3.5 text-center transition-all border-t border-white/10 cursor-pointer focus:outline-none shrink-0 uppercase tracking-wider"
                             >
                                 View all results ({filteredProducts.length})
                             </button>
                         </>
                     ) : (
-                        <div className="p-8 text-center text-[#e1b382]/60 text-xs font-light">
+                        <div className="p-8 text-center text-white/60 text-xs font-light">
                             {getNoResultsMessage(searchTerm)}
                         </div>
                     )}
