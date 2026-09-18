@@ -33,15 +33,14 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                     </button>
 
                     <div 
-                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex flex-col items-center select-none" 
+                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex items-center justify-center select-none" 
                         onClick={() => navigate('/')}
                     >
-                        <span className="font-extrabold text-white text-base sm:text-lg tracking-wider uppercase leading-none font-sans">
-                            Sweet
-                        </span>
-                        <span className="font-light text-rose-300 text-xs sm:text-sm tracking-widest uppercase leading-none font-sans">
-                            Spot
-                        </span>
+                        <img 
+                            src="/logo-white-sweetspot.png" 
+                            alt="Sweet Spot" 
+                            className="h-9 sm:h-11 w-auto object-contain transition-transform hover:scale-105" 
+                        />
                     </div>
 
                     <div className="flex items-center space-x-0 md:space-x-4">

@@ -56,14 +56,13 @@ export default function Landing() {
                 {/* Center: Brand Logo */}
                 <div 
                     onClick={() => navigate('/')} 
-                    className="cursor-pointer flex flex-col items-center select-none"
+                    className="cursor-pointer flex items-center justify-center select-none"
                 >
-                    <span className="font-extrabold text-white text-lg tracking-wider uppercase leading-none font-sans">
-                        Sweet
-                    </span>
-                    <span className="font-light text-white/90 text-sm tracking-widest uppercase leading-none font-sans">
-                        Spot
-                    </span>
+                    <img 
+                        src="/logo-white-sweetspot.png" 
+                        alt="Sweet Spot" 
+                        className="h-10 sm:h-12 w-auto object-contain transition-transform hover:scale-105" 
+                    />
                 </div>
 
                 {/* Right: Actions (Search, Cart, User) */}

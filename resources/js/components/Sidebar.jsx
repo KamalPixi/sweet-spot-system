@@ -61,15 +61,14 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                     {/* Header: Brand text + Close button */}
                     <div className="flex justify-between items-center mb-10 pb-4 border-b border-white/10">
                         <div 
-                            className="cursor-pointer flex flex-col items-start select-none" 
+                            className="cursor-pointer flex items-center select-none" 
                             onClick={() => { navigate('/'); setIsMenuOpen(false); }}
                         >
-                            <span className="font-extrabold text-white text-lg tracking-wider uppercase leading-none font-sans">
-                                Sweet
-                            </span>
-                            <span className="font-light text-rose-300 text-sm tracking-widest uppercase leading-none font-sans">
-                                Spot
-                            </span>
+                            <img 
+                                src="/logo-white-sweetspot.png" 
+                                alt="Sweet Spot" 
+                                className="h-10 w-auto object-contain transition-transform hover:scale-105" 
+                            />
                         </div>
                         <button 
                             onClick={() => setIsMenuOpen(false)}

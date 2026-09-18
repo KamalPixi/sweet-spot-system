@@ -31,8 +31,8 @@ export default function Footer({ onCategoryClick, navigate }) {
         }
     };
 
-    // Brand logo: prefer database white logo, or our extracted Sweet Spot logo
-    const brandLogo = configs?.store_logo_white || "/images/sweet-spot-footer-logo.png";
+    // Brand logo: Always prioritize /logo-white-sweetspot.png, or store_logo_white if explicitly uploaded
+    const brandLogo = "/logo-white-sweetspot.png";
 
     // Products: either categories or curated fallback matching design
     const defaultProducts = ['Cakes', 'Coffee', 'French Pastries', 'Drinks'];
@@ -50,7 +50,10 @@ export default function Footer({ onCategoryClick, navigate }) {
                             <img 
                                 src={brandLogo} 
                                 alt="Sweet Spot" 
-                                className="h-12 sm:h-14 w-auto object-contain"
+                                className="h-12 sm:h-14 w-auto object-contain block"
+                                onError={(e) => {
+                                    e.currentTarget.src = "/images/logo-white-sweetspot.png";
+                                }}
                             />
                         </div>
                     </div>
