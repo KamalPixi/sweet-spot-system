@@ -31,6 +31,17 @@ import {
     Clock,
     CheckCircle2,
     Send,
+    Compass,
+    LineChart,
+    ReceiptText,
+    UtensilsCrossed,
+    Receipt,
+    CalendarClock,
+    Tag,
+    Package,
+    UserCheck,
+    SlidersHorizontal,
+    ArchiveRestore,
 } from 'lucide-react';
 
 const formatCurrency = (value) => `£${parseFloat(value || 0).toFixed(2)}`;
@@ -376,38 +387,38 @@ export default function AdminOrderDetailPage() {
         {
             label: 'Overview',
             items: [
-                { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
-                { id: 'reports', label: 'Reports', icon: <BarChart3 size={16} /> },
+                { id: 'dashboard', label: 'Dashboard', icon: <Compass size={16} /> },
+                { id: 'reports', label: 'Reports', icon: <LineChart size={16} /> },
             ],
         },
         {
             label: 'Operations',
             items: [
-                { id: 'orders', label: 'Orders', icon: <ClipboardList size={16} /> },
-                { id: 'tables', label: 'Tables & QR', icon: <QrCode size={16} /> },
-                { id: 'printers', label: 'Cloud Printers', icon: <Printer size={16} /> },
-                { id: 'collection-slots', label: 'Collection Slots', icon: <Clock size={16} /> },
+                { id: 'orders', label: 'Orders', icon: <ReceiptText size={16} /> },
+                { id: 'tables', label: 'Tables & QR', icon: <UtensilsCrossed size={16} /> },
+                { id: 'printers', label: 'Cloud Printers', icon: <Receipt size={16} /> },
+                { id: 'collection-slots', label: 'Collection Slots', icon: <CalendarClock size={16} /> },
             ],
         },
         {
             label: 'Catalogue',
             items: [
-                { id: 'categories', label: 'Categories', icon: <FolderTree size={16} /> },
-                { id: 'products', label: 'Products', icon: <ShoppingBag size={16} /> },
+                { id: 'categories', label: 'Categories', icon: <Tag size={16} /> },
+                { id: 'products', label: 'Products', icon: <Package size={16} /> },
             ],
         },
         {
             label: 'Customers',
             items: [
-                { id: 'customers', label: 'Customers', icon: <Users size={16} /> },
-                { id: 'newsletter', label: 'Newsletter', icon: <Mail size={16} /> },
+                { id: 'customers', label: 'Customers', icon: <UserCheck size={16} /> },
+                { id: 'newsletter', label: 'Newsletter', icon: <Send size={16} /> },
             ],
         },
         {
             label: 'System',
             items: [
-                { id: 'settings', label: 'Settings', icon: <Settings size={16} /> },
-                { id: 'trash', label: 'Trash', icon: <Trash2 size={16} /> },
+                { id: 'settings', label: 'Settings', icon: <SlidersHorizontal size={16} /> },
+                { id: 'trash', label: 'Trash', icon: <ArchiveRestore size={16} /> },
             ],
         },
     ];

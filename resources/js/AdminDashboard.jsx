@@ -16,7 +16,8 @@ import {
     ArrowLeft, LogOut, Loader2, AlertCircle, Plus, Edit, Trash, Check, X, ShieldAlert, ChevronLeft, ChevronRight, BarChart3,
     Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, User, Bell, RefreshCw, ChevronDown, Upload, Clock,
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, Sparkles, DollarSign, Flame, CheckCircle2, ArrowUpRight,
-    Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat
+    Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
+    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
 
@@ -1610,38 +1611,38 @@ export default function AdminDashboard() {
         {
             label: 'Overview',
             items: [
-                { id: 'dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> },
-                { id: 'reports', label: 'Reports', icon: <BarChart3 size={16} /> },
+                { id: 'dashboard', label: 'Dashboard', icon: <Compass size={16} /> },
+                { id: 'reports', label: 'Reports', icon: <LineChart size={16} /> },
             ],
         },
         {
             label: 'Operations',
             items: [
-                { id: 'orders', label: 'Orders', icon: <ClipboardList size={16} />, badge: orderSummary.active || null, badgeTone: 'amber' },
-                { id: 'tables', label: 'Tables & QR', icon: <QrCode size={16} /> },
-                { id: 'printers', label: 'Cloud Printers', icon: <Printer size={16} /> },
-                { id: 'collectionSlots', label: 'Collection Slots', icon: <Clock size={16} /> },
+                { id: 'orders', label: 'Orders', icon: <ReceiptText size={16} />, badge: orderSummary.active || null, badgeTone: 'amber' },
+                { id: 'tables', label: 'Tables & QR', icon: <UtensilsCrossed size={16} /> },
+                { id: 'printers', label: 'Cloud Printers', icon: <Receipt size={16} /> },
+                { id: 'collectionSlots', label: 'Collection Slots', icon: <CalendarClock size={16} /> },
             ],
         },
         {
             label: 'Catalogue',
             items: [
-                { id: 'categories', label: 'Categories', icon: <FolderTree size={16} /> },
-                { id: 'products', label: 'Products', icon: <ShoppingBag size={16} /> },
+                { id: 'categories', label: 'Categories', icon: <Tag size={16} /> },
+                { id: 'products', label: 'Products', icon: <Package size={16} /> },
             ],
         },
         {
             label: 'Customers',
             items: [
-                { id: 'customers', label: 'Customers', icon: <Users size={16} />, badge: customers.length || reports?.total_customers || null },
-                { id: 'newsletter', label: 'Newsletter', icon: <Mail size={16} />, badge: newsletter.length || null },
+                { id: 'customers', label: 'Customers', icon: <UserCheck size={16} />, badge: customers.length || reports?.total_customers || null },
+                { id: 'newsletter', label: 'Newsletter', icon: <Send size={16} />, badge: newsletter.length || null },
             ],
         },
         {
             label: 'System',
             items: [
-                { id: 'settings', label: 'Settings', icon: <Settings size={16} /> },
-                { id: 'trash', label: 'Trash', icon: <Trash2 size={16} />, badge: trashCount || null, badgeTone: 'red' },
+                { id: 'settings', label: 'Settings', icon: <SlidersHorizontal size={16} /> },
+                { id: 'trash', label: 'Trash', icon: <ArchiveRestore size={16} />, badge: trashCount || null, badgeTone: 'red' },
             ],
         },
     ];
@@ -1738,10 +1739,6 @@ export default function AdminDashboard() {
 
                                         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                                             <div className="space-y-2 max-w-xl">
-                                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-white/10 text-accent text-[10px] font-bold uppercase tracking-widest">
-                                                    <Sparkles size={11} className="text-accent" />
-                                                    <span>Sweet Spot · Live Operations</span>
-                                                </div>
                                                 <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-tight text-white leading-tight">
                                                     {greeting}, {user?.name?.split(' ')[0] || 'Atelier Master'}
                                                 </h1>
