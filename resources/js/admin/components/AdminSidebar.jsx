@@ -35,25 +35,26 @@ export default function AdminSidebar({
                     collapsed
                         ? 'max-md:-translate-x-full md:w-[76px] md:p-2'
                         : 'max-md:translate-x-0 max-md:fixed max-md:inset-y-0 max-md:left-0 max-md:z-50 md:w-[268px] p-2.5 lg:p-3'
-                } flex flex-col justify-between h-screen sticky top-0 shrink-0 bg-[#F5EFEB] select-none z-30 max-md:w-[280px]`}
+                } flex flex-col justify-between h-screen sticky top-0 shrink-0 bg-canvas select-none z-30 max-md:w-[280px]`}
             >
                 <div className="flex flex-col h-full overflow-hidden space-y-3">
-                {/* 1. Dark Emerald / Forest Profile Hero Card (as in Ember reference) */}
+                {/* 1. Deep Espresso / Brand Profile Hero Card */}
                 {!collapsed ? (
-                    <div className="relative overflow-hidden rounded-2xl bg-[#132B25] text-white p-4 shadow-sm">
+                    <div className="relative overflow-hidden rounded-2xl bg-primary text-white p-4 shadow-sm border border-white/5">
                         {/* Decorative background radial glow */}
-                        <div className="absolute top-0 right-0 -mr-6 -mt-6 w-24 h-24 rounded-full bg-emerald-700/20 blur-xl pointer-events-none" />
+                        <div className="absolute top-0 right-0 -mr-6 -mt-6 w-28 h-28 rounded-full bg-secondary/20 blur-xl pointer-events-none" />
+                        <div className="absolute bottom-0 left-0 -ml-4 -mb-4 w-20 h-20 rounded-full bg-accent/15 blur-lg pointer-events-none" />
                         
                         <div className="relative z-10 flex items-start justify-between gap-2">
                             {/* Avatar Circle */}
-                            <div className="w-10 h-10 rounded-full bg-[#E5DFD7] text-[#132B25] flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
-                                <User size={18} className="text-[#132B25]" />
+                            <div className="w-10 h-10 rounded-full bg-accent/20 text-accent border border-accent/30 flex items-center justify-center font-bold text-sm shadow-xs shrink-0">
+                                <User size={18} className="text-accent" />
                             </div>
 
                             {/* Collapse / Close Toggle Button */}
                             <button
                                 onClick={onToggleCollapsed}
-                                className="p-1 rounded-md text-emerald-300/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                                className="p-1 rounded-md text-stone-300 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                                 title="Close Menu"
                             >
                                 <span className="md:hidden">
@@ -70,15 +71,15 @@ export default function AdminSidebar({
                             <h3 className="text-sm font-bold tracking-tight text-white truncate">
                                 {adminDisplayName}
                             </h3>
-                            <p className="text-[10.5px] text-emerald-200/60 truncate font-light mt-0.5">
+                            <p className="text-[10.5px] text-stone-300/80 truncate font-light mt-0.5">
                                 {userEmail}
                             </p>
                         </div>
 
-                        {/* Gold / Tier Pill Badge */}
-                        <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#1C3B33] border border-emerald-500/20 text-[#E4C586] text-[10px] font-semibold tracking-wide">
-                            <span className="text-[#E4C586]">🏆</span>
-                            <span>SweetSpot · {adminRole}</span>
+                        {/* Brand Badge */}
+                        <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-white/10 text-accent text-[10px] font-semibold tracking-wide">
+                            <Sparkles size={11} className="text-accent" />
+                            <span>Sweet Spot · {adminRole}</span>
                         </div>
                     </div>
                 ) : (
@@ -86,10 +87,10 @@ export default function AdminSidebar({
                     <div className="flex flex-col items-center gap-2 py-2">
                         <div
                             onClick={() => onTabChange('dashboard')}
-                            className="w-11 h-11 rounded-2xl bg-[#132B25] text-white flex items-center justify-center font-bold text-xs cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                            className="w-11 h-11 rounded-2xl bg-primary text-accent border border-white/5 flex items-center justify-center font-bold text-xs cursor-pointer shadow-sm hover:scale-105 transition-transform"
                             title={adminDisplayName}
                         >
-                            <User size={18} className="text-[#E5DFD7]" />
+                            <User size={18} className="text-accent" />
                         </div>
                         <button
                             onClick={onToggleCollapsed}
@@ -101,8 +102,8 @@ export default function AdminSidebar({
                     </div>
                 )}
 
-                {/* 2. Floating Navigation Links Card (as in Ember reference) */}
-                <div className="flex-grow overflow-y-auto bg-white rounded-2xl p-3 shadow-xs border border-stone-200/50 space-y-4 scrollbar-thin scrollbar-thumb-stone-200">
+                {/* 2. Floating Navigation Links Card */}
+                <div className="flex-grow overflow-y-auto bg-surface rounded-2xl p-3 shadow-xs border border-stone-200/60 space-y-4 scrollbar-thin scrollbar-thumb-stone-200">
                     {sections.map(section => (
                         <div key={section.label} className="space-y-1">
                             {!collapsed && (
@@ -122,15 +123,15 @@ export default function AdminSidebar({
                                                 collapsed ? 'justify-center p-2.5 relative' : 'gap-3 px-3.5 py-2.5'
                                             } text-[12.5px] font-semibold rounded-xl cursor-pointer ${
                                                 isActive
-                                                    ? 'bg-[#132B25] text-white shadow-xs'
-                                                    : 'text-stone-600 hover:text-stone-950 hover:bg-stone-50'
+                                                    ? 'bg-primary text-white shadow-xs'
+                                                    : 'text-stone-600 hover:text-stone-950 hover:bg-canvas'
                                             }`}
                                             title={collapsed ? item.label : undefined}
                                         >
                                             <span
                                                 className={`shrink-0 transition-colors ${
                                                     isActive
-                                                        ? 'text-white'
+                                                        ? 'text-accent'
                                                         : 'text-stone-400 group-hover:text-stone-600'
                                                 }`}
                                             >
@@ -145,8 +146,8 @@ export default function AdminSidebar({
                                                         <span
                                                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
                                                                 isActive
-                                                                    ? 'bg-[#C84C1C] text-white'
-                                                                    : 'bg-[#C84C1C] text-white'
+                                                                    ? 'bg-secondary text-white'
+                                                                    : 'bg-secondary text-white'
                                                             }`}
                                                         >
                                                             {item.badge}
@@ -155,7 +156,7 @@ export default function AdminSidebar({
                                                 </>
                                             )}
                                             {collapsed && item.badge && (
-                                                <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-[#C84C1C] text-white text-[9px] font-black flex items-center justify-center shadow-xs">
+                                                <span className="absolute top-1.5 right-1.5 min-w-4 h-4 px-1 rounded-full bg-secondary text-white text-[9px] font-black flex items-center justify-center shadow-xs">
                                                     {item.badge}
                                                 </span>
                                             )}
@@ -172,7 +173,7 @@ export default function AdminSidebar({
                             onClick={() => handleItemClick('profile')}
                             className={`w-full flex items-center transition-colors ${
                                 collapsed ? 'justify-center p-2.5' : 'gap-3 px-3.5 py-2'
-                            } text-[12px] font-semibold text-stone-600 hover:text-stone-950 hover:bg-stone-50 rounded-xl cursor-pointer`}
+                            } text-[12px] font-semibold text-stone-600 hover:text-stone-950 hover:bg-canvas rounded-xl cursor-pointer`}
                             title="Admin Settings"
                         >
                             <User size={15} className="text-stone-400 shrink-0" />
@@ -182,10 +183,10 @@ export default function AdminSidebar({
                             onClick={onLogout}
                             className={`w-full flex items-center transition-colors ${
                                 collapsed ? 'justify-center p-2.5' : 'gap-3 px-3.5 py-2'
-                            } text-[12px] font-semibold text-[#C84C1C] hover:bg-red-50/80 rounded-xl cursor-pointer`}
+                            } text-[12px] font-semibold text-rose-600 hover:bg-rose-50 rounded-xl cursor-pointer`}
                             title="Log Out"
                         >
-                            <LogOut size={15} className="text-[#C84C1C] shrink-0" />
+                            <LogOut size={15} className="text-rose-600 shrink-0" />
                             {!collapsed && <span>Log Out</span>}
                         </button>
                     </div>

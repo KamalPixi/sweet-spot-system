@@ -1647,7 +1647,7 @@ export default function AdminDashboard() {
     ];
 
     return (
-        <div className="min-h-screen bg-[#F5EFEB] text-[#132B25] font-sans flex">
+        <div className="min-h-screen bg-canvas text-primary font-sans flex">
             <AdminSidebar
                 collapsed={sidebarCollapsed}
                 onToggleCollapsed={() => setSidebarCollapsed(prev => !prev)}
@@ -1665,7 +1665,7 @@ export default function AdminDashboard() {
                 adminRole={adminRole}
             />
 
-            <main className="flex-grow max-h-screen overflow-y-auto w-full bg-[#F5EFEB]">
+            <main className="flex-grow max-h-screen overflow-y-auto w-full bg-canvas">
                 <AdminTopbar
                     sectionLabel={currentSectionLabel}
                     adminRole={adminRole}
@@ -1713,37 +1713,39 @@ export default function AdminDashboard() {
                         {/* 1. DASHBOARD OVERVIEW TAB */}
                         {activeTab === 'dashboard' && reports && (() => {
                             const hour = new Date().getHours();
-                            const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+                            let greeting = "Good morning";
+                            if (hour >= 12 && hour < 17) greeting = "Good afternoon";
+                            else if (hour >= 17) greeting = "Good evening";
                             const totalOrders = reports.orders_count.pending + reports.orders_count.preparing + reports.orders_count.ready + reports.orders_count.completed + (reports.orders_count.cancelled || 0);
                             const activeOrdersCount = reports.orders_count.pending + reports.orders_count.preparing + reports.orders_count.ready;
                             const fulfillmentTotal = (reports.fulfillment_split?.delivery || 0) + (reports.fulfillment_split?.collection || 0) + (reports.fulfillment_split?.dine_in || 0);
 
-                            const statusConfig = {
-                                pending:   { label: 'Pending',   color: 'bg-amber-400', pill: 'bg-amber-50 text-amber-800 border-amber-200' },
-                                preparing: { label: 'In Oven',   color: 'bg-sky-400',   pill: 'bg-sky-50 text-sky-800 border-sky-200' },
-                                ready:     { label: 'Ready',     color: 'bg-emerald-400', pill: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
+                            const statusConfigs = {
+                                pending:   { label: 'Pending Payment', color: 'bg-amber-400', pill: 'bg-amber-50 text-amber-700 border-amber-200' },
+                                preparing: { label: 'Baking / Prep',   color: 'bg-orange-400', pill: 'bg-orange-50 text-orange-700 border-orange-200' },
+                                ready:     { label: 'Ready for Pickup', color: 'bg-emerald-400', pill: 'bg-emerald-50 text-emerald-800 border-emerald-200' },
                                 completed: { label: 'Fulfilled', color: 'bg-stone-300', pill: 'bg-stone-100 text-stone-600 border-stone-200' },
                                 cancelled: { label: 'Cancelled', color: 'bg-rose-300',  pill: 'bg-rose-50 text-rose-700 border-rose-200' },
                             };
 
                             return (
                                 <div className="space-y-6 pb-10">
-                                    {/* Atelier Hero Command Banner (Ember Forest & Warm Terracotta) */}
+                                    {/* Atelier Hero Command Banner */}
                                     <div className="relative overflow-hidden rounded-2xl bg-primary text-white p-6 md:p-8 shadow-sm border border-stone-200/40">
                                         {/* Background subtle art glow */}
-                                        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-emerald-700/20 rounded-full blur-3xl pointer-events-none" />
-                                        <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-accent/10 rounded-full blur-2xl pointer-events-none" />
+                                        <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-secondary/15 rounded-full blur-3xl pointer-events-none" />
+                                        <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-accent/15 rounded-full blur-2xl pointer-events-none" />
 
                                         <div className="relative z-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
                                             <div className="space-y-2 max-w-xl">
-                                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-emerald-500/20 text-accent text-[10px] font-bold uppercase tracking-widest">
+                                                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-white/10 text-accent text-[10px] font-bold uppercase tracking-widest">
                                                     <Sparkles size={11} className="text-accent" />
                                                     <span>Sweet Spot · Live Operations</span>
                                                 </div>
                                                 <h1 className="text-xl md:text-2xl lg:text-3xl font-serif font-black tracking-tight text-white leading-tight">
                                                     {greeting}, {user?.name?.split(' ')[0] || 'Atelier Master'}
                                                 </h1>
-                                                <p className="text-xs md:text-sm text-emerald-100/75 font-light leading-relaxed">
+                                                <p className="text-xs md:text-sm text-stone-300 font-light leading-relaxed">
                                                     Your kitchen is live. Currently tracking{' '}
                                                     <span className="font-semibold text-accent">{reports.today_orders || 0} order{reports.today_orders !== 1 ? 's' : ''}</span>{' '}
                                                     today across UK Deliveries, Store Collections, and Dine-In QR tables.
@@ -1761,7 +1763,7 @@ export default function AdminDashboard() {
                                                 </button>
                                                 <button
                                                     onClick={() => setActiveTab('printers')}
-                                                    className="px-4 py-2.5 rounded-xl bg-primary-light hover:bg-[#23493F] active:scale-98 text-white border border-emerald-500/20 text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5"
+                                                    className="px-4 py-2.5 rounded-xl bg-primary-light hover:bg-primary-hover active:scale-98 text-white border border-white/10 text-xs font-bold tracking-tight transition-all duration-200 flex items-center gap-2 cursor-pointer shadow-xs hover:-translate-y-0.5"
                                                 >
                                                     <Printer size={14} className="text-accent" />
                                                     <span>Star TSP100 CloudPRNT</span>
