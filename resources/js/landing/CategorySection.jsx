@@ -1,143 +1,232 @@
-import React, { useRef } from 'react';
-import { ChevronLeft, ChevronRight, ChevronDown } from 'lucide-react';
+import React, { useRef, useState, useCallback } from 'react';
+import { ArrowLeft, ArrowRight, ArrowDownRight } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
+/**
+ * Layout: items-end stagger (shorter card 2 sits higher visually)
+ * Rotation is on the container with overflow-hidden so rounded corners follow the tilt.
+ * Hover: rotation resets to 0 and card scales up slightly.
+ */
 const DEFAULT_CATEGORIES = [
     {
         id: 1,
         name: 'Strawberry Cake',
         slug: 'cakes',
-        bgColor: 'bg-[#C2162B]', // Rich red
-        image: '/images/landing-cat-1.jpg'
+        image: '/images/landing-cat-1.jpg',
+        rotation: -2,
+        titlePosition: 'bottom',
+        height: 'tall',
     },
     {
         id: 2,
         name: 'Artisan Cookies',
         slug: 'cookies',
-        bgColor: 'bg-[#E39556]', // Warm amber/orange
-        image: '/images/landing-cat-2.jpg'
+        image: '/images/landing-cat-2.jpg',
+        rotation: 1.5,
+        titlePosition: 'top',
+        height: 'short',
     },
     {
         id: 3,
         name: 'Sponge Gateau',
         slug: 'puddings',
-        bgColor: 'bg-[#15462D]', // Forest green
-        image: '/images/landing-cat-3.jpg'
+        image: '/images/landing-cat-3.jpg',
+        rotation: -1,
+        titlePosition: 'bottom',
+        height: 'tall',
     },
     {
         id: 4,
         name: 'New York Cheesecake',
         slug: 'cheesecakes',
-        bgColor: 'bg-[#DFB339]', // Golden yellow
-        image: '/images/landing-cat-4.jpg'
-    }
+        image: '/images/landing-cat-4.jpg',
+        rotation: 2.5,
+        titlePosition: 'top',
+        height: 'tall',
+    },
 ];
 
 export default function CategorySection({ categories = [] }) {
     const navigate = useNavigate();
-    const scrollContainerRef = useRef(null);
+    const scrollRef = useRef(null);
+    const [activeIndex, setActiveIndex] = useState(0);
+    const dragRef = useRef({ active: false, startX: 0, scrollLeft: 0, moved: false });
 
-    // Merge database categories with curated UI cards
     const displayList = categories.length > 0
         ? categories.map((cat, idx) => {
-            const defaultItem = DEFAULT_CATEGORIES[idx % DEFAULT_CATEGORIES.length];
+            const def = DEFAULT_CATEGORIES[idx % DEFAULT_CATEGORIES.length];
             const primaryImg = cat.images?.find(i => i.is_primary)?.url || cat.image;
             const resolveUrl = (url) => {
-                if (!url) return defaultItem.image;
+                if (!url) return def.image;
                 if (url.startsWith('http')) return url;
-                const clean = url.replace(/^\/?(storage\/)+/, '');
-                return `/storage/${clean}`;
+                return `/storage/${url.replace(/^\/?(storage\/)+/, '')}`;
             };
             return {
                 id: cat.id,
                 name: cat.name,
                 slug: cat.slug,
-                bgColor: defaultItem.bgColor,
-                image: cat.images?.length || cat.image ? resolveUrl(primaryImg) : defaultItem.image
+                image: (cat.images?.length || cat.image) ? resolveUrl(primaryImg) : def.image,
+                rotation: def.rotation,
+                titlePosition: def.titlePosition,
+                height: def.height,
             };
         })
         : DEFAULT_CATEGORIES;
 
-    const handleScroll = (direction) => {
-        if (scrollContainerRef.current) {
-            const scrollAmount = direction === 'left' ? -300 : 300;
-            scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-        }
+    const onScroll = useCallback(() => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const max = el.scrollWidth - el.clientWidth;
+        if (max <= 0) return setActiveIndex(0);
+        setActiveIndex(Math.min(2, Math.round((el.scrollLeft / max) * 2)));
+    }, []);
+
+    const scrollByCard = (dir) => {
+        const el = scrollRef.current;
+        if (!el) return;
+        const card = el.querySelector('[data-card]');
+        const amount = card ? card.offsetWidth + 24 : 280;
+        el.scrollBy({ left: dir === 'left' ? -amount : amount, behavior: 'smooth' });
+    };
+
+    const scrollToPage = (i) => {
+        const el = scrollRef.current;
+        if (!el) return;
+        el.scrollTo({ left: (el.scrollWidth - el.clientWidth) * (i / 2), behavior: 'smooth' });
+    };
+
+    const onMouseDown = (e) => {
+        dragRef.current = { active: true, startX: e.pageX, scrollLeft: scrollRef.current.scrollLeft, moved: false };
+    };
+    const onMouseMove = (e) => {
+        if (!dragRef.current.active) return;
+        e.preventDefault();
+        const walk = (e.pageX - dragRef.current.startX) * 1.4;
+        if (Math.abs(walk) > 5) dragRef.current.moved = true;
+        scrollRef.current.scrollLeft = dragRef.current.scrollLeft - walk;
+    };
+    const onMouseUp = () => { dragRef.current.active = false; };
+    const onCardClick = (slug) => {
+        if (!dragRef.current.moved) navigate(`/categories/${slug || 'cakes'}`);
     };
 
     return (
-        <section className="w-full bg-white py-14 md:py-20 px-6 md:px-12 lg:px-20 text-neutral-900">
-            <div className="max-w-7xl mx-auto">
+        <section className="w-full bg-white py-12 md:py-20 overflow-hidden select-none">
+            <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
+
                 {/* Header */}
-                <div className="flex items-center justify-between mb-8 md:mb-10">
-                    <h2 className="text-3xl md:text-4xl font-extrabold text-[#1a1a1a] tracking-tight">
+                <div className="flex items-center justify-between mb-10 md:mb-14">
+                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#191919] tracking-tight leading-none">
                         Category
                     </h2>
                     <button
                         onClick={() => navigate('/categories')}
-                        className="text-xs md:text-sm font-medium text-rose-500 hover:text-rose-600 transition-colors flex items-center gap-1 cursor-pointer focus:outline-none"
+                        className="flex items-center gap-1 text-sm font-semibold text-rose-500 hover:text-rose-600 transition-colors group cursor-pointer"
                     >
-                        <span>See All</span>
-                        <ChevronRight size={14} />
+                        See all
+                        <ArrowDownRight size={16} className="group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform" />
                     </button>
                 </div>
 
-                {/* Category Cards Carousel / Row */}
-                <div 
-                    ref={scrollContainerRef}
-                    className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6 lg:gap-8 overflow-x-auto pb-4 scrollbar-none"
+                {/*
+                  items-end = all cards align to the BOTTOM.
+                  Shorter card (card 2) has less height → its top edge sits higher → stagger effect.
+                  Zero rotation on all cards — exactly like the reference.
+                */}
+                <div
+                    ref={scrollRef}
+                    onScroll={onScroll}
+                    onMouseDown={onMouseDown}
+                    onMouseMove={onMouseMove}
+                    onMouseUp={onMouseUp}
+                    onMouseLeave={onMouseUp}
+                    className="flex items-end gap-5 md:gap-6 overflow-x-auto pb-2 scrollbar-none cursor-grab active:cursor-grabbing"
+                    style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
-                    {displayList.map((item, idx) => (
-                        <div
-                            key={item.id || idx}
-                            onClick={() => navigate(`/categories/${item.slug || 'cakes'}`)}
-                            className="flex flex-col group cursor-pointer"
-                        >
-                            {/* Card with colorful background */}
-                            <div className={`relative aspect-square w-full ${item.bgColor} rounded-[24px] md:rounded-[32px] overflow-hidden p-3 sm:p-4 md:p-5 flex items-center justify-center transition-all duration-300 group-hover:scale-[1.03] group-hover:shadow-xl`}>
-                                <img
-                                    src={item.image}
-                                    alt={item.name}
-                                    className="w-full h-full object-contain rounded-2xl drop-shadow-md"
-                                    onError={(e) => {
-                                        e.target.src = DEFAULT_CATEGORIES[idx % DEFAULT_CATEGORIES.length].image;
-                                    }}
-                                />
-                            </div>
+                    {displayList.map((item, idx) => {
+                        const isTitleTop = item.titlePosition === 'top';
+                        const isTall = item.height !== 'short';
 
-                            {/* Label */}
-                            <span className="mt-3.5 text-xs sm:text-sm md:text-base font-medium text-neutral-800 tracking-tight group-hover:text-rose-600 transition-colors text-left pl-1">
-                                {item.name}
-                            </span>
-                        </div>
-                    ))}
+                        return (
+                            <div
+                                key={item.id || idx}
+                                data-card
+                                onClick={() => onCardClick(item.slug)}
+                                className="flex-none flex flex-col cursor-pointer group"
+                                style={{
+                                    /* Tall cards: ~270px wide, Short card: ~235px wide */
+                                    width: isTall ? 'clamp(200px, 22vw, 270px)' : 'clamp(170px, 18vw, 235px)',
+                                }}
+                            >
+                                {/* Label ABOVE (cards 2 & 4) */}
+                                {isTitleTop && (
+                                    <p className="mb-2.5 text-[15px] md:text-[17px] font-semibold text-[#1a1a1a] tracking-tight leading-tight group-hover:text-rose-500 transition-colors truncate">
+                                        {item.name}
+                                    </p>
+                                )}
+
+                                {/* Rotation on the container — overflow-hidden clips the rounded corners correctly */}
+                                <div
+                                    className="w-full overflow-hidden rounded-[20px] md:rounded-[24px] transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                                    style={{
+                                        height: isTall ? 'clamp(210px, 20vw, 270px)' : 'clamp(175px, 17vw, 230px)',
+                                        transform: `rotate(${item.rotation}deg)`,
+                                    }}
+                                >
+                                    <img
+                                        src={item.image}
+                                        alt={item.name}
+                                        draggable={false}
+                                        className="w-full h-full object-cover"
+                                        onError={(e) => { e.target.src = DEFAULT_CATEGORIES[idx % DEFAULT_CATEGORIES.length].image; }}
+                                    />
+                                </div>
+
+                                {/* Label BELOW (cards 1 & 3) */}
+                                {!isTitleTop && (
+                                    <p className="mt-2.5 text-[15px] md:text-[17px] font-semibold text-[#1a1a1a] tracking-tight leading-tight group-hover:text-rose-500 transition-colors truncate">
+                                        {item.name}
+                                    </p>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
 
-                {/* Controls Bar: Arrow Dots Indicator */}
-                <div className="flex items-center justify-center gap-3 mt-8">
+                {/* Controls */}
+                <div className="flex items-center justify-center gap-4 mt-10 md:mt-12">
                     <button
-                        onClick={() => handleScroll('left')}
-                        className="w-7 h-7 rounded-full bg-neutral-900 text-white flex items-center justify-center hover:bg-neutral-800 transition-all cursor-pointer shadow-sm"
-                        aria-label="Previous Category"
+                        onClick={() => scrollByCard('left')}
+                        aria-label="Previous"
+                        className="w-9 h-9 flex items-center justify-center rounded-full bg-[#1c1410] text-white hover:bg-black active:scale-90 transition-all shadow-sm cursor-pointer"
                     >
-                        <ChevronLeft size={14} />
+                        <ArrowLeft size={15} strokeWidth={2.5} />
                     </button>
 
-                    {/* Progress indicator capsule */}
-                    <div className="flex items-center gap-1.5">
-                        <span className="w-8 h-1.5 rounded-full bg-neutral-900" />
-                        <span className="w-4 h-1.5 rounded-full bg-neutral-300" />
-                        <span className="w-4 h-1.5 rounded-full bg-neutral-300" />
+                    <div className="flex items-center gap-2">
+                        {[0, 1, 2].map(i => (
+                            <button
+                                key={i}
+                                onClick={() => scrollToPage(i)}
+                                aria-label={`Slide ${i + 1}`}
+                                className={`h-[6px] rounded-full transition-all duration-300 cursor-pointer ${
+                                    activeIndex === i
+                                        ? 'w-12 bg-[#1c1410]'
+                                        : 'w-7 bg-[#dcdcdc] hover:bg-[#bbb]'
+                                }`}
+                            />
+                        ))}
                     </div>
 
                     <button
-                        onClick={() => handleScroll('right')}
-                        className="w-7 h-7 rounded-full border border-neutral-300 text-neutral-600 flex items-center justify-center hover:border-neutral-900 hover:text-neutral-900 transition-all cursor-pointer"
-                        aria-label="Next Category"
+                        onClick={() => scrollByCard('right')}
+                        aria-label="Next"
+                        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#888] text-[#1c1410] hover:border-black hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
                     >
-                        <ChevronRight size={14} />
+                        <ArrowRight size={15} strokeWidth={2.5} />
                     </button>
                 </div>
+
             </div>
         </section>
     );
