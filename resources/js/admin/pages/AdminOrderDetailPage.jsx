@@ -502,7 +502,7 @@ export default function AdminOrderDetailPage() {
                             <Loader2 className="animate-spin text-neutral-950" size={40} />
                         </div>
                     ) : !order ? (
-                        <div className="bg-white border border-neutral-200 rounded-2xl p-8 text-center shadow-sm">
+                        <div className="bg-white border border-neutral-200 rounded-xl p-8 text-center shadow-sm">
                             <p className="text-sm text-neutral-500">Order details are not available.</p>
                             <button
                                 type="button"
@@ -581,7 +581,7 @@ export default function AdminOrderDetailPage() {
                             </div>
 
                             <div className="grid grid-cols-1 xl:grid-cols-[1.4fr_1fr] gap-6">
-                                <div className="bg-white border border-neutral-200 rounded-2xl overflow-hidden shadow-sm">
+                                <div className="bg-white border border-neutral-200 rounded-xl overflow-hidden shadow-sm">
                                     <div className="px-5 py-4 border-b border-neutral-100">
                                         <h2 className="text-sm font-bold text-neutral-900">Order Items</h2>
                                     </div>
@@ -602,7 +602,7 @@ export default function AdminOrderDetailPage() {
                                 </div>
 
                                 <div className="space-y-4">
-                                    <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
+                                    <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
                                         <h2 className="text-sm font-bold text-neutral-900 mb-3">Totals</h2>
                                         <div className="space-y-2 text-xs">
                                             <div className="flex justify-between text-neutral-500">
@@ -623,7 +623,7 @@ export default function AdminOrderDetailPage() {
                                     </div>
 
                                     {order.type === 'delivery' && (
-                                        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm space-y-3">
+                                        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm space-y-3">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <Truck size={16} className="text-neutral-900" />
@@ -676,7 +676,7 @@ export default function AdminOrderDetailPage() {
                                     )}
 
                                     {order.notes && (
-                                        <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
+                                        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
                                             <h2 className="text-sm font-bold text-neutral-900 mb-2">Notes</h2>
                                             <p className="text-xs text-neutral-600 leading-relaxed">{order.notes}</p>
                                         </div>

@@ -51,7 +51,7 @@ export default function AdminTable({
     className = '',
 }) {
     return (
-        <div className={`bg-surface border border-stone-200/70 rounded-2xl shadow-2xs overflow-hidden text-left w-full ${className}`}>
+        <div className={`bg-surface border border-stone-200/70 rounded-xl shadow-2xs overflow-hidden text-left w-full ${className}`}>
             {/* Table Header / Title Bar */}
             {(title || countText || headerActions) && (
                 <div className="px-5 py-4 border-b border-stone-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5">

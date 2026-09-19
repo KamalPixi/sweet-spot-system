@@ -236,7 +236,7 @@ export default function AdminTablesTab({ orders = [] }) {
                 
                 {/* Tables Grid / Directory (2 Cols) */}
                 <div className="xl:col-span-2 space-y-6">
-                    <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
+                    <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
                         <div className="flex items-center justify-between mb-5">
                             <div>
                                 <h2 className="text-sm font-bold text-neutral-900">Configured Tables</h2>
@@ -303,7 +303,7 @@ export default function AdminTablesTab({ orders = [] }) {
                     </div>
 
                     {/* Add New Table Form */}
-                    <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm">
+                    <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm">
                         <h2 className="text-sm font-bold text-neutral-900 mb-4 flex items-center gap-2">
                             <Plus size={16} className="text-amber-600" />
                             <span>Add New Dining Table</span>
@@ -367,7 +367,7 @@ export default function AdminTablesTab({ orders = [] }) {
                 {/* QR Code Preview & Sticker Inspector (1 Col) */}
                 <div className="space-y-6">
                     {selectedTable ? (
-                        <div className="bg-white border border-neutral-200 rounded-2xl p-6 shadow-sm text-center">
+                        <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm text-center">
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 text-amber-800 text-[10px] font-extrabold uppercase tracking-wider mb-4">
                                 <Sparkles size={11} className="text-amber-600" />
                                 <span>Table QR Preview</span>
@@ -378,7 +378,7 @@ export default function AdminTablesTab({ orders = [] }) {
                                 {selectedTable.area} · Seating for {selectedTable.capacity} guests
                             </p>
 
-                            <div className="my-6 inline-block p-4 bg-white border-2 border-dashed border-amber-400 rounded-2xl shadow-inner">
+                            <div className="my-6 inline-block p-4 bg-white border-2 border-dashed border-amber-400 rounded-xl shadow-inner">
                                 <img
                                     src={qrImageUrl}
                                     alt={`QR Code for Table ${selectedTable.number}`}
@@ -418,13 +418,13 @@ export default function AdminTablesTab({ orders = [] }) {
                             </div>
                         </div>
                     ) : (
-                        <div className="bg-white border border-neutral-200 rounded-2xl p-10 text-center text-neutral-400">
+                        <div className="bg-white border border-neutral-200 rounded-xl p-10 text-center text-neutral-400">
                             <QrCode size={36} className="mx-auto mb-2 opacity-50" />
                             <p className="text-xs font-semibold">Select a table to view its QR code</p>
                         </div>
                     )}
 
-                    <div className="bg-amber-50/60 border border-amber-200/80 rounded-2xl p-5 flex items-start gap-3">
+                    <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-5 flex items-start gap-3">
                         <Info size={16} className="text-amber-700 shrink-0 mt-0.5" />
                         <div className="text-xs text-amber-900 leading-relaxed">
                             <span className="font-bold block mb-1">How Table QR Ordering Works:</span>

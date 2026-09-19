@@ -36,7 +36,7 @@ export default function AdminTopbar({
     return (
         <header className="sticky top-0 z-30 pt-2.5 lg:pt-3 px-2.5 sm:pl-0 sm:pr-2.5 lg:pr-3 pb-1.5 bg-canvas/90 backdrop-blur-md">
             {/* Top Bar Floating Curved Card - 3-Column Grid for True Center Lock */}
-            <div className="bg-surface rounded-2xl border border-stone-200/60 shadow-xs px-3 sm:px-4 lg:px-5 py-2 grid grid-cols-2 xl:grid-cols-[1fr_auto_1fr] items-center gap-3">
+            <div className="bg-surface rounded-xl border border-stone-200/60 shadow-xs px-3 sm:px-4 lg:px-5 py-2 grid grid-cols-2 xl:grid-cols-[1fr_auto_1fr] items-center gap-3">
                 {/* Left: Hamburger (Mobile) + Atelier Identity & Section Breadcrumb */}
                 <div className="flex items-center gap-2 sm:gap-3.5 min-w-0 pr-2">
                     {/* Mobile Hamburger Toggle */}
@@ -147,7 +147,7 @@ export default function AdminTopbar({
                         </button>
 
                         {quickActionsOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-52 bg-surface text-primary border border-stone-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-fadeIn">
+                            <div className="absolute right-0 top-full mt-2 w-52 bg-surface text-primary border border-stone-200 rounded-xl shadow-xl overflow-hidden z-50 animate-fadeIn">
                                 <div className="px-3.5 py-2.5 bg-canvas border-b border-stone-200/80">
                                     <span className="text-[9.5px] font-black uppercase tracking-wider text-stone-500">
                                         Quick Operations
@@ -243,7 +243,7 @@ export default function AdminTopbar({
 
                         {/* Notifications Dropdown Panel */}
                         {notificationsOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-[380px] max-w-[calc(100vw-2rem)] bg-surface text-primary border border-stone-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-fadeIn">
+                            <div className="absolute right-0 top-full mt-2 w-[380px] max-w-[calc(100vw-2rem)] bg-surface text-primary border border-stone-200 rounded-xl shadow-xl overflow-hidden z-50 animate-fadeIn">
                                 <div className="px-4 py-3 bg-canvas border-b border-stone-200/80 flex items-center justify-between">
                                     <div>
                                         <h2 className="text-xs font-black text-primary uppercase tracking-wider">Atelier Activity Log</h2>
@@ -358,7 +358,7 @@ export default function AdminTopbar({
                         </button>
 
                         {accountMenuOpen && (
-                            <div className="absolute right-0 top-full mt-2 w-64 bg-surface text-primary border border-stone-200 rounded-2xl shadow-xl overflow-hidden z-50 animate-fadeIn">
+                            <div className="absolute right-0 top-full mt-2 w-64 bg-surface text-primary border border-stone-200 rounded-xl shadow-xl overflow-hidden z-50 animate-fadeIn">
                                 <div className="px-4 py-3 bg-canvas border-b border-stone-200/80">
                                     <p className="text-xs font-bold text-primary truncate">{adminDisplayName}</p>
                                     <p className="text-[10px] text-stone-500 truncate mt-0.5">{userEmail}</p>

@@ -157,7 +157,7 @@ export default function AdminPrintersTab({ token }) {
 
             {/* Hardware Status Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Target Printer</span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
@@ -175,7 +175,7 @@ export default function AdminPrintersTab({ token }) {
                     </div>
                 </div>
 
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Queue State</span>
                         <Layers size={15} className="text-amber-600" />
@@ -194,7 +194,7 @@ export default function AdminPrintersTab({ token }) {
                     </div>
                 </div>
 
-                <div className="bg-white border border-neutral-200 rounded-2xl p-5 shadow-sm">
+                <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Polling Endpoint</span>
                         <Wifi size={15} className="text-neutral-600" />
@@ -215,7 +215,7 @@ export default function AdminPrintersTab({ token }) {
             </div>
 
             {/* Print Jobs Table */}
-            <div className="bg-white border border-neutral-200 rounded-2xl shadow-sm overflow-hidden">
+            <div className="bg-white border border-neutral-200 rounded-xl shadow-sm overflow-hidden">
                 <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between">
                     <div>
                         <h2 className="text-sm font-bold text-neutral-900">Hardware Print Queue</h2>
@@ -304,7 +304,7 @@ export default function AdminPrintersTab({ token }) {
             {/* Inspect Modal */}
             {selectedJob && (
                 <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-2xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-neutral-200 max-h-[90vh] flex flex-col">
+                    <div className="bg-white rounded-xl max-w-xl w-full p-6 space-y-4 shadow-2xl border border-neutral-200 max-h-[90vh] flex flex-col">
                         <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
                             <div>
                                 <h3 className="text-sm font-black text-neutral-900">Receipt Ticket Content</h3>

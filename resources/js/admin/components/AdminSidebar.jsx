@@ -40,7 +40,7 @@ export default function AdminSidebar({
                 <div className="flex flex-col h-full overflow-hidden space-y-3">
                 {/* 1. Deep Espresso / Brand Profile Hero Card */}
                 {!collapsed ? (
-                    <div className="relative overflow-hidden rounded-2xl bg-primary text-white p-4 shadow-sm border border-white/5">
+                    <div className="relative overflow-hidden rounded-xl bg-primary text-white p-4 shadow-sm border border-white/5">
                         {/* Decorative background radial glow */}
                         <div className="absolute top-0 right-0 -mr-6 -mt-6 w-28 h-28 rounded-full bg-secondary/20 blur-xl pointer-events-none" />
                         <div className="absolute bottom-0 left-0 -ml-4 -mb-4 w-20 h-20 rounded-full bg-accent/15 blur-lg pointer-events-none" />
@@ -87,7 +87,7 @@ export default function AdminSidebar({
                     <div className="flex flex-col items-center gap-2 py-2">
                         <div
                             onClick={() => onTabChange('dashboard')}
-                            className="w-11 h-11 rounded-2xl bg-primary text-accent border border-white/5 flex items-center justify-center font-bold text-xs cursor-pointer shadow-sm hover:scale-105 transition-transform"
+                            className="w-11 h-11 rounded-xl bg-primary text-accent border border-white/5 flex items-center justify-center font-bold text-xs cursor-pointer shadow-sm hover:scale-105 transition-transform"
                             title={adminDisplayName}
                         >
                             <User size={18} className="text-accent" />
@@ -103,7 +103,7 @@ export default function AdminSidebar({
                 )}
 
                 {/* 2. Floating Navigation Links Card */}
-                <div className="flex-grow overflow-y-auto bg-surface rounded-2xl p-3 shadow-xs border border-stone-200/60 space-y-4 scrollbar-thin scrollbar-thumb-stone-200">
+                <div className="flex-grow overflow-y-auto bg-surface rounded-xl p-3 shadow-xs border border-stone-200/60 space-y-4 scrollbar-thin scrollbar-thumb-stone-200">
                     {sections.map(section => (
                         <div key={section.label} className="space-y-1">
                             {!collapsed && (
@@ -121,7 +121,7 @@ export default function AdminSidebar({
                                             onClick={() => handleItemClick(item.id)}
                                             className={`w-full flex items-center transition-all duration-150 ${
                                                 collapsed ? 'justify-center p-2.5 relative' : 'gap-3 px-3.5 py-2.5'
-                                            } text-[12.5px] font-semibold rounded-xl cursor-pointer ${
+                                            } text-[12.5px] font-semibold rounded-lg cursor-pointer ${
                                                 isActive
                                                     ? 'bg-primary text-white shadow-xs'
                                                     : 'text-stone-600 hover:text-stone-950 hover:bg-canvas'
@@ -173,7 +173,7 @@ export default function AdminSidebar({
                             onClick={() => handleItemClick('profile')}
                             className={`w-full flex items-center transition-colors ${
                                 collapsed ? 'justify-center p-2.5' : 'gap-3 px-3.5 py-2'
-                            } text-[12px] font-semibold text-stone-600 hover:text-stone-950 hover:bg-canvas rounded-xl cursor-pointer`}
+                            } text-[12px] font-semibold text-stone-600 hover:text-stone-950 hover:bg-canvas rounded-lg cursor-pointer`}
                             title="Admin Settings"
                         >
                             <User size={15} className="text-stone-400 shrink-0" />
@@ -183,7 +183,7 @@ export default function AdminSidebar({
                             onClick={onLogout}
                             className={`w-full flex items-center transition-colors ${
                                 collapsed ? 'justify-center p-2.5' : 'gap-3 px-3.5 py-2'
-                            } text-[12px] font-semibold text-rose-600 hover:bg-rose-50 rounded-xl cursor-pointer`}
+                            } text-[12px] font-semibold text-rose-600 hover:bg-rose-50 rounded-lg cursor-pointer`}
                             title="Log Out"
                         >
                             <LogOut size={15} className="text-rose-600 shrink-0" />

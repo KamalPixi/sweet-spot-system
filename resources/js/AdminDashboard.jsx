@@ -1731,7 +1731,7 @@ export default function AdminDashboard() {
                             return (
                                 <div className="space-y-6 pb-10">
                                     {/* Atelier Hero Command Banner */}
-                                    <div className="relative overflow-hidden rounded-2xl bg-primary text-white p-6 md:p-8 shadow-sm border border-stone-200/40">
+                                    <div className="relative overflow-hidden rounded-xl bg-primary text-white p-6 md:p-8 shadow-sm border border-stone-200/40">
                                         {/* Background subtle art glow */}
                                         <div className="absolute top-0 right-0 -mt-10 -mr-10 w-80 h-80 bg-secondary/15 rounded-full blur-3xl pointer-events-none" />
                                         <div className="absolute bottom-0 left-1/3 -mb-12 w-64 h-64 bg-accent/15 rounded-full blur-2xl pointer-events-none" />
@@ -1775,7 +1775,7 @@ export default function AdminDashboard() {
                                     {/* Urgent Orders Alert Banner */}
                                     {activeOrdersCount > 0 && (
                                         <div
-                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-secondary-light/70 border border-secondary/20 rounded-2xl px-5 py-3.5 cursor-pointer hover:border-secondary/40 hover:shadow-xs transition-all duration-200"
+                                            className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-secondary-light/70 border border-secondary/20 rounded-xl px-5 py-3.5 cursor-pointer hover:border-secondary/40 hover:shadow-xs transition-all duration-200"
                                             onClick={() => setActiveTab('orders')}
                                         >
                                             <div className="flex items-center gap-3">
@@ -1846,7 +1846,7 @@ export default function AdminDashboard() {
                                         ].map((card, i) => (
                                             <div
                                                 key={card.label}
-                                                className="bg-surface border border-stone-200/70 rounded-2xl p-4 shadow-2xs hover:shadow-xs hover:border-primary/30 transition-all duration-200 flex flex-col justify-between group"
+                                                className="bg-surface border border-stone-200/70 rounded-xl p-4 shadow-2xs hover:shadow-xs hover:border-primary/30 transition-all duration-200 flex flex-col justify-between group"
                                             >
                                                 <div className="flex items-center justify-between mb-2.5">
                                                     <span className="text-[9.5px] font-bold text-stone-400 uppercase tracking-wider">
@@ -2917,7 +2917,7 @@ export default function AdminDashboard() {
                                         </AdminStatGrid>
 
                                         {/* Search & Filters Toolbar */}
-                                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
+                                        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-xl shadow-2xs">
                                             {/* Left side: Search input */}
                                             <div className="relative flex-grow max-w-md">
                                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
@@ -3515,7 +3515,7 @@ export default function AdminDashboard() {
                                             />
                                         </AdminStatGrid>
 
-                                        <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
+                                        <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-xl shadow-2xs">
                                             <div className="relative flex-grow max-w-xl">
                                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
                                                 <input
@@ -3722,7 +3722,7 @@ export default function AdminDashboard() {
                                     />
                                 </AdminStatGrid>
 
-                                <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-2xl shadow-2xs">
+                                <div className="flex flex-col xl:flex-row justify-between items-stretch xl:items-center gap-4 bg-surface border border-stone-200/70 p-3.5 sm:p-4 rounded-xl shadow-2xs">
                                     <div className="relative flex-grow max-w-xl">
                                         <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" size={15} />
                                         <input
@@ -4957,7 +4957,7 @@ export default function AdminDashboard() {
             {/* Image Cropper Modal */}
             {cropperOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-                    <div className="bg-white rounded-2xl w-full max-w-md overflow-hidden shadow-2xl animate-scaleIn">
+                    <div className="bg-white rounded-xl w-full max-w-md overflow-hidden shadow-2xl animate-scaleIn">
                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center justify-between">
                             <h3 className="font-bold text-sm text-neutral-800">Crop Category Image (3:4)</h3>
                             <button
@@ -4972,7 +4972,7 @@ export default function AdminDashboard() {
                         <div className="p-6 flex flex-col items-center gap-6 bg-neutral-50">
                             {/* Viewport Container */}
                             <div 
-                                className="w-[270px] h-[360px] rounded-2xl overflow-hidden relative border border-neutral-200 shadow-inner bg-neutral-200 select-none cursor-move"
+                                className="w-[270px] h-[360px] rounded-xl overflow-hidden relative border border-neutral-200 shadow-inner bg-neutral-200 select-none cursor-move"
                                 onMouseDown={(e) => {
                                     setIsDraggingCrop(true);
                                     setDragStartCrop({ x: e.clientX - cropOffset.x, y: e.clientY - cropOffset.y });
