@@ -111,20 +111,20 @@ export default function CategorySection({ categories = [] }) {
     };
 
     return (
-        <section className="w-full bg-white py-12 md:py-20 select-none">
-            <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
+        <section className="w-full bg-white py-8 md:py-12 select-none">
+            <div className="max-w-[1300px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16">
 
                 {/* Header */}
-                <div className="flex items-center justify-between mb-10 md:mb-14">
-                    <h2 className="text-4xl sm:text-5xl md:text-6xl font-black text-[#191919] tracking-tight leading-none">
+                <div className="flex items-center justify-between mb-6 md:mb-8">
+                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#191919] tracking-tight leading-none">
                         Category
                     </h2>
                     <button
                         onClick={() => navigate('/categories')}
-                        className="flex items-center gap-1 text-sm font-semibold text-rose-500 hover:text-rose-600 transition-colors group cursor-pointer"
+                        className="flex items-center gap-1 text-xs sm:text-sm font-semibold text-rose-500 hover:text-rose-600 transition-colors group cursor-pointer"
                     >
                         See all
-                        <ArrowDownRight size={16} className="group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform" />
+                        <ArrowDownRight size={15} className="group-hover:translate-x-0.5 group-hover:translate-y-0.5 transition-transform" />
                     </button>
                 </div>
 
@@ -136,7 +136,7 @@ export default function CategorySection({ categories = [] }) {
                     onMouseMove={onMouseMove}
                     onMouseUp={onMouseUp}
                     onMouseLeave={onMouseUp}
-                    className="flex items-end gap-5 md:gap-6 overflow-x-auto py-6 scrollbar-none cursor-grab active:cursor-grabbing"
+                    className="flex items-end gap-4 md:gap-5 overflow-x-auto py-4 scrollbar-none cursor-grab active:cursor-grabbing"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {displayList.map((item, idx) => {
@@ -150,22 +150,22 @@ export default function CategorySection({ categories = [] }) {
                                 onClick={() => onCardClick(item.slug)}
                                 className="flex-none flex flex-col cursor-pointer group"
                                 style={{
-                                    /* Tall cards: ~270px wide, Short card: ~235px wide */
-                                    width: isTall ? 'clamp(200px, 22vw, 270px)' : 'clamp(170px, 18vw, 235px)',
+                                    /* Tall cards: ~210px wide, Short card: ~185px wide */
+                                    width: isTall ? 'clamp(160px, 17vw, 215px)' : 'clamp(140px, 14vw, 185px)',
                                 }}
                             >
                                 {/* Label ABOVE (cards 2 & 4) */}
                                 {isTitleTop && (
-                                    <p className="mb-2.5 text-[15px] md:text-[17px] font-semibold text-[#1a1a1a] tracking-tight leading-tight group-hover:text-rose-500 transition-colors truncate">
+                                    <p className="mb-2 text-[13px] md:text-[14px] font-semibold text-[#1a1a1a] tracking-tight leading-tight group-hover:text-rose-500 transition-colors truncate">
                                         {item.name}
                                     </p>
                                 )}
 
                                 {/* Rotation on the container — overflow-hidden clips the rounded corners correctly */}
                                 <div
-                                    className="w-full overflow-hidden rounded-[20px] md:rounded-[24px] transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                                    className="w-full overflow-hidden rounded-[16px] md:rounded-[20px] transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                                     style={{
-                                        height: isTall ? 'clamp(210px, 20vw, 270px)' : 'clamp(175px, 17vw, 230px)',
+                                        height: isTall ? 'clamp(160px, 16vw, 215px)' : 'clamp(135px, 13vw, 175px)',
                                         transform: `rotate(${item.rotation}deg)`,
                                     }}
                                 >
@@ -180,7 +180,7 @@ export default function CategorySection({ categories = [] }) {
 
                                 {/* Label BELOW (cards 1 & 3) */}
                                 {!isTitleTop && (
-                                    <p className="mt-2.5 text-[15px] md:text-[17px] font-semibold text-[#1a1a1a] tracking-tight leading-tight group-hover:text-rose-500 transition-colors truncate">
+                                    <p className="mt-2 text-[13px] md:text-[14px] font-semibold text-[#1a1a1a] tracking-tight leading-tight group-hover:text-rose-500 transition-colors truncate">
                                         {item.name}
                                     </p>
                                 )}
@@ -190,25 +190,25 @@ export default function CategorySection({ categories = [] }) {
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center justify-center gap-4 mt-10 md:mt-12">
+                <div className="flex items-center justify-center gap-3.5 mt-6 md:mt-8">
                     <button
                         onClick={() => scrollByCard('left')}
                         aria-label="Previous"
-                        className="w-9 h-9 flex items-center justify-center rounded-full bg-[#1c1410] text-white hover:bg-black active:scale-90 transition-all shadow-sm cursor-pointer"
+                        className="w-8 h-8 flex items-center justify-center rounded-full bg-[#1c1410] text-white hover:bg-black active:scale-90 transition-all shadow-sm cursor-pointer"
                     >
-                        <ArrowLeft size={15} strokeWidth={2.5} />
+                        <ArrowLeft size={13} strokeWidth={2.5} />
                     </button>
 
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                         {[0, 1, 2].map(i => (
                             <button
                                 key={i}
                                 onClick={() => scrollToPage(i)}
                                 aria-label={`Slide ${i + 1}`}
-                                className={`h-[6px] rounded-full transition-all duration-300 cursor-pointer ${
+                                className={`h-[5px] rounded-full transition-all duration-300 cursor-pointer ${
                                     activeIndex === i
-                                        ? 'w-12 bg-[#1c1410]'
-                                        : 'w-7 bg-[#dcdcdc] hover:bg-[#bbb]'
+                                        ? 'w-9 bg-[#1c1410]'
+                                        : 'w-5 bg-[#dcdcdc] hover:bg-[#bbb]'
                                 }`}
                             />
                         ))}
@@ -217,9 +217,9 @@ export default function CategorySection({ categories = [] }) {
                     <button
                         onClick={() => scrollByCard('right')}
                         aria-label="Next"
-                        className="w-9 h-9 flex items-center justify-center rounded-full border border-[#888] text-[#1c1410] hover:border-black hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
+                        className="w-8 h-8 flex items-center justify-center rounded-full border border-[#888] text-[#1c1410] hover:border-black hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
                     >
-                        <ArrowRight size={15} strokeWidth={2.5} />
+                        <ArrowRight size={13} strokeWidth={2.5} />
                     </button>
                 </div>
 

@@ -41,16 +41,16 @@ export default function Footer({ onCategoryClick, navigate }) {
         : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
 
     return (
-        <footer className="w-full bg-primary text-white py-14 sm:py-16 md:py-20 px-6 md:px-12 lg:px-20 z-20 border-t border-white/5">
-            <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-8 text-left">
+        <footer className="w-full bg-primary text-white py-10 sm:py-12 md:py-14 px-6 md:px-12 lg:px-16 z-20 border-t border-white/5">
+            <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 text-left">
                 {/* Column 1: Brand & Copyright */}
-                <div className="col-span-12 md:col-span-4 flex flex-col justify-between space-y-8">
+                <div className="col-span-12 md:col-span-4 flex flex-col justify-between space-y-6">
                     <div>
                         <div className="cursor-pointer inline-block" onClick={() => navigate ? navigate('/') : (window.location.href = '/')}>
                             <img 
                                 src={brandLogo} 
                                 alt="Sweet Spot" 
-                                className="h-12 sm:h-14 w-auto object-contain block"
+                                className="h-9 sm:h-11 w-auto object-contain block"
                                 onError={(e) => {
                                     e.currentTarget.src = "/images/logo-white-sweetspot.png";
                                 }}

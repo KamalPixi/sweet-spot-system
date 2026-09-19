@@ -43,14 +43,14 @@ export default function Landing() {
     return (
         <div className="min-h-screen flex flex-col bg-white text-neutral-900 font-sans selection:bg-rose-500 selection:text-white">
             {/* Dark Plum Fixed / Absolute Header over Hero */}
-            <header className="w-full absolute top-0 left-0 z-40 py-5 px-6 md:px-12 lg:px-20 flex justify-between items-center bg-transparent">
+            <header className="w-full absolute top-0 left-0 z-40 py-3.5 sm:py-4 px-5 md:px-10 lg:px-16 flex justify-between items-center bg-transparent">
                 {/* Left: Hamburger menu */}
                 <button 
                     onClick={() => setIsMenuOpen(true)} 
                     className="text-white/90 hover:text-white transition-colors p-2 -ml-2 cursor-pointer focus:outline-none"
                     aria-label="Open navigation menu"
                 >
-                    <Menu size={24} strokeWidth={1.75} />
+                    <Menu size={22} strokeWidth={1.75} />
                 </button>
 
                 {/* Center: Brand Logo */}
@@ -61,7 +61,7 @@ export default function Landing() {
                     <img 
                         src="/logo-white-sweetspot.png" 
                         alt="Sweet Spot" 
-                        className="h-10 sm:h-12 w-auto object-contain transition-transform hover:scale-105" 
+                        className="h-8 sm:h-10 w-auto object-contain transition-transform hover:scale-105" 
                     />
                 </div>
 
