@@ -111,7 +111,7 @@ export default function CategorySection({ categories = [] }) {
     };
 
     return (
-        <section className="w-full bg-white py-12 md:py-20 overflow-hidden select-none">
+        <section className="w-full bg-white py-12 md:py-20 select-none">
             <div className="max-w-[1400px] mx-auto px-5 sm:px-8 md:px-12 lg:px-20">
 
                 {/* Header */}
@@ -128,11 +128,7 @@ export default function CategorySection({ categories = [] }) {
                     </button>
                 </div>
 
-                {/*
-                  items-end = all cards align to the BOTTOM.
-                  Shorter card (card 2) has less height → its top edge sits higher → stagger effect.
-                  Zero rotation on all cards — exactly like the reference.
-                */}
+                {/* py-6 gives rotated card corners room; overflow-x-auto handles scrolling */}
                 <div
                     ref={scrollRef}
                     onScroll={onScroll}
@@ -140,7 +136,7 @@ export default function CategorySection({ categories = [] }) {
                     onMouseMove={onMouseMove}
                     onMouseUp={onMouseUp}
                     onMouseLeave={onMouseUp}
-                    className="flex items-end gap-5 md:gap-6 overflow-x-auto pb-2 scrollbar-none cursor-grab active:cursor-grabbing"
+                    className="flex items-end gap-5 md:gap-6 overflow-x-auto py-6 scrollbar-none cursor-grab active:cursor-grabbing"
                     style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                 >
                     {displayList.map((item, idx) => {
