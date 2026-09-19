@@ -111,12 +111,12 @@ export default function CategorySection({ categories = [] }) {
     };
 
     return (
-        <section className="w-full bg-white py-8 md:py-12 select-none">
+        <section className="w-full bg-white pt-6 sm:pt-7 pb-8 md:pb-12 select-none">
             <div className="max-w-[1300px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16">
 
                 {/* Header */}
-                <div className="flex items-center justify-between mb-6 md:mb-8">
-                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#191919] tracking-tight leading-none">
+                <div className="flex items-center justify-between mb-4 md:mb-5">
+                    <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-[#191919] tracking-tight leading-none">
                         Category
                     </h2>
                     <button

@@ -41,16 +41,16 @@ export default function Landing() {
     };
 
     return (
-        <div className="min-h-screen flex flex-col bg-white text-neutral-900 font-sans selection:bg-rose-500 selection:text-white">
+        <div className="min-h-screen flex flex-col bg-[#24161b] text-neutral-900 font-sans selection:bg-rose-500 selection:text-white">
             {/* Dark Plum Fixed / Absolute Header over Hero */}
-            <header className="w-full absolute top-0 left-0 z-40 py-3.5 sm:py-4 px-5 md:px-10 lg:px-16 flex justify-between items-center bg-transparent">
+            <header className="w-full absolute top-0 left-0 z-40 py-2 sm:py-2.5 md:py-3 px-5 md:px-10 lg:px-16 flex justify-between items-center bg-transparent">
                 {/* Left: Hamburger menu */}
                 <button 
                     onClick={() => setIsMenuOpen(true)} 
-                    className="text-white/90 hover:text-white transition-colors p-2 -ml-2 cursor-pointer focus:outline-none"
+                    className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none"
                     aria-label="Open navigation menu"
                 >
-                    <Menu size={22} strokeWidth={1.75} />
+                    <Menu size={20} strokeWidth={1.75} />
                 </button>
 
                 {/* Center: Brand Logo */}
@@ -61,33 +61,33 @@ export default function Landing() {
                     <img 
                         src="/logo-white-sweetspot.png" 
                         alt="Sweet Spot" 
-                        className="h-8 sm:h-10 w-auto object-contain transition-transform hover:scale-105" 
+                        className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
                     />
                 </div>
 
                 {/* Right: Actions (Search, Cart, User) */}
-                <div className="flex items-center space-x-2 md:space-x-4">
+                <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
                     <button 
                         onClick={() => setIsSearchOpen(!isSearchOpen)} 
-                        className="text-white/90 hover:text-white transition-colors p-2 cursor-pointer focus:outline-none"
+                        className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
                         aria-label="Search products"
                     >
-                        <Search size={20} strokeWidth={1.75} />
+                        <Search size={19} strokeWidth={1.75} />
                     </button>
 
                     <button 
                         onClick={() => setIsCartOpen(true)} 
-                        className="text-white/90 hover:text-white transition-colors p-2 cursor-pointer relative focus:outline-none"
+                        className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer relative focus:outline-none"
                         aria-label="Open cart"
                     >
                         <img 
                             src="/images/icons/bag.png" 
                             alt="Cart" 
-                            className="w-[20px] h-[20px] object-contain inline-block" 
+                            className="w-[18px] h-[18px] object-contain inline-block" 
                             style={{ filter: 'brightness(0) invert(1)' }} 
                         />
                         {cartItemCount > 0 && (
-                            <span className="absolute top-1 right-1 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
+                            <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
                                 {cartItemCount}
                             </span>
                         )}
@@ -95,33 +95,36 @@ export default function Landing() {
 
                     <button 
                         onClick={() => navigate(user ? '/account' : '/login')} 
-                        className="text-white/90 hover:text-white transition-colors p-2 cursor-pointer focus:outline-none"
+                        className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
                         aria-label="User account"
                     >
-                        <User size={20} strokeWidth={1.75} />
+                        <User size={19} strokeWidth={1.75} />
                     </button>
                 </div>
             </header>
 
             {/* Main Landing Sections */}
-            <main className="flex-1 w-full">
+            <main className="flex-1 w-full bg-[#24161b]">
                 {/* 1. Hero Section */}
                 <HeroSection onOrderClick={handleOrderNow} />
 
-                {/* 2. Category Carousel Section */}
-                <CategorySection categories={catalog} />
+                {/* 2. Pill-like Curved White Section Container (overlaps Hero above & Footer below, like pudding-london) */}
+                <div className="w-full -mt-6 md:-mt-8 mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 bg-white shadow-2xl overflow-hidden">
+                    {/* Category Carousel Section */}
+                    <CategorySection categories={catalog} />
 
-                {/* 3. Our Fine Home Made Treats Section */}
-                <HomeMadeTreatsSection />
+                    {/* Fine Home Made Treats Section */}
+                    <HomeMadeTreatsSection />
 
-                {/* 4. The Sweet Spot Difference Accordion */}
-                <DifferenceSection />
+                    {/* The Sweet Spot Difference Accordion */}
+                    <DifferenceSection />
 
-                {/* 5. Local Love Testimonials */}
-                <LocalLoveSection />
+                    {/* Local Love Testimonials */}
+                    <LocalLoveSection />
 
-                {/* 6. Where dreams Meet Cream Storefront Location */}
-                <StoreLocationSection configs={configs} />
+                    {/* Where Dreams Meet Cream Storefront Location */}
+                    <StoreLocationSection configs={configs} />
+                </div>
             </main>
 
             {/* Global Footer */}

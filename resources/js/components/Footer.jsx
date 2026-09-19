@@ -41,7 +41,7 @@ export default function Footer({ onCategoryClick, navigate }) {
         : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
 
     return (
-        <footer className="w-full bg-primary text-white py-10 sm:py-12 md:py-14 px-6 md:px-12 lg:px-16 z-20 border-t border-white/5">
+        <footer className="w-full bg-primary text-white pt-16 sm:pt-20 md:pt-24 pb-10 sm:pb-12 md:pb-14 px-6 md:px-12 lg:px-16 relative z-20">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 text-left">
                 {/* Column 1: Brand & Copyright */}
                 <div className="col-span-12 md:col-span-4 flex flex-col justify-between space-y-6">
