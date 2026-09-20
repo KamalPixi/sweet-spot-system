@@ -54,6 +54,7 @@ export default function Auth({ defaultMode = 'login' }) {
     const [showPassword, setShowPassword] = useState(false);
 
     // Feature toggles for Phone vs Email
+    const [loginMethod, setLoginMethod] = useState('phone');       // 'phone' | 'email'
     const [registerMethod, setRegisterMethod] = useState('phone'); // 'phone' | 'email'
     const [forgotMethod, setForgotMethod] = useState('phone');     // 'phone' | 'email'
 
@@ -75,12 +76,13 @@ export default function Auth({ defaultMode = 'login' }) {
 
         if (mode === 'login') {
             url = '/api/customer/login';
+            const inputVal = loginMethod === 'email' ? email : phone;
             payload = {
-                email_or_phone: email || phone,
+                email_or_phone: inputVal,
                 password
             };
-            if (!payload.email_or_phone) {
-                setError('Please enter your email or phone number.');
+            if (!inputVal) {
+                setError(`Please enter your ${loginMethod === 'email' ? 'email address' : 'UK phone number'}.`);
                 setLoading(false);
                 return;
             }
@@ -225,13 +227,8 @@ export default function Auth({ defaultMode = 'login' }) {
 
                         {/* ════════ RIGHT FORM CONTAINER ════════ */}
                         <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto h-full">
-                            {/* Mobile Top Visual Banner */}
-                            <div className="lg:hidden mb-6 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 relative overflow-hidden bg-[#24161b] text-white p-6 sm:p-8 rounded-b-[24px] shadow-sm">
-                                <img 
-                                    src="/images/auth-bakery.jpg" 
-                                    alt="Sweet Spot" 
-                                    className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
-                                />
+                            {/* Mobile Top Header (Clean Brand Bar, Left Image Removed) */}
+                            <div className="lg:hidden mb-6 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 relative bg-[#24161b] text-white p-5 sm:p-6 rounded-b-[24px] shadow-sm">
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="cursor-pointer" onClick={() => navigate('/')}>
                                         <img src="/logo-white-sweetspot.png" alt="Sweet Spot" className="h-7 w-auto object-contain" />
@@ -391,31 +388,79 @@ export default function Auth({ defaultMode = 'login' }) {
                                         </div>
                                     </div>
 
-                                    {/* Login / Admin input */}
-                                    {(mode === 'login' || mode === 'admin') && (
+                                    {/* Login Input (Same sleek Phone vs Email toggle matching Register) */}
+                                    {mode === 'login' && (
+                                        <div className="animate-auth-switch">
+                                            <div className="flex items-center justify-between mb-1.5">
+                                                <label className="text-xs font-medium text-neutral-700">
+                                                    {loginMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
+                                                </label>
+                                                <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setLoginMethod('phone'); setEmail(''); }}
+                                                        className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                            loginMethod === 'phone'
+                                                                ? 'bg-white text-[#24161b] shadow-xs'
+                                                                : 'text-neutral-500 hover:text-neutral-900'
+                                                        }`}
+                                                    >
+                                                        Phone
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => { setLoginMethod('email'); setPhone(''); }}
+                                                        className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                            loginMethod === 'email'
+                                                                ? 'bg-white text-[#24161b] shadow-xs'
+                                                                : 'text-neutral-500 hover:text-neutral-900'
+                                                        }`}
+                                                    >
+                                                        Email
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            {loginMethod === 'phone' ? (
+                                                <div className="relative flex items-center">
+                                                    <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                        <span className="text-sm">🇬🇧</span>
+                                                        <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                    </div>
+                                                    <input 
+                                                        type="tel" 
+                                                        required={mode === 'login'}
+                                                        value={phone}
+                                                        onChange={(e) => setPhone(e.target.value)}
+                                                        placeholder="07123 456789"
+                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                    />
+                                                </div>
+                                            ) : (
+                                                <input 
+                                                    type="email" 
+                                                    required={mode === 'login'}
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                    placeholder="jane.doe@example.com"
+                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                />
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Admin Staff input */}
+                                    {mode === 'admin' && (
                                         <div className="animate-auth-switch">
                                             <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                                                {mode === 'admin' ? 'Staff Email' : 'Email or Mobile'}
+                                                Staff Email
                                             </label>
                                             <input 
-                                                type={mode === 'admin' ? 'email' : 'text'} 
+                                                type="email" 
                                                 required
-                                                value={mode === 'admin' ? email : (email || phone)}
-                                                onChange={(e) => {
-                                                    const val = e.target.value;
-                                                    if (mode === 'admin') {
-                                                        setEmail(val);
-                                                    } else {
-                                                        if (val.includes('@')) {
-                                                            setEmail(val);
-                                                            setPhone('');
-                                                        } else {
-                                                            setPhone(val);
-                                                            setEmail('');
-                                                        }
-                                                    }
-                                                }}
-                                                placeholder={mode === 'admin' ? 'admin@sweetspot.co.uk' : 'Email or mobile number'}
+                                                value={email}
+                                                onChange={(e) => setEmail(e.target.value)}
+                                                placeholder="admin@sweetspot.co.uk"
                                                 className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
                                             />
                                         </div>
