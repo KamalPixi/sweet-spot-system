@@ -9,8 +9,8 @@ import useRealtimeChannel from '../../hooks/useRealtimeChannel';
 import {
     Activity, ArrowRight, Bell, CheckCheck, ChevronRight, Clock,
     Loader2, LogOut, Mail, MapPin, Package, Pencil, Save, ShoppingBag,
-    Trash2, User, X, Phone, CircleCheck, Sparkles, ExternalLink,
-    ShieldCheck, Lock, ChefHat, AlertCircle, ArrowUpRight
+    Trash2, User, X, Phone, CircleCheck, ExternalLink,
+    Lock, ChefHat, AlertCircle, ArrowUpRight, LayoutDashboard
 } from 'lucide-react';
 
 /* ─── Helpers ─────────────────────────────────────────── */
@@ -106,7 +106,7 @@ const OrderStepper = ({ status, type }) => {
 /* ─── Tabs Config ─────────────────────────────────────── */
 
 const TABS = [
-    { id: 'overview',       label: 'Overview',       icon: Sparkles },
+    { id: 'overview',       label: 'Overview',       icon: LayoutDashboard },
     { id: 'orders',         label: 'My Orders',       icon: ShoppingBag },
     { id: 'notifications',  label: 'Notifications',   icon: Bell },
     { id: 'profile',        label: 'Profile & Details', icon: User },
@@ -407,13 +407,8 @@ export default function CustomerPortal() {
                         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                             {/* Left: Avatar + Details */}
                             <div className="flex items-center gap-4 sm:gap-5">
-                                <div className="relative">
-                                    <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-[#1c1115] to-[#3a222c] border-2 border-[#e5b582] text-[#e5b582] flex items-center justify-center text-xl sm:text-2xl font-serif font-black shadow-lg shadow-black/30">
-                                        {initials}
-                                    </div>
-                                    <div className="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full bg-[#e5b582] text-[#24161b] flex items-center justify-center shadow-md">
-                                        <Sparkles size={13} className="fill-[#24161b]" />
-                                    </div>
+                                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-[#1c1115] to-[#3a222c] border-2 border-[#e5b582] text-[#e5b582] flex items-center justify-center text-xl sm:text-2xl font-serif font-black shadow-lg shadow-black/30 shrink-0">
+                                    {initials}
                                 </div>
 
                                 <div>
