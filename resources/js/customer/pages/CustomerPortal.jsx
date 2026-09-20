@@ -395,11 +395,11 @@ export default function CustomerPortal() {
             />
 
             {/* Main Floating Artisanal Container */}
-            <main className="w-full flex-grow mb-[-32px] md:mb-[-48px] rounded-b-[28px] md:rounded-b-[40px] rounded-t-none relative z-30 px-4 pt-4 pb-12 sm:px-8 md:px-12 md:pt-8 md:pb-16 bg-[#faf7f2] shadow-2xl border-b border-black/[0.04]">
+            <main className="w-full flex-grow mb-[-32px] md:mb-[-48px] rounded-b-2xl md:rounded-b-3xl rounded-t-none relative z-30 px-4 pt-4 pb-12 sm:px-8 md:px-12 md:pt-8 md:pb-16 bg-[#faf7f2] shadow-2xl border-b border-black/[0.04]">
                 <div className="max-w-5xl mx-auto w-full">
 
                     {/* ════════ HERO CUSTOMER IDENTITY BANNER ════════ */}
-                    <div className="relative overflow-hidden rounded-[26px] bg-gradient-to-br from-[#24161b] via-[#2d1b22] to-[#1c1115] text-white p-6 sm:p-8 shadow-xl shadow-[#24161b]/20 border border-white/10 mb-7">
+                    <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#24161b] via-[#2d1b22] to-[#1c1115] text-white p-6 sm:p-8 shadow-xl shadow-[#24161b]/20 border border-white/10 mb-7">
                         {/* Ambient Gold Glow Corner */}
                         <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-[#e5b582]/15 blur-3xl pointer-events-none" />
                         <div className="absolute -left-16 -bottom-16 w-48 h-48 rounded-full bg-rose-500/10 blur-3xl pointer-events-none" />
@@ -407,7 +407,7 @@ export default function CustomerPortal() {
                         <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
                             {/* Left: Avatar + Details */}
                             <div className="flex items-center gap-4 sm:gap-5">
-                                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-2xl bg-gradient-to-tr from-[#1c1115] to-[#3a222c] border-2 border-[#e5b582] text-[#e5b582] flex items-center justify-center text-xl sm:text-2xl font-serif font-black shadow-lg shadow-black/30 shrink-0">
+                                <div className="w-16 h-16 sm:w-18 sm:h-18 rounded-xl bg-gradient-to-tr from-[#1c1115] to-[#3a222c] border-2 border-[#e5b582] text-[#e5b582] flex items-center justify-center text-xl sm:text-2xl font-serif font-black shadow-lg shadow-black/30 shrink-0">
                                     {initials}
                                 </div>
 
@@ -467,7 +467,7 @@ export default function CustomerPortal() {
 
                     {/* ════════ SEGMENTED NAVIGATION TAB BAR ════════ */}
                     <div className="flex items-center justify-start sm:justify-center mb-8 overflow-x-auto scrollbar-none py-1">
-                        <div className="inline-flex items-center gap-1.5 bg-white/90 p-1.5 rounded-2xl border border-neutral-200/90 shadow-sm w-full sm:w-auto">
+                        <div className="inline-flex items-center gap-1.5 bg-white/90 p-1.5 rounded-xl border border-neutral-200/90 shadow-sm w-full sm:w-auto">
                             {TABS.map(({ id, label, icon: Icon }) => {
                                 const isActive = activeTab === id;
                                 return (
@@ -475,7 +475,7 @@ export default function CustomerPortal() {
                                         key={id}
                                         type="button"
                                         onClick={() => setActiveTab(id)}
-                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer select-none flex-1 sm:flex-initial justify-center ${
+                                        className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all whitespace-nowrap cursor-pointer select-none flex-1 sm:flex-initial justify-center ${
                                             isActive
                                                 ? 'bg-[#24161b] text-[#e5b582] shadow-md shadow-[#24161b]/20 font-black'
                                                 : 'text-neutral-600 hover:text-[#24161b] hover:bg-neutral-100/70 font-semibold'
@@ -506,7 +506,7 @@ export default function CustomerPortal() {
                             <p className="text-xs font-semibold text-neutral-500">Preparing your Sweet Spot account...</p>
                         </div>
                     ) : error ? (
-                        <div className="bg-white border border-red-200 rounded-[24px] p-8 shadow-sm text-center max-w-md mx-auto">
+                        <div className="bg-white border border-red-200 rounded-2xl p-8 shadow-sm text-center max-w-md mx-auto">
                             <AlertCircle size={36} className="text-red-500 mx-auto mb-3" />
                             <h3 className="text-base font-bold text-neutral-900 mb-1">Couldn't Load Account</h3>
                             <p className="text-xs text-neutral-600 mb-4">{error}</p>
@@ -526,7 +526,7 @@ export default function CustomerPortal() {
                                     {/* 1. Stat Metric Cards */}
                                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                                         {/* Card 1: Total Orders */}
-                                        <div className="bg-white border border-neutral-200/80 rounded-[22px] p-5 shadow-sm hover:shadow-md hover:border-[#e5b582]/60 transition-all flex flex-col justify-between">
+                                        <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#e5b582]/60 transition-all flex flex-col justify-between">
                                             <div className="flex items-center justify-between gap-3 mb-3">
                                                 <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Total Orders</span>
                                                 <div className="w-9 h-9 rounded-xl bg-[#24161b]/8 text-[#24161b] flex items-center justify-center">
@@ -540,7 +540,7 @@ export default function CustomerPortal() {
                                         </div>
 
                                         {/* Card 2: Active Orders */}
-                                        <div className="bg-white border border-neutral-200/80 rounded-[22px] p-5 shadow-sm hover:shadow-md hover:border-[#e5b582]/60 transition-all flex flex-col justify-between">
+                                        <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#e5b582]/60 transition-all flex flex-col justify-between">
                                             <div className="flex items-center justify-between gap-3 mb-3">
                                                 <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Active In-Flight</span>
                                                 <div className="w-9 h-9 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center relative">
@@ -559,7 +559,7 @@ export default function CustomerPortal() {
                                         </div>
 
                                         {/* Card 3: Notifications */}
-                                        <div className="bg-white border border-neutral-200/80 rounded-[22px] p-5 shadow-sm hover:shadow-md hover:border-[#e5b582]/60 transition-all flex flex-col justify-between">
+                                        <div className="bg-white border border-neutral-200/80 rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#e5b582]/60 transition-all flex flex-col justify-between">
                                             <div className="flex items-center justify-between gap-3 mb-3">
                                                 <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Notifications</span>
                                                 <div className="w-9 h-9 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
@@ -577,12 +577,12 @@ export default function CustomerPortal() {
 
                                     {/* 2. Active Order Tracker OR Bakery Invitation Banner */}
                                     {latestActiveOrder && !['completed', 'cancelled'].includes(latestActiveOrder.status) ? (
-                                        <div className="bg-white border-2 border-[#e5b582]/50 rounded-[24px] p-6 sm:p-7 shadow-lg shadow-[#24161b]/5 relative overflow-hidden">
+                                        <div className="bg-white border-2 border-[#e5b582]/50 rounded-2xl p-6 sm:p-7 shadow-lg shadow-[#24161b]/5 relative overflow-hidden">
                                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
                                                 <div>
                                                     <div className="flex items-center gap-2 mb-1">
                                                         <span className="text-[10px] font-black uppercase tracking-widest text-[#8e5233]">
-                                                            Live Order Progress
+                                                             Live Order Progress
                                                         </span>
                                                         <StatusBadge status={latestActiveOrder.status} />
                                                     </div>
@@ -610,9 +610,9 @@ export default function CustomerPortal() {
                                             </div>
                                         </div>
                                     ) : (
-                                        <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-r from-amber-50/70 via-[#fefbf6] to-white border border-[#e5b582]/40 p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
+                                        <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-50/70 via-[#fefbf6] to-white border border-[#e5b582]/40 p-6 sm:p-7 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xs">
                                             <div className="flex items-center gap-4">
-                                                <div className="w-13 h-13 rounded-2xl bg-[#24161b] text-[#e5b582] flex items-center justify-center shrink-0 shadow-md">
+                                                <div className="w-13 h-13 rounded-xl bg-[#24161b] text-[#e5b582] flex items-center justify-center shrink-0 shadow-md">
                                                     <ChefHat size={26} />
                                                 </div>
                                                 <div>
@@ -654,7 +654,7 @@ export default function CustomerPortal() {
                                             </div>
 
                                             {orders.length === 0 && completedOrders.length === 0 ? (
-                                                <div className="bg-white border border-dashed border-neutral-200/90 rounded-[22px] p-6 sm:p-8 text-center flex-1 flex flex-col items-center justify-center min-h-[190px] shadow-xs">
+                                                <div className="bg-white border border-dashed border-neutral-200/90 rounded-2xl p-6 sm:p-8 text-center flex-1 flex flex-col items-center justify-center min-h-[190px] shadow-xs">
                                                     <ShoppingBag size={28} className="mx-auto text-neutral-300 mb-2" />
                                                     <p className="text-xs font-bold text-neutral-700">No orders placed yet</p>
                                                     <p className="text-[11px] text-neutral-400 mt-0.5 mb-3">Your previous treat orders will appear here.</p>
@@ -672,7 +672,7 @@ export default function CustomerPortal() {
                                                         <div
                                                             key={order.id}
                                                             onClick={() => navigate(`/track/${order.order_number}`)}
-                                                            className="bg-white border border-neutral-200/70 hover:border-[#e5b582] rounded-[18px] p-4.5 transition-all shadow-xs hover:shadow-sm cursor-pointer group flex items-center justify-between gap-4"
+                                                            className="bg-white border border-neutral-200/70 hover:border-[#e5b582] rounded-xl p-4.5 transition-all shadow-xs hover:shadow-sm cursor-pointer group flex items-center justify-between gap-4"
                                                         >
                                                             <div className="min-w-0 flex-1">
                                                                 <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -726,7 +726,7 @@ export default function CustomerPortal() {
                                             </div>
 
                                             {notifications.length === 0 ? (
-                                                <div className="bg-white border border-dashed border-neutral-200/90 rounded-[22px] p-6 sm:p-8 text-center flex-1 flex flex-col items-center justify-center min-h-[190px] shadow-xs">
+                                                <div className="bg-white border border-dashed border-neutral-200/90 rounded-2xl p-6 sm:p-8 text-center flex-1 flex flex-col items-center justify-center min-h-[190px] shadow-xs">
                                                     <Bell size={28} className="mx-auto text-neutral-300 mb-2" />
                                                     <p className="text-xs font-bold text-neutral-700">All caught up!</p>
                                                     <p className="text-[11px] text-neutral-400 mt-0.5">No recent alerts or order updates.</p>
@@ -742,7 +742,7 @@ export default function CustomerPortal() {
                                                                     if (isUnread) handleMarkAsRead(notif.id);
                                                                     if (notif.data?.action_url) navigate(notif.data.action_url);
                                                                 }}
-                                                                className={`p-3.5 rounded-[16px] border transition-all cursor-pointer flex items-start gap-3 ${
+                                                                className={`p-3.5 rounded-xl border transition-all cursor-pointer flex items-start gap-3 ${
                                                                     isUnread
                                                                         ? 'bg-amber-50/50 border-amber-200/80 hover:bg-amber-50'
                                                                         : 'bg-white border-neutral-200/70 hover:bg-neutral-50/60'
@@ -824,8 +824,8 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {orders.length === 0 && completedOrders.length === 0 ? (
-                                        <div className="py-20 sm:py-24 text-center bg-white border border-dashed border-neutral-200/90 rounded-[24px] w-full p-8 shadow-xs">
-                                            <div className="w-14 h-14 rounded-2xl bg-[#24161b]/5 text-[#24161b] flex items-center justify-center mx-auto mb-4">
+                                        <div className="py-20 sm:py-24 text-center bg-white border border-dashed border-neutral-200/90 rounded-2xl w-full p-8 shadow-xs">
+                                            <div className="w-14 h-14 rounded-xl bg-[#24161b]/5 text-[#24161b] flex items-center justify-center mx-auto mb-4">
                                                 <ShoppingBag size={28} />
                                             </div>
                                             <h3 className="text-base font-serif font-black text-[#24161b]">No orders yet</h3>
@@ -856,12 +856,12 @@ export default function CustomerPortal() {
                                                         <div
                                                             key={order.id}
                                                             onClick={() => navigate(`/track/${order.order_number}`)}
-                                                            className="bg-white border-2 border-[#e5b582]/40 rounded-[22px] p-5 sm:p-6 hover:border-[#e5b582] hover:shadow-md transition-all cursor-pointer group"
+                                                            className="bg-white border-2 border-[#e5b582]/40 rounded-2xl p-5 sm:p-6 hover:border-[#e5b582] hover:shadow-md transition-all cursor-pointer group"
                                                         >
                                                             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                                                                        <span className="font-serif font-black text-base text-[#24161b]">
+                                                                        <span className="font-serif font-black text-sm text-[#24161b]">
                                                                             #{order.order_number}
                                                                         </span>
                                                                         <span className="px-2.5 py-0.5 bg-neutral-100 text-neutral-700 text-[10px] font-bold uppercase tracking-wider rounded-full">
@@ -927,7 +927,7 @@ export default function CustomerPortal() {
 
                                             {/* 2. Fulfilled Orders Section */}
                                             {(orderFilter === 'all' || orderFilter === 'completed') && completedOrders.length > 0 && (
-                                                <div className="bg-white border border-neutral-200/80 rounded-[24px] overflow-hidden shadow-xs">
+                                                <div className="bg-white border border-neutral-200/80 rounded-2xl overflow-hidden shadow-xs">
                                                     <div className="px-6 py-4.5 border-b border-neutral-100 flex items-center justify-between gap-3 bg-neutral-50/50">
                                                         <div>
                                                             <h3 className="text-xs font-black uppercase tracking-wider text-neutral-700">
@@ -1057,8 +1057,8 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {notifications.length === 0 ? (
-                                        <div className="py-20 sm:py-24 text-center bg-white border border-dashed border-neutral-200/90 rounded-[24px] w-full p-8 shadow-xs">
-                                            <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4">
+                                        <div className="py-20 sm:py-24 text-center bg-white border border-dashed border-neutral-200/90 rounded-2xl w-full p-8 shadow-xs">
+                                            <div className="w-14 h-14 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4">
                                                 <Bell size={28} />
                                             </div>
                                             <h3 className="text-base font-serif font-black text-[#24161b]">Your inbox is clear</h3>
@@ -1073,7 +1073,7 @@ export default function CustomerPortal() {
                                                 return (
                                                     <div
                                                         key={notif.id}
-                                                        className={`p-4 sm:p-5 rounded-[20px] border transition-all flex items-start gap-4 ${
+                                                        className={`p-4 sm:p-5 rounded-xl border transition-all flex items-start gap-4 ${
                                                             isUnread
                                                                 ? 'bg-gradient-to-r from-amber-50/70 via-white to-white border-l-4 border-l-[#e5b582] border-y border-r border-amber-200/80 shadow-xs'
                                                                 : 'bg-white border-neutral-200/70 hover:bg-neutral-50/50'
@@ -1140,7 +1140,7 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {/* 1. Personal Details Card */}
-                                    <div className="bg-white border border-neutral-200/80 rounded-[24px] p-6 sm:p-7 shadow-xs">
+                                    <div className="bg-white border border-neutral-200/80 rounded-2xl p-6 sm:p-7 shadow-xs">
                                         <div className="flex items-center justify-between mb-6 pb-4 border-b border-neutral-100">
                                             <div className="flex items-center gap-3">
                                                 <div className="w-10 h-10 rounded-xl bg-[#24161b]/8 text-[#24161b] flex items-center justify-center">
@@ -1252,7 +1252,7 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {/* 2. Security & Password Card */}
-                                    <div className="bg-white border border-neutral-200/80 rounded-[24px] p-6 sm:p-7 shadow-xs">
+                                    <div className="bg-white border border-neutral-200/80 rounded-2xl p-6 sm:p-7 shadow-xs">
                                         <div className="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-100">
                                             <div className="w-10 h-10 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center">
                                                 <Lock size={18} />
@@ -1315,7 +1315,7 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {/* 3. Account Actions Card */}
-                                    <div className="bg-white border border-neutral-200/80 rounded-[24px] p-6 sm:p-7 shadow-xs">
+                                    <div className="bg-white border border-neutral-200/80 rounded-2xl p-6 sm:p-7 shadow-xs">
                                         <h3 className="text-base font-serif font-black text-[#24161b] mb-4">Account Shortcuts</h3>
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                             <button
