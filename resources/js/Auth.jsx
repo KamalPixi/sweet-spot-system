@@ -190,10 +190,10 @@ export default function Auth({ defaultMode = 'login' }) {
             {/* Main Overlapping Storefront Container */}
             <div className="w-full mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-3 sm:px-6 pt-4 sm:pt-6 pb-10 md:px-10 md:pt-8 md:pb-16 flex-grow flex flex-col items-center bg-[#fdfaf5] shadow-lg shadow-[#24161b]/5">
                 <div className="w-full max-w-6xl mx-auto">
-                    {/* Integrated Editorial Split Card */}
-                    <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-2xl shadow-[#24161b]/10 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
+                    {/* Integrated Editorial Split Card with strictly locked dimensions on desktop */}
+                    <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-2xl shadow-[#24161b]/10 overflow-hidden grid grid-cols-1 lg:grid-cols-12 lg:h-[640px] min-h-[600px]">
                         {/* ════════ LEFT SHOWCASE (Pure Image with Overlay Back Button) ════════ */}
-                        <aside className="lg:col-span-5 relative hidden lg:block overflow-hidden bg-[#24161b]">
+                        <aside className="lg:col-span-5 relative hidden lg:block overflow-hidden bg-[#24161b] h-full w-full">
                             <img 
                                 src="/images/auth-bakery.jpg" 
                                 alt="Sweet Spot Artisanal Treats" 
@@ -224,7 +224,7 @@ export default function Auth({ defaultMode = 'login' }) {
                         </aside>
 
                         {/* ════════ RIGHT FORM CONTAINER ════════ */}
-                        <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto min-h-[580px] transition-[min-height] duration-300">
+                        <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto h-full">
                             {/* Mobile Top Visual Banner */}
                             <div className="lg:hidden mb-6 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 relative overflow-hidden bg-[#24161b] text-white p-6 sm:p-8 rounded-b-[24px] shadow-sm">
                                 <img 
