@@ -224,7 +224,7 @@ export default function Auth({ defaultMode = 'login' }) {
                         </aside>
 
                         {/* ════════ RIGHT FORM CONTAINER ════════ */}
-                        <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto">
+                        <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto min-h-[580px] transition-[min-height] duration-300">
                             {/* Mobile Top Visual Banner */}
                             <div className="lg:hidden mb-6 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 relative overflow-hidden bg-[#24161b] text-white p-6 sm:p-8 rounded-b-[24px] shadow-sm">
                                 <img 
@@ -301,16 +301,16 @@ export default function Auth({ defaultMode = 'login' }) {
                                     </div>
                                 )}
 
-                                <form key={mode} onSubmit={handleSubmit} className="space-y-4 animate-auth-switch">
-                                    {/* Registration fields */}
-                                    {mode === 'register' && (
-                                        <>
+                                <form onSubmit={handleSubmit} className="space-y-4">
+                                    {/* Collapsible Registration Fields (First Name, Last Name, Register Contact Toggle) */}
+                                    <div className={`auth-expand-grid ${mode === 'register' ? 'expanded' : ''}`}>
+                                        <div className="auth-expand-inner space-y-4 pb-1">
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <label className="block text-xs font-medium text-neutral-700 mb-1.5">First Name</label>
                                                     <input 
                                                         type="text" 
-                                                        required
+                                                        required={mode === 'register'}
                                                         value={firstName}
                                                         onChange={(e) => setFirstName(e.target.value)}
                                                         placeholder="Jane"
@@ -321,7 +321,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     <label className="block text-xs font-medium text-neutral-700 mb-1.5">Last Name</label>
                                                     <input 
                                                         type="text" 
-                                                        required
+                                                        required={mode === 'register'}
                                                         value={lastName}
                                                         onChange={(e) => setLastName(e.target.value)}
                                                         placeholder="Doe"
@@ -370,7 +370,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                         </div>
                                                         <input 
                                                             type="tel" 
-                                                            required
+                                                            required={mode === 'register'}
                                                             value={phone}
                                                             onChange={(e) => setPhone(e.target.value)}
                                                             placeholder="07123 456789"
@@ -380,7 +380,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                 ) : (
                                                     <input 
                                                         type="email" 
-                                                        required
+                                                        required={mode === 'register'}
                                                         value={email}
                                                         onChange={(e) => setEmail(e.target.value)}
                                                         placeholder="jane.doe@example.com"
@@ -388,12 +388,12 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     />
                                                 )}
                                             </div>
-                                        </>
-                                    )}
+                                        </div>
+                                    </div>
 
                                     {/* Login / Admin input */}
                                     {(mode === 'login' || mode === 'admin') && (
-                                        <div>
+                                        <div className="animate-auth-switch">
                                             <label className="block text-xs font-medium text-neutral-700 mb-1.5">
                                                 {mode === 'admin' ? 'Staff Email' : 'Email or Mobile'}
                                             </label>
