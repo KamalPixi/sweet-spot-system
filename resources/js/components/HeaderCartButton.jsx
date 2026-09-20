@@ -1,5 +1,6 @@
 import React from 'react';
 import { useApp } from '../AppContext';
+import { CartBagIcon } from './HeaderIcons';
 
 export default function HeaderCartButton({ className = "" }) {
     const { cartItemCount, isCartLoading, openCart } = useApp();
@@ -20,19 +21,12 @@ export default function HeaderCartButton({ className = "" }) {
                 </>
             )}
 
-            {/* Bag Icon */}
-            <img 
-                src="/images/icons/bag.png" 
-                alt="Cart" 
-                className={`w-[19px] h-[19px] object-contain transition-all duration-200 ${
-                    isCartLoading ? 'scale-90' : 'group-hover:scale-105'
-                }`}
-                style={{ 
-                    filter: isCartLoading 
-                        ? 'brightness(0) saturate(100%) invert(80%) sepia(26%) saturate(693%) hue-rotate(345deg) brightness(96%) contrast(89%)' 
-                        : 'brightness(0) invert(1)' 
-                }} 
-            />
+            {/* Boutique SVG Tote Bag Icon */}
+            <span className={`transition-all duration-200 ${
+                isCartLoading ? 'scale-90 text-[#e5b582]' : 'group-hover:scale-105 text-white'
+            }`}>
+                <CartBagIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
+            </span>
 
             {/* Brand Cart Count Badge */}
             {cartItemCount > 0 && (

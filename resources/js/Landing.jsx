@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from './AppContext';
-import { Menu, Search, User } from 'lucide-react';
+import { MenuIcon, SearchIcon, UserIcon } from './components/HeaderIcons';
 
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
@@ -51,7 +51,7 @@ export default function Landing() {
                     className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none"
                     aria-label="Open navigation menu"
                 >
-                    <Menu size={20} strokeWidth={1.75} />
+                    <MenuIcon className="w-5 h-5" strokeWidth={2} />
                 </button>
 
                 {/* Center: Brand Logo */}
@@ -73,7 +73,7 @@ export default function Landing() {
                         className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
                         aria-label="Search products"
                     >
-                        <Search size={19} strokeWidth={1.75} />
+                        <SearchIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
                     </button>
 
                     <HeaderCartButton />
@@ -83,7 +83,7 @@ export default function Landing() {
                         className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
                         aria-label="User account"
                     >
-                        <User size={19} strokeWidth={1.75} />
+                        <UserIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
                     </button>
                 </div>
             </header>

@@ -5,7 +5,8 @@ import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import ProductCard from './components/ProductCard';
 import HeaderCartButton from './components/HeaderCartButton';
-import { Menu, Search, User, ArrowLeft } from 'lucide-react';
+import { MenuIcon, SearchIcon, UserIcon } from './components/HeaderIcons';
+import { ArrowLeft } from 'lucide-react';
 
 const CATALOG_CACHE_KEY = 'cached_menu_catalog_v2';
 
@@ -127,7 +128,7 @@ export default function Categories() {
                         className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none"
                         aria-label="Open navigation menu"
                     >
-                        <Menu size={22} strokeWidth={1.75} />
+                        <MenuIcon className="w-5 h-5" strokeWidth={2} />
                     </button>
 
                     {/* Center: Brand Logo */}
@@ -149,7 +150,7 @@ export default function Categories() {
                             className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
                             aria-label="Search products"
                         >
-                            <Search size={19} strokeWidth={1.75} />
+                            <SearchIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
                         </button>
 
                         <HeaderCartButton />
@@ -159,7 +160,7 @@ export default function Categories() {
                             className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
                             aria-label="User account"
                         >
-                            <User size={19} strokeWidth={1.75} />
+                            <UserIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
                         </button>
                     </div>
                 </header>

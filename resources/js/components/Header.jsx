@@ -1,9 +1,7 @@
 import React from 'react';
-import { Menu, Search, User } from 'lucide-react';
-
+import { MenuIcon, SearchIcon, UserIcon } from './HeaderIcons';
 import { useApp } from '../AppContext';
 import { useLocation } from 'react-router-dom';
-
 import HeaderCartButton from './HeaderCartButton';
 
 const Logo = () => (
@@ -26,7 +24,7 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                         className="text-white hover:text-white/80 transition-colors p-1.5 pl-0 cursor-pointer focus:outline-none flex items-center justify-center"
                         aria-label="Open menu"
                     >
-                        <Menu size={24} strokeWidth={1.5} />
+                        <MenuIcon className="w-6 h-6" strokeWidth={2} />
                     </button>
 
                     <div 
@@ -46,7 +44,7 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                             className="text-white hover:text-white/80 transition-colors px-1 py-1.5 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
                             aria-label="Search"
                         >
-                            <Search size={22} strokeWidth={1.5} />
+                            <SearchIcon className="w-[21px] h-[21px]" strokeWidth={1.75} />
                         </button>
                         {!isCartRoute && (
                             <HeaderCartButton />
@@ -56,7 +54,7 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                             className="text-white hover:text-white/80 transition-colors pl-1 pr-0 py-1.5 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
                             aria-label="User"
                         >
-                            <User size={22} strokeWidth={1.5} />
+                            <UserIcon className="w-[21px] h-[21px]" strokeWidth={1.75} />
                         </button>
                     </div>
                 </header>
