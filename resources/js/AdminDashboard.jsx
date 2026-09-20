@@ -1635,7 +1635,6 @@ export default function AdminDashboard() {
             label: 'Customers',
             items: [
                 { id: 'customers', label: 'Customers', icon: <UserCheck size={16} />, badge: customers.length || reports?.total_customers || null },
-                { id: 'newsletter', label: 'Newsletter', icon: <Send size={16} />, badge: newsletter.length || null },
             ],
         },
         {

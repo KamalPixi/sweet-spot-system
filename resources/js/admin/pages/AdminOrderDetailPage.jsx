@@ -411,7 +411,6 @@ export default function AdminOrderDetailPage() {
             label: 'Customers',
             items: [
                 { id: 'customers', label: 'Customers', icon: <UserCheck size={16} /> },
-                { id: 'newsletter', label: 'Newsletter', icon: <Send size={16} /> },
             ],
         },
         {
