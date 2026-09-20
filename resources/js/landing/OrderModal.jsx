@@ -21,7 +21,7 @@ export default function OrderModal({ isOpen, onClose }) {
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-fadeIn">
-            <div className="relative w-full max-w-md bg-white rounded-[32px] p-6 sm:p-8 shadow-2xl border border-neutral-100 text-neutral-900">
+            <div className="relative w-full max-w-md bg-white rounded-2xl p-6 sm:p-8 shadow-2xl border border-neutral-100 text-neutral-900">
                 {/* Close Button */}
                 <button
                     onClick={onClose}
@@ -46,7 +46,7 @@ export default function OrderModal({ isOpen, onClose }) {
                     {/* Home Delivery Option */}
                     <button
                         onClick={() => handleSelectType('delivery')}
-                        className="w-full bg-[#FCF3F5] hover:bg-[#fae7eb] border border-rose-200/70 hover:border-rose-300 rounded-[22px] p-4 flex items-center justify-between text-left transition-all duration-200 cursor-pointer group"
+                        className="w-full bg-[#FCF3F5] hover:bg-[#fae7eb] border border-rose-200/70 hover:border-rose-300 rounded-xl p-4 flex items-center justify-between text-left transition-all duration-200 cursor-pointer group"
                     >
                         <div className="flex items-center gap-3.5">
                             <div className="w-11 h-11 rounded-full bg-rose-500 text-white flex items-center justify-center shrink-0 shadow-sm">
@@ -67,7 +67,7 @@ export default function OrderModal({ isOpen, onClose }) {
                     {/* Self Collection Option */}
                     <button
                         onClick={() => handleSelectType('collection')}
-                        className="w-full bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 rounded-[22px] p-4 flex items-center justify-between text-left transition-all duration-200 cursor-pointer group"
+                        className="w-full bg-white hover:bg-neutral-50 border border-neutral-200 hover:border-neutral-300 rounded-xl p-4 flex items-center justify-between text-left transition-all duration-200 cursor-pointer group"
                     >
                         <div className="flex items-center gap-3.5">
                             <div className="w-11 h-11 rounded-full bg-neutral-900 text-white flex items-center justify-center shrink-0 shadow-sm">

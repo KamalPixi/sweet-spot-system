@@ -52,7 +52,7 @@ export default function LocalLoveSection() {
                     {REVIEWS.map((review) => (
                         <div
                             key={review.id}
-                            className="bg-[#FCF3F5] rounded-[18px] p-4 sm:p-5 flex flex-col justify-between text-left border border-rose-100/80 shadow-xs hover:shadow-sm transition-all duration-300"
+                            className="bg-[#FCF3F5] rounded-xl p-4 sm:p-5 flex flex-col justify-between text-left border border-rose-100/80 shadow-xs hover:shadow-sm transition-all duration-300"
                         >
                             <div>
                                 {/* Quote Icon */}

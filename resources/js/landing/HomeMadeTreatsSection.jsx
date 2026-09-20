@@ -60,10 +60,10 @@ export default function HomeMadeTreatsSection() {
                         <div
                             key={card.id}
                             onClick={() => navigate('/categories')}
-                            className={`w-full max-w-[175px] bg-white rounded-[18px] p-2.5 pb-3.5 shadow-md shadow-rose-950/5 border border-rose-100/60 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:rotate-0 cursor-pointer ${card.tilt}`}
+                            className={`w-full max-w-[175px] bg-white rounded-xl p-2.5 pb-3.5 shadow-md shadow-rose-950/5 border border-rose-100/60 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:rotate-0 cursor-pointer ${card.tilt}`}
                         >
                             {/* Inner image container */}
-                            <div className="aspect-[4/5] w-full rounded-[14px] overflow-hidden bg-neutral-100 mb-2.5">
+                            <div className="aspect-[4/5] w-full rounded-lg overflow-hidden bg-neutral-100 mb-2.5">
                                 <img
                                     src={card.image}
                                     alt={card.title}

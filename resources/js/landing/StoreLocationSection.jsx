@@ -17,7 +17,7 @@ export default function StoreLocationSection({ configs = {} }) {
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-center">
                 {/* Left: Storefront Photo with rounded corners */}
                 <div className="lg:col-span-4 w-full flex justify-center">
-                    <div className="w-full max-w-[260px] aspect-square rounded-[20px] overflow-hidden border border-neutral-200/80 shadow-md">
+                    <div className="w-full max-w-[260px] aspect-square rounded-2xl overflow-hidden border border-neutral-200/80 shadow-md">
                         <img
                             src="/images/landing-storefront.jpg"
                             alt="Sweet Spot Storefront in Barking"
@@ -51,7 +51,7 @@ export default function StoreLocationSection({ configs = {} }) {
                     {/* 2 Info Cards: Location & Opening Hours */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                         {/* Location Card */}
-                        <div className="bg-white rounded-[18px] p-4 sm:p-5 border border-neutral-200/80 flex items-start justify-between shadow-xs">
+                        <div className="bg-white rounded-xl p-4 sm:p-5 border border-neutral-200/80 flex items-start justify-between shadow-xs">
                             <div className="space-y-0.5">
                                 <h4 className="text-xs sm:text-sm font-bold text-neutral-900">
                                     Location
@@ -66,7 +66,7 @@ export default function StoreLocationSection({ configs = {} }) {
                         </div>
 
                         {/* Opening Hours Card */}
-                        <div className="bg-white rounded-[18px] p-4 sm:p-5 border border-neutral-200/80 flex items-start justify-between shadow-xs">
+                        <div className="bg-white rounded-xl p-4 sm:p-5 border border-neutral-200/80 flex items-start justify-between shadow-xs">
                             <div className="space-y-0.5">
                                 <h4 className="text-xs sm:text-sm font-bold text-neutral-900">
                                     Opening Hours

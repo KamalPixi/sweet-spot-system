@@ -93,8 +93,8 @@ export default function Landing() {
                 {/* 1. Hero Section */}
                 <HeroSection onOrderClick={handleOrderNow} />
 
-                {/* 2. Pill-like Curved White Section Container (overlaps Hero above & Footer below, like pudding-london) */}
-                <div className="w-full -mt-6 md:-mt-8 mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 bg-white shadow-2xl overflow-hidden">
+                {/* 2. Floating White Section Container (overlaps Hero above & Footer below) */}
+                <div className="w-full -mt-6 md:-mt-8 mb-[-32px] md:mb-[-48px] rounded-2xl md:rounded-3xl relative z-30 bg-white shadow-2xl overflow-hidden">
                     {/* Category Carousel Section */}
                     <CategorySection categories={catalog} />
 

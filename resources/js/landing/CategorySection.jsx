@@ -163,7 +163,7 @@ export default function CategorySection({ categories = [] }) {
 
                                 {/* Rotation on the container — overflow-hidden clips the rounded corners correctly */}
                                 <div
-                                    className="w-full overflow-hidden rounded-[16px] md:rounded-[20px] transition-transform duration-300 ease-out group-hover:scale-[1.03]"
+                                    className="w-full overflow-hidden rounded-xl md:rounded-2xl transition-transform duration-300 ease-out group-hover:scale-[1.03]"
                                     style={{
                                         height: isTall ? 'clamp(160px, 16vw, 215px)' : 'clamp(135px, 13vw, 175px)',
                                         transform: `rotate(${item.rotation}deg)`,

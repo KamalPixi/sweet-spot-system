@@ -49,7 +49,7 @@ export default function DifferenceSection() {
                         return (
                             <div
                                 key={idx}
-                                className={`w-full rounded-[18px] transition-all duration-300 border ${
+                                className={`w-full rounded-xl transition-all duration-300 border ${
                                     isOpen 
                                         ? 'border-neutral-300 bg-white shadow-xs p-4 sm:p-5' 
                                         : 'border-neutral-200 bg-white hover:border-neutral-300 p-3 sm:p-4'
