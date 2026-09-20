@@ -225,14 +225,11 @@ export default function ProductDetailModal({ isOpen, onClose, product }) {
                 {/* Right: Product Details & Actions */}
                 <div className="p-6 sm:p-7 md:p-8 flex-1 flex flex-col justify-between overflow-y-auto">
                     <div>
-                        {/* Category & Badge */}
-                        <div className="flex items-center justify-between gap-2 mb-2 pr-6">
+                        {/* Category Label */}
+                        <div className="mb-2 pr-6">
                             <span className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
                                 {product.category?.name || 'Sweet Spot Treat'}
                             </span>
-                            <div className="border border-neutral-900 rounded-full px-2.5 py-0.5 text-xs font-bold text-neutral-900 shrink-0">
-                                £ {unitPrice.toFixed(2)}
-                            </div>
                         </div>
 
                         {/* Product Title */}
