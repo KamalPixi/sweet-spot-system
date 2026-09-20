@@ -290,11 +290,15 @@ function TitleUpdater() {
         } else if (path === '/payment/failed') {
             title = 'Payment Failed | Sweet Spot System';
         } else if (path === '/login') {
-            title = 'Sign In / Register | Sweet Spot System';
+            title = 'Sign In | Sweet Spot';
+        } else if (path === '/register' || path === '/signup') {
+            title = 'Create Account | Sweet Spot';
+        } else if (path === '/forgot-password') {
+            title = 'Reset Password | Sweet Spot';
         } else if (path === '/reset-password') {
-            title = 'Reset Password | Sweet Spot System';
+            title = 'Choose New Password | Sweet Spot';
         } else if (path.startsWith('/account')) {
-            title = 'My Account Center | Sweet Spot System';
+            title = 'My Account Center | Sweet Spot';
         } else if (path.startsWith('/admin')) {
             if (path === '/admin/login') {
                 title = 'Admin Login | Sweet Spot System';
@@ -338,6 +342,9 @@ export default function MainApp() {
                         <Route path="/payment/success" element={<PaymentSuccess />} />
                         <Route path="/payment/failed" element={<PaymentFailed />} />
                         <Route path="/login" element={<Auth defaultMode="login" />} />
+                        <Route path="/register" element={<Auth defaultMode="register" />} />
+                        <Route path="/signup" element={<Auth defaultMode="register" />} />
+                        <Route path="/forgot-password" element={<Auth defaultMode="forgot_password" />} />
                         <Route path="/reset-password" element={<ResetPassword />} />
                         <Route path="/account/*" element={<CustomerPortal />} />
 

@@ -83,17 +83,17 @@ const OrderStepper = ({ status, type }) => {
                         <div className="flex flex-col items-center">
                             <div className={`w-7 h-7 rounded-full flex items-center justify-center border-2 transition-all ${
                                 done
-                                    ? 'bg-[#8e5233] border-[#8e5233] text-white'
+                                    ? 'bg-[#24161b] border-[#24161b] text-[#e5b582]'
                                     : 'bg-white border-neutral-200 text-neutral-300'
-                            } ${active ? 'ring-2 ring-[#8e5233]/20 scale-110' : ''}`}>
+                            } ${active ? 'ring-2 ring-[#e5b582]/40 scale-110' : ''}`}>
                                 {done ? <CircleCheck size={14} /> : <span className="text-[9px] font-bold">{idx + 1}</span>}
                             </div>
-                            <p className={`text-[9px] font-bold mt-1 whitespace-nowrap ${done ? 'text-[#8e5233]' : 'text-neutral-300'}`}>
+                            <p className={`text-[9px] font-bold mt-1 whitespace-nowrap ${done ? 'text-[#24161b]' : 'text-neutral-300'}`}>
                                 {step}
                             </p>
                         </div>
                         {!isLast && (
-                            <div className={`flex-1 h-0.5 mx-1 mb-4 ${done && idx < currentStep ? 'bg-[#8e5233]' : 'bg-neutral-200'}`} />
+                            <div className={`flex-1 h-0.5 mx-1 mb-4 ${done && idx < currentStep ? 'bg-[#24161b]' : 'bg-neutral-200'}`} />
                         )}
                     </React.Fragment>
                 );
@@ -391,18 +391,17 @@ export default function CustomerPortal() {
                 user={user}
             />
 
-            <main className="w-full flex-grow mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-4 pt-6 pb-10 md:px-12 md:pt-10 md:pb-16"
-                style={{ background: 'linear-gradient(to bottom, #f4edd9 0%, #ffffff 15%, #ffffff 85%, #f7f2e4 100%)' }}>
+            <main className="w-full flex-grow mb-[-32px] md:mb-[-48px] rounded-b-[28px] md:rounded-b-[40px] rounded-t-none relative z-30 px-4 pt-6 pb-12 sm:px-8 md:px-12 md:pt-10 md:pb-16 bg-white shadow-xl shadow-[#24161b]/5 border-b border-black/[0.04]">
                 <div className="max-w-5xl mx-auto w-full">
 
                     {/* ── Page header ── */}
                     <div className="flex items-center gap-4 mb-7">
-                        <div className="w-14 h-14 rounded-full bg-[#8e5233] text-white flex items-center justify-center text-lg font-black shrink-0 shadow-md shadow-[#8e5233]/20">
+                        <div className="w-14 h-14 rounded-full bg-[#24161b] text-[#e5b582] border-2 border-[#e5b582]/40 flex items-center justify-center text-lg font-black shrink-0 shadow-md shadow-[#24161b]/20">
                             {initials}
                         </div>
                         <div>
-                            <p className="text-[10px] font-bold text-[#8e5233] uppercase tracking-widest">Account Center</p>
-                            <h1 className="text-2xl font-bold text-neutral-900 leading-tight">
+                            <p className="text-[10px] font-bold text-[#24161b] uppercase tracking-widest">Account Center</p>
+                            <h1 className="text-2xl font-serif font-black text-[#24161b] leading-tight">
                                 Hi, {profile?.first_name || 'there'} 👋
                             </h1>
                             <p className="text-xs text-neutral-400 mt-0.5">{profile?.email || profile?.phone}</p>
@@ -420,16 +419,16 @@ export default function CustomerPortal() {
                     </div>
 
                     {/* ── Tab bar ── */}
-                    <div className="flex items-center gap-1 bg-neutral-100/80 p-1 rounded-[16px] mb-7 overflow-x-auto scrollbar-none">
+                    <div className="flex items-center gap-1.5 bg-[#f7f2ec] p-1.5 rounded-2xl border border-[#24161b]/10 mb-7 overflow-x-auto scrollbar-none">
                         {TABS.map(({ id, label, icon: Icon }) => (
                             <button
                                 key={id}
                                 type="button"
                                 onClick={() => setActiveTab(id)}
-                                className={`flex items-center gap-2 px-4 py-2.5 rounded-[12px] text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex-1 justify-center ${
+                                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap cursor-pointer flex-1 justify-center ${
                                     activeTab === id
-                                        ? 'bg-white text-[#8F5336] shadow-sm shadow-[#8e5233]/10'
-                                        : 'text-neutral-500 hover:text-neutral-700 hover:bg-white/60'
+                                        ? 'bg-[#24161b] text-[#e5b582] shadow-sm shadow-[#24161b]/20'
+                                        : 'text-neutral-600 hover:text-[#24161b] hover:bg-white/60'
                                 }`}
                             >
                                 <Icon size={13} />
@@ -446,13 +445,13 @@ export default function CustomerPortal() {
                     {/* ── Content ── */}
                     {loading ? (
                         <div className="flex items-center justify-center py-24">
-                            <Loader2 className="animate-spin text-[#8e5233]" size={36} />
+                            <Loader2 className="animate-spin text-[#24161b]" size={36} />
                         </div>
                     ) : error ? (
                         <div className="bg-white border border-neutral-200/60 rounded-[24px] p-8 shadow-sm">
                             <p className="text-sm text-red-700">{error}</p>
                             <button type="button" onClick={fetchPortalData}
-                                className="mt-4 px-5 py-2.5 rounded-full bg-[#8e5233] text-white text-xs font-bold hover:bg-[#723e25] cursor-pointer transition-colors">
+                                className="mt-4 px-5 py-2.5 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold hover:bg-[#341f27] cursor-pointer transition-colors">
                                 Retry
                             </button>
                         </div>
@@ -464,7 +463,7 @@ export default function CustomerPortal() {
                                     {/* Stat cards */}
                                     <div className="grid grid-cols-3 gap-2 sm:gap-3">
                                         {[
-                                            { label: 'Total Orders',  value: totalOrders,  icon: ShoppingBag, color: 'text-[#8e5233]', bg: 'bg-[#8e5233]/8' },
+                                            { label: 'Total Orders',  value: totalOrders,  icon: ShoppingBag, color: 'text-[#24161b]', bg: 'bg-[#24161b]/8' },
                                             { label: 'Active Orders', value: activeOrders, icon: Package,     color: 'text-blue-600',   bg: 'bg-blue-50' },
                                             { label: 'Notifications', value: unreadCount,  icon: Bell,        color: 'text-amber-600',  bg: 'bg-amber-50' },
                                         ].map(({ label, value, icon: Icon, color, bg }) => (
@@ -493,7 +492,7 @@ export default function CustomerPortal() {
                                                 <button
                                                     type="button"
                                                     onClick={() => navigate(`/track/${latestActiveOrder.order_number}`)}
-                                                    className="flex items-center gap-1 text-xs text-[#8e5233] font-bold hover:underline cursor-pointer"
+                                                    className="flex items-center gap-1 text-xs text-[#24161b] hover:text-[#e5b582] font-bold transition-colors cursor-pointer"
                                                 >
                                                     Track <ChevronRight size={13} />
                                                 </button>
@@ -512,7 +511,7 @@ export default function CustomerPortal() {
                                             <div className="flex items-center justify-between mb-4">
                                                 <h2 className="text-sm font-bold text-neutral-800">Recent Notifications</h2>
                                                 <button type="button" onClick={() => setActiveTab('notifications')}
-                                                    className="text-[10px] text-[#8e5233] font-bold hover:underline cursor-pointer">
+                                                    className="text-[10px] text-[#24161b] hover:text-[#e5b582] font-bold transition-colors cursor-pointer">
                                                     See all
                                                 </button>
                                             </div>
@@ -522,8 +521,8 @@ export default function CustomerPortal() {
                                                     return (
                                                         <div key={notif.id}
                                                             onClick={() => { if (isUnread) handleMarkAsRead(notif.id); if (notif.data?.action_url) navigate(notif.data.action_url); }}
-                                                            className={`flex items-start gap-3 p-3 rounded-[12px] border cursor-pointer transition-all ${isUnread ? 'bg-[#8e5233]/4 border-[#8e5233]/20 hover:bg-[#8e5233]/8' : 'bg-neutral-50/50 border-neutral-100 hover:bg-neutral-50'}`}>
-                                                            <Bell size={14} className={isUnread ? 'text-[#8e5233] mt-0.5 shrink-0' : 'text-neutral-300 mt-0.5 shrink-0'} />
+                                                            className={`flex items-start gap-3 p-3 rounded-[12px] border cursor-pointer transition-all ${isUnread ? 'bg-[#24161b]/4 border-[#24161b]/15 hover:bg-[#24161b]/8' : 'bg-neutral-50/50 border-neutral-100 hover:bg-neutral-50'}`}>
+                                                            <Bell size={14} className={isUnread ? 'text-[#24161b] mt-0.5 shrink-0' : 'text-neutral-300 mt-0.5 shrink-0'} />
                                                             <div className="flex-1 min-w-0">
                                                                 <p className={`text-xs font-medium truncate ${isUnread ? 'text-neutral-800' : 'text-neutral-500'}`}>
                                                                     {notif.data?.message || 'Notification received.'}
@@ -540,13 +539,13 @@ export default function CustomerPortal() {
 
                                     {/* Quick actions */}
                                     <div className="grid grid-cols-2 gap-3">
-                                        <button type="button" onClick={() => navigate('/categories')}
-                                            className="flex items-center justify-between px-5 py-4 rounded-[18px] bg-[#8e5233] hover:bg-[#723e25] text-white text-xs font-bold shadow-md shadow-[#8e5233]/20 transition-all cursor-pointer">
+                                        <button type="button" onClick={() => navigate('/products')}
+                                            className="flex items-center justify-between px-5 py-4 rounded-[18px] bg-[#24161b] hover:bg-[#341f27] text-[#e5b582] text-xs font-bold shadow-md shadow-[#24161b]/15 transition-all cursor-pointer">
                                             <span>Shop Again</span>
-                                            <img src="/images/icons/bag.png" alt="Cart" className="w-[16px] h-[16px] object-contain" style={{ filter: 'brightness(0) invert(1)' }} />
+                                            <ShoppingBag size={16} className="text-[#e5b582]" />
                                         </button>
                                         <button type="button" onClick={() => setActiveTab('orders')}
-                                            className="flex items-center justify-between px-5 py-4 rounded-[18px] bg-white border border-neutral-200 hover:border-[#8e5233]/40 text-xs font-bold text-neutral-700 transition-all cursor-pointer">
+                                            className="flex items-center justify-between px-5 py-4 rounded-[18px] bg-white border border-neutral-200 hover:border-[#24161b]/40 text-xs font-bold text-neutral-700 transition-all cursor-pointer">
                                             <span>All Orders</span>
                                             <Package size={16} />
                                         </button>
@@ -569,8 +568,8 @@ export default function CustomerPortal() {
                                             <ShoppingBag size={30} className="mx-auto text-neutral-300 mb-3" />
                                             <p className="text-sm font-bold text-neutral-600">No orders yet</p>
                                             <p className="text-xs text-neutral-400 mt-1 mb-4">Once you place an order, it will appear here.</p>
-                                            <button type="button" onClick={() => navigate('/categories')}
-                                                className="px-5 py-2.5 rounded-full bg-[#8e5233] text-white text-xs font-bold cursor-pointer hover:bg-[#723e25] transition-colors">
+                                            <button type="button" onClick={() => navigate('/products')}
+                                                className="px-5 py-2.5 rounded-full bg-[#24161b] hover:bg-[#341f27] text-[#e5b582] text-xs font-bold cursor-pointer transition-all shadow-md">
                                                 Start Shopping
                                             </button>
                                         </div>
@@ -585,7 +584,7 @@ export default function CustomerPortal() {
                                                     {orders.map(order => (
                                                         <div key={order.id}
                                                             onClick={() => navigate(`/track/${order.order_number}`)}
-                                                            className="bg-white border border-neutral-200/60 rounded-[20px] p-5 hover:border-[#8e5233]/40 hover:shadow-sm transition-all cursor-pointer group">
+                                                            className="bg-white border border-neutral-200/60 rounded-[20px] p-5 hover:border-[#e5b582] hover:shadow-md transition-all cursor-pointer group">
                                                             <div className="flex items-start justify-between gap-3">
                                                                 <div className="flex-1 min-w-0">
                                                                     <div className="flex items-center gap-2 flex-wrap">
@@ -609,8 +608,8 @@ export default function CustomerPortal() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="text-right shrink-0">
-                                                                    <p className="text-base font-bold text-[#8F5336]">£{parseFloat(order.total || 0).toFixed(2)}</p>
-                                                                    <ChevronRight size={14} className="text-neutral-300 mt-1 ml-auto group-hover:text-[#8e5233] transition-colors" />
+                                                                    <p className="text-base font-bold text-[#24161b]">£{parseFloat(order.total || 0).toFixed(2)}</p>
+                                                                    <ChevronRight size={14} className="text-neutral-300 mt-1 ml-auto group-hover:text-[#24161b] transition-colors" />
                                                                 </div>
                                                             </div>
                                                             <div className="mt-4 pt-3 border-t border-neutral-100">
@@ -663,32 +662,32 @@ export default function CustomerPortal() {
                                                                 </tr>
                                                             </thead>
                                                             <tbody className="divide-y divide-neutral-100">
-                                                                {completedOrders.map(order => (
-                                                                    <tr key={order.id} className="hover:bg-[#8e5233]/5 transition-colors">
-                                                                        <td className="px-5 py-3">
-                                                                            <p className="text-xs font-black text-neutral-900">{order.order_number}</p>
-                                                                            <p className="text-[11px] text-neutral-400 truncate max-w-[190px]">
-                                                                                {order.items?.[0]?.product_name || 'Order'}
-                                                                            </p>
-                                                                        </td>
-                                                                        <td className="px-4 py-3 text-xs text-neutral-600">{formatDate(order.created_at)}</td>
-                                                                        <td className="px-4 py-3">
-                                                                            <span className="px-2 py-1 rounded-full bg-neutral-100 text-neutral-500 text-[10px] font-bold uppercase tracking-wider">
-                                                                                {order.type}
-                                                                            </span>
-                                                                        </td>
-                                                                        <td className="px-4 py-3 text-xs text-neutral-600 text-center">{order.items?.length || 0}</td>
-                                                                        <td className="px-4 py-3 text-xs font-black text-[#8F5336] text-right">£{parseFloat(order.total || 0).toFixed(2)}</td>
-                                                                        <td className="px-5 py-3 text-right">
-                                                                            <button type="button"
-                                                                                onClick={() => navigate(`/track/${order.order_number}`)}
-                                                                                className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-neutral-500 hover:border-[#8e5233]/40 hover:text-[#8e5233] cursor-pointer transition-colors">
-                                                                                View <ArrowRight size={11} />
-                                                                            </button>
-                                                                        </td>
-                                                                    </tr>
-                                                                ))}
-                                                            </tbody>
+                                                                        {completedOrders.map(order => (
+                                                                            <tr key={order.id} className="hover:bg-[#24161b]/3 transition-colors">
+                                                                                <td className="px-5 py-3">
+                                                                                    <p className="text-xs font-black text-neutral-900">{order.order_number}</p>
+                                                                                    <p className="text-[11px] text-neutral-400 truncate max-w-[190px]">
+                                                                                        {order.items?.[0]?.product_name || 'Order'}
+                                                                                    </p>
+                                                                                </td>
+                                                                                <td className="px-4 py-3 text-xs text-neutral-600">{formatDate(order.created_at)}</td>
+                                                                                <td className="px-4 py-3">
+                                                                                    <span className="px-2 py-1 rounded-full bg-neutral-100 text-neutral-500 text-[10px] font-bold uppercase tracking-wider">
+                                                                                        {order.type}
+                                                                                    </span>
+                                                                                </td>
+                                                                                <td className="px-4 py-3 text-xs text-neutral-600 text-center">{order.items?.length || 0}</td>
+                                                                                <td className="px-4 py-3 text-xs font-black text-[#24161b] text-right">£{parseFloat(order.total || 0).toFixed(2)}</td>
+                                                                                <td className="px-5 py-3 text-right">
+                                                                                    <button type="button"
+                                                                                        onClick={() => navigate(`/track/${order.order_number}`)}
+                                                                                        className="inline-flex items-center gap-1.5 rounded-full border border-neutral-200 px-3 py-1.5 text-[10px] font-black uppercase tracking-wider text-neutral-600 hover:border-[#24161b] hover:text-[#24161b] cursor-pointer transition-colors">
+                                                                                        View <ArrowRight size={11} />
+                                                                                    </button>
+                                                                                </td>
+                                                                            </tr>
+                                                                        ))}
+                                                                    </tbody>
                                                         </table>
                                                     </div>
 
@@ -731,7 +730,7 @@ export default function CustomerPortal() {
                                         {notifications.length > 0 && (
                                             <div className="flex items-center gap-3">
                                                 <button onClick={handleMarkAllAsRead} title="Mark all as read"
-                                                    className="flex items-center gap-1.5 text-xs text-[#8e5233] font-bold hover:text-[#723e25] cursor-pointer transition-colors">
+                                                    className="flex items-center gap-1.5 text-xs text-[#24161b] font-bold hover:text-[#e5b582] cursor-pointer transition-colors">
                                                     <CheckCheck size={15} /> Mark all read
                                                 </button>
                                                 <button onClick={handleClearAll} title="Clear all"
@@ -754,8 +753,8 @@ export default function CustomerPortal() {
                                                 const isUnread = !notif.read_at;
                                                 return (
                                                     <div key={notif.id}
-                                                        className={`flex items-start gap-3 p-4 rounded-[16px] border transition-all ${isUnread ? 'bg-[#8e5233]/4 border-[#8e5233]/20' : 'bg-white border-neutral-100'}`}>
-                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUnread ? 'bg-[#8e5233]/10 text-[#8e5233]' : 'bg-neutral-100 text-neutral-400'}`}>
+                                                        className={`flex items-start gap-3 p-4 rounded-[16px] border transition-all ${isUnread ? 'bg-[#24161b]/4 border-[#24161b]/15' : 'bg-white border-neutral-100'}`}>
+                                                        <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${isUnread ? 'bg-[#24161b] text-[#e5b582]' : 'bg-neutral-100 text-neutral-400'}`}>
                                                             <Bell size={14} />
                                                         </div>
                                                         <div
@@ -794,7 +793,7 @@ export default function CustomerPortal() {
                                             <h2 className="text-base font-bold text-neutral-900">Personal Details</h2>
                                             {!isEditing ? (
                                                 <button type="button" onClick={startEdit}
-                                                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#8e5233]/30 text-[#8e5233] text-xs font-bold hover:bg-[#8e5233]/5 cursor-pointer transition-all">
+                                                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl border border-[#24161b]/20 text-[#24161b] text-xs font-bold hover:bg-[#24161b]/5 cursor-pointer transition-all">
                                                     <Pencil size={12} /> Edit
                                                 </button>
                                             ) : (
@@ -804,7 +803,7 @@ export default function CustomerPortal() {
                                                         <X size={12} /> Cancel
                                                     </button>
                                                     <button type="button" onClick={saveProfile} disabled={saving}
-                                                        className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#8e5233] text-white text-xs font-bold hover:bg-[#723e25] disabled:opacity-60 cursor-pointer transition-all shadow-sm">
+                                                        className="flex items-center gap-1.5 px-4 py-1.5 rounded-xl bg-[#24161b] text-[#e5b582] text-xs font-bold hover:bg-[#341f27] disabled:opacity-60 cursor-pointer transition-all shadow-sm">
                                                         {saving ? <Loader2 size={12} className="animate-spin" /> : <Save size={12} />}
                                                         {saving ? 'Saving…' : 'Save'}
                                                     </button>
@@ -821,7 +820,7 @@ export default function CustomerPortal() {
                                                         type="text"
                                                         value={editForm.first_name}
                                                         onChange={e => setEditForm(f => ({ ...f, first_name: e.target.value }))}
-                                                        className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
+                                                        className="bg-neutral-50 border border-neutral-200 focus:border-[#e5b582] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
                                                     />
                                                 ) : (
                                                     <div className="bg-neutral-50/60 border border-neutral-200/45 rounded-xl px-4 py-3 text-xs text-neutral-800 font-medium select-none">
@@ -838,7 +837,7 @@ export default function CustomerPortal() {
                                                         type="text"
                                                         value={editForm.last_name}
                                                         onChange={e => setEditForm(f => ({ ...f, last_name: e.target.value }))}
-                                                        className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
+                                                        className="bg-neutral-50 border border-neutral-200 focus:border-[#e5b582] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
                                                     />
                                                 ) : (
                                                     <div className="bg-neutral-50/60 border border-neutral-200/45 rounded-xl px-4 py-3 text-xs text-neutral-800 font-medium select-none">
@@ -866,7 +865,7 @@ export default function CustomerPortal() {
                                                         type="tel"
                                                         value={editForm.phone}
                                                         onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
-                                                        className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
+                                                        className="bg-neutral-50 border border-neutral-200 focus:border-[#e5b582] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
                                                         placeholder="e.g. +44 7700 000000"
                                                     />
                                                 ) : (
@@ -894,7 +893,7 @@ export default function CustomerPortal() {
                                                     type="password"
                                                     value={passwordForm.current_password}
                                                     onChange={e => setPasswordForm(f => ({ ...f, current_password: e.target.value }))}
-                                                    className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
+                                                    className="bg-neutral-50 border border-neutral-200 focus:border-[#e5b582] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
                                                     placeholder="Current password"
                                                     autoComplete="current-password"
                                                 />
@@ -905,7 +904,7 @@ export default function CustomerPortal() {
                                                     type="password"
                                                     value={passwordForm.password}
                                                     onChange={e => setPasswordForm(f => ({ ...f, password: e.target.value }))}
-                                                    className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
+                                                    className="bg-neutral-50 border border-neutral-200 focus:border-[#e5b582] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
                                                     placeholder="At least 8 characters"
                                                     autoComplete="new-password"
                                                 />
@@ -916,7 +915,7 @@ export default function CustomerPortal() {
                                                     type="password"
                                                     value={passwordForm.password_confirmation}
                                                     onChange={e => setPasswordForm(f => ({ ...f, password_confirmation: e.target.value }))}
-                                                    className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
+                                                    className="bg-neutral-50 border border-neutral-200 focus:border-[#e5b582] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all"
                                                     placeholder="Repeat new password"
                                                     autoComplete="new-password"
                                                 />
@@ -925,7 +924,7 @@ export default function CustomerPortal() {
 
                                         <div className="flex justify-end mt-5">
                                             <button type="button" onClick={savePassword} disabled={changingPassword}
-                                                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#8e5233] text-white text-xs font-bold hover:bg-[#723e25] disabled:opacity-60 cursor-pointer transition-all shadow-sm">
+                                                className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#24161b] text-[#e5b582] text-xs font-bold hover:bg-[#341f27] disabled:opacity-60 cursor-pointer transition-all shadow-sm">
                                                 {changingPassword ? <Loader2 size={13} className="animate-spin" /> : <Save size={13} />}
                                                 {changingPassword ? 'Updating…' : 'Update Password'}
                                             </button>
@@ -935,8 +934,8 @@ export default function CustomerPortal() {
                                     {/* Account actions */}
                                     <div className="bg-white border border-neutral-200/60 rounded-[24px] p-6 shadow-sm space-y-2">
                                         <h2 className="text-base font-bold text-neutral-900 mb-4">Account</h2>
-                                        <button type="button" onClick={() => navigate('/categories')}
-                                            className="w-full flex items-center justify-between px-5 py-3.5 rounded-xl bg-[#8e5233] text-white text-xs font-bold hover:bg-[#723e25] transition-colors shadow-sm cursor-pointer">
+                                        <button type="button" onClick={() => navigate('/products')}
+                                            className="w-full flex items-center justify-between px-5 py-3.5 rounded-xl bg-[#24161b] text-[#e5b582] text-xs font-bold hover:bg-[#341f27] transition-colors shadow-sm cursor-pointer">
                                             <span>Shop Again</span>
                                             <ArrowRight size={14} />
                                         </button>

@@ -36,3 +36,18 @@ html {
 body {
     background-color: #ffffff;
 }
+
+@keyframes authFadeSlide {
+    0% {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-auth-switch {
+    animation: authFadeSlide 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
