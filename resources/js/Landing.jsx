@@ -5,6 +5,7 @@ import { Menu, Search, User } from 'lucide-react';
 
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
+import HeaderCartButton from './components/HeaderCartButton';
 
 // Landing Page Modular Sections
 import HeroSection from './landing/HeroSection';
@@ -75,23 +76,7 @@ export default function Landing() {
                         <Search size={19} strokeWidth={1.75} />
                     </button>
 
-                    <button 
-                        onClick={() => setIsCartOpen(true)} 
-                        className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer relative focus:outline-none"
-                        aria-label="Open cart"
-                    >
-                        <img 
-                            src="/images/icons/bag.png" 
-                            alt="Cart" 
-                            className="w-[18px] h-[18px] object-contain inline-block" 
-                            style={{ filter: 'brightness(0) invert(1)' }} 
-                        />
-                        {cartItemCount > 0 && (
-                            <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-xs">
-                                {cartItemCount}
-                            </span>
-                        )}
-                    </button>
+                    <HeaderCartButton />
 
                     <button 
                         onClick={() => navigate(user ? '/account' : '/login')} 

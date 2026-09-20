@@ -41,6 +41,15 @@ export function AppProvider({ children }) {
     const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isCartLoading, setIsCartLoading] = useState(false);
+
+    const openCart = () => {
+        setIsCartLoading(true);
+        setIsCartOpen(true);
+        setTimeout(() => {
+            setIsCartLoading(false);
+        }, 400);
+    };
 
     // Fetch Configurations on load
     useEffect(() => {
@@ -131,7 +140,11 @@ export function AppProvider({ children }) {
     };
 
     const addToCart = (product, variation, quantity) => {
+        setIsCartLoading(true);
         setIsCartOpen(true);
+        setTimeout(() => {
+            setIsCartLoading(false);
+        }, 400);
         setCart(prev => {
             const key = variation ? `${product.id}-${variation.id}` : `${product.id}`;
             const existingIndex = prev.findIndex(item => item.key === key);
@@ -210,7 +223,8 @@ export function AppProvider({ children }) {
             catalog, setCatalog, catalogLoading, setCatalogLoading,
             isSearchOpen, setIsSearchOpen,
             searchTerm, setSearchTerm,
-            isCartOpen, setIsCartOpen
+            isCartOpen, setIsCartOpen,
+            isCartLoading, setIsCartLoading, openCart
         }}>
             {children}
         </AppContext.Provider>

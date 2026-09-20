@@ -4,6 +4,8 @@ import { Menu, Search, User } from 'lucide-react';
 import { useApp } from '../AppContext';
 import { useLocation } from 'react-router-dom';
 
+import HeaderCartButton from './HeaderCartButton';
+
 const Logo = () => (
     <svg className="w-8 h-8 text-white fill-current transition-transform hover:scale-105" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <path d="M16 26.5L6.5 13.5H11.5L16 19.5L20.5 13.5H25.5L16 26.5Z" />
@@ -12,14 +14,9 @@ const Logo = () => (
 );
 
 export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, navigate, cartItemCount, user }) {
-    const { setIsCartOpen } = useApp();
     const location = useLocation();
     const isCartRoute = location.pathname === '/cart' || location.pathname === '/checkout';
 
-    const handleCartClick = () => {
-        if (isCartRoute) return;
-        setIsCartOpen(true);
-    };
     return (
         <div className="bg-primary">
             <div className="w-full h-[72px] md:h-[80px] bg-primary relative overflow-hidden">
@@ -51,18 +48,9 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                         >
                             <Search size={22} strokeWidth={1.5} />
                         </button>
-                        <button 
-                            onClick={handleCartClick} 
-                            className="text-white hover:text-white/80 transition-colors px-1 py-1.5 md:p-2 cursor-pointer relative focus:outline-none"
-                            aria-label="Cart"
-                        >
-                            <img src="/images/icons/bag.png" alt="Cart" className="w-[22px] h-[22px] object-contain inline-block" style={{ filter: 'brightness(0) invert(1)' }} />
-                            {cartItemCount > 0 && (
-                                <span className="absolute top-0.5 right-0.5 w-4 h-4 bg-white text-[#8e5233] text-[9px] font-black rounded-full flex items-center justify-center">
-                                    {cartItemCount}
-                                </span>
-                            )}
-                        </button>
+                        {!isCartRoute && (
+                            <HeaderCartButton />
+                        )}
                         <button 
                             onClick={() => navigate(user ? '/account' : '/login')} 
                             className="text-white hover:text-white/80 transition-colors pl-1 pr-0 py-1.5 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
