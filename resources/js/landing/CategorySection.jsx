@@ -111,7 +111,7 @@ export default function CategorySection({ categories = [] }) {
     };
 
     return (
-        <section className="w-full bg-white pt-6 sm:pt-7 pb-8 md:pb-12 select-none">
+        <section className="w-full bg-white pt-10 sm:pt-12 md:pt-14 pb-8 md:pb-12 select-none">
             <div className="max-w-[1300px] mx-auto px-5 sm:px-8 md:px-12 lg:px-16">
 
                 {/* Header */}
