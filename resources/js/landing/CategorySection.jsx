@@ -190,16 +190,18 @@ export default function CategorySection({ categories = [] }) {
                 </div>
 
                 {/* Controls */}
-                <div className="flex items-center justify-center gap-3.5 mt-6 md:mt-8">
+                <div className="flex items-center justify-center gap-4 sm:gap-5 mt-6 md:mt-8">
+                    {/* Left Capsule Button (Dark with Gold border & Gold arrow) */}
                     <button
                         onClick={() => scrollByCard('left')}
                         aria-label="Previous"
-                        className="w-8 h-8 flex items-center justify-center rounded-full bg-[#1c1410] text-white hover:bg-black active:scale-90 transition-all shadow-sm cursor-pointer"
+                        className="w-10 h-6 sm:w-10.5 sm:h-6 flex items-center justify-center rounded-full bg-[#1c1410] text-[#e5b582] border border-[#e5b582]/80 hover:bg-black active:scale-95 transition-all shadow-xs cursor-pointer"
                     >
-                        <ArrowLeft size={13} strokeWidth={2.5} />
+                        <ArrowLeft size={13} strokeWidth={1.75} />
                     </button>
 
-                    <div className="flex items-center gap-1.5">
+                    {/* Horizontal Progress Dash Indicators */}
+                    <div className="flex items-center gap-2">
                         {[0, 1, 2].map(i => (
                             <button
                                 key={i}
@@ -207,19 +209,20 @@ export default function CategorySection({ categories = [] }) {
                                 aria-label={`Slide ${i + 1}`}
                                 className={`h-[5px] rounded-full transition-all duration-300 cursor-pointer ${
                                     activeIndex === i
-                                        ? 'w-9 bg-[#1c1410]'
-                                        : 'w-5 bg-[#dcdcdc] hover:bg-[#bbb]'
+                                        ? 'w-14 sm:w-16 bg-[#1c1410]'
+                                        : 'w-6 sm:w-7 bg-[#d5d5d5] hover:bg-[#bbb]'
                                 }`}
                             />
                         ))}
                     </div>
 
+                    {/* Right Capsule Button (White with Dark border & Dark arrow) */}
                     <button
                         onClick={() => scrollByCard('right')}
                         aria-label="Next"
-                        className="w-8 h-8 flex items-center justify-center rounded-full border border-[#888] text-[#1c1410] hover:border-black hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
+                        className="w-10 h-6 sm:w-10.5 sm:h-6 flex items-center justify-center rounded-full bg-white text-[#1c1410] border border-[#1c1410] hover:bg-neutral-50 active:scale-95 transition-all shadow-xs cursor-pointer"
                     >
-                        <ArrowRight size={13} strokeWidth={2.5} />
+                        <ArrowRight size={13} strokeWidth={1.75} />
                     </button>
                 </div>
 
