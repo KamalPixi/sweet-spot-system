@@ -79,3 +79,7 @@ body {
     overflow: hidden;
 }
 
+.auth-expand-grid.expanded .auth-expand-inner {
+    overflow: visible;
+}
+

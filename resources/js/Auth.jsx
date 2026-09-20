@@ -310,7 +310,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                         value={firstName}
                                                         onChange={(e) => setFirstName(e.target.value)}
                                                         placeholder="Jane"
-                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                     />
                                                 </div>
                                                 <div>
@@ -321,7 +321,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                         value={lastName}
                                                         onChange={(e) => setLastName(e.target.value)}
                                                         placeholder="Doe"
-                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                     />
                                                 </div>
                                             </div>
@@ -373,7 +373,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                         value={phone}
                                                         onChange={(e) => setPhone(e.target.value)}
                                                         placeholder="07123 456789"
-                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                     />
                                                 </div>
                                             ) : (
@@ -383,7 +383,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="jane.doe@example.com"
-                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                 />
                                             )}
                                         </div>
@@ -549,7 +549,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     value={password}
                                                     onChange={(e) => setPassword(e.target.value)}
                                                     placeholder="••••••••"
-                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl pl-3.5 pr-10 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
+                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-3.5 pr-10 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                 />
                                                 <button
                                                     type="button"
