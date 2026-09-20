@@ -850,7 +850,7 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {orders.length === 0 && completedOrders.length === 0 ? (
-                                        <div className="py-24 text-center bg-white border border-dashed border-neutral-200 rounded-[24px] max-w-lg mx-auto p-8 shadow-xs">
+                                        <div className="py-20 sm:py-24 text-center bg-white border border-dashed border-neutral-200/90 rounded-[24px] w-full p-8 shadow-xs">
                                             <div className="w-14 h-14 rounded-2xl bg-[#24161b]/5 text-[#24161b] flex items-center justify-center mx-auto mb-4">
                                                 <ShoppingBag size={28} />
                                             </div>
@@ -1083,7 +1083,7 @@ export default function CustomerPortal() {
                                     </div>
 
                                     {notifications.length === 0 ? (
-                                        <div className="py-24 text-center bg-white border border-dashed border-neutral-200 rounded-[24px] max-w-lg mx-auto p-8 shadow-xs">
+                                        <div className="py-20 sm:py-24 text-center bg-white border border-dashed border-neutral-200/90 rounded-[24px] w-full p-8 shadow-xs">
                                             <div className="w-14 h-14 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4">
                                                 <Bell size={28} />
                                             </div>
