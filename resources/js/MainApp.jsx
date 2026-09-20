@@ -5,6 +5,7 @@ import { Toaster } from 'react-hot-toast';
 import { AppProvider, useApp } from './AppContext';
 import { Search, X } from 'lucide-react';
 import CartDrawer from './components/CartDrawer';
+import ProductDetailModal from './components/ProductDetailModal';
 
 // Lazy-loaded Pages & Components
 const Landing = lazy(() => import('./Landing'));
@@ -21,7 +22,6 @@ const Auth = lazy(() => import('./Auth'));
 const AdminDashboard = lazy(() => import('./AdminDashboard'));
 const AdminOrderDetailPage = lazy(() => import('./admin/pages/AdminOrderDetailPage'));
 const AdminCustomerDetailPage = lazy(() => import('./admin/pages/AdminCustomerDetailPage'));
-const ProductDetail = lazy(() => import('./ProductDetail'));
 const CustomerPortal = lazy(() => import('./customer/pages/CustomerPortal'));
 const Shop = lazy(() => import('./Shop'));
 const ResetPassword = lazy(() => import('./ResetPassword'));
@@ -131,7 +131,7 @@ function RequireAdmin({ children }) {
 
 function GlobalSearchOverlay() {
     const navigate = useNavigate();
-    const { isSearchOpen, setIsSearchOpen, searchTerm, setSearchTerm, catalog } = useApp();
+    const { isSearchOpen, setIsSearchOpen, searchTerm, setSearchTerm, catalog, openProductModal } = useApp();
 
     if (!isSearchOpen) return null;
 
@@ -204,7 +204,7 @@ function GlobalSearchOverlay() {
                                     <div 
                                         key={product.id}
                                         onClick={() => {
-                                            navigate(`/product/${product.slug}`);
+                                            openProductModal(product);
                                             setIsSearchOpen(false);
                                             setSearchTerm('');
                                         }}
@@ -277,10 +277,6 @@ function TitleUpdater() {
             title = 'Our Menu | Sweet Spot System';
         } else if (path === '/products') {
             title = 'Shop Our Menu | Sweet Spot System';
-        } else if (path.startsWith('/product/')) {
-            const slug = path.split('/').pop();
-            const productName = slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Product';
-            title = `${productName} | Sweet Spot System`;
         } else if (path === '/cart' || path === '/checkout') {
             title = 'Secure Checkout | Sweet Spot System';
         } else if (path.startsWith('/track')) {
@@ -315,6 +311,17 @@ function TitleUpdater() {
     return null;
 }
 
+function GlobalProductModal() {
+    const { modalProduct, closeProductModal } = useApp();
+    return (
+        <ProductDetailModal
+            isOpen={!!modalProduct}
+            onClose={closeProductModal}
+            product={modalProduct}
+        />
+    );
+}
+
 export default function MainApp() {
     return (
         <AppProvider>
@@ -322,6 +329,7 @@ export default function MainApp() {
                 <TitleUpdater />
                 <AppToaster />
                 <GlobalSearchOverlay />
+                <GlobalProductModal />
                 <CartDrawer />
                 <Suspense fallback={<PageLoader />}>
                     <Routes>
@@ -334,7 +342,8 @@ export default function MainApp() {
                         <Route path="/menu" element={<PdfMenu />} />
                         <Route path="/pdf-menu" element={<PdfMenu />} />
                         <Route path="/products" element={<Shop />} />
-                        <Route path="/product/:productSlug" element={<ProductDetail />} />
+                        <Route path="/product/:productSlug" element={<Navigate to="/products" replace />} />
+                        <Route path="/product/*" element={<Navigate to="/products" replace />} />
                         <Route path="/cart" element={<Checkout />} />
                         <Route path="/checkout" element={<Checkout />} />
                         <Route path="/track" element={<OrderTracking />} />

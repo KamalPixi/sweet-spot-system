@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { X, ChevronLeft, ChevronRight, Minus, Plus, ArrowRight, Check } from 'lucide-react';
+import { X, ChevronLeft, ChevronRight, Minus, Plus, Check } from 'lucide-react';
 import { useApp } from '../AppContext';
 
 const formatImageUrl = (url) => {
@@ -11,7 +10,6 @@ const formatImageUrl = (url) => {
 };
 
 export default function ProductDetailModal({ isOpen, onClose, product }) {
-    const navigate = useNavigate();
     const { addToCart, setIsCartOpen } = useApp();
 
     const [selectedVariation, setSelectedVariation] = useState(null);
@@ -137,12 +135,6 @@ export default function ProductDetailModal({ isOpen, onClose, product }) {
         }, 600);
     };
 
-    const handleViewFullDetails = (e) => {
-        e?.stopPropagation();
-        onClose();
-        navigate(`/product/${product.slug}`);
-    };
-
     const descriptionText = product.description 
         || product.short_description 
         || "Every dessert tells a story. Freshly prepared, made with love, and delivered straight to your doorstep.";
@@ -153,7 +145,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }) {
             onClick={onClose}
         >
             <div 
-                className="relative w-full max-w-lg md:max-w-3xl lg:max-w-[820px] bg-white rounded-[26px] md:rounded-[32px] shadow-2xl border border-neutral-100 overflow-hidden flex flex-col md:flex-row my-auto max-h-[90vh] md:max-h-[85vh]"
+                className="relative w-full max-w-lg md:max-w-3xl lg:max-w-[820px] bg-white rounded-2xl shadow-2xl border border-neutral-100 overflow-hidden flex flex-col md:flex-row my-auto max-h-[90vh] md:max-h-[85vh]"
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Close Button */}
@@ -325,18 +317,6 @@ export default function ProductDetailModal({ isOpen, onClose, product }) {
                                         <span className="whitespace-nowrap">Add to cart • £ {totalPrice}</span>
                                     </>
                                 )}
-                            </button>
-                        </div>
-
-                        {/* Unobtrusive Full Detail link */}
-                        <div className="text-center pt-0.5">
-                            <button
-                                type="button"
-                                onClick={handleViewFullDetails}
-                                className="inline-flex items-center gap-1 text-[11px] font-medium text-neutral-400 hover:text-neutral-700 transition-colors cursor-pointer"
-                            >
-                                <span>View full details & nutrition</span>
-                                <ArrowRight size={11} />
                             </button>
                         </div>
                     </div>

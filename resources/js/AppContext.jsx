@@ -42,6 +42,15 @@ export function AppProvider({ children }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isCartLoading, setIsCartLoading] = useState(false);
+    const [modalProduct, setModalProduct] = useState(null);
+
+    const openProductModal = (product) => {
+        setModalProduct(product);
+    };
+
+    const closeProductModal = () => {
+        setModalProduct(null);
+    };
 
     const openCart = () => {
         setIsCartLoading(true);
@@ -224,7 +233,8 @@ export function AppProvider({ children }) {
             isSearchOpen, setIsSearchOpen,
             searchTerm, setSearchTerm,
             isCartOpen, setIsCartOpen,
-            isCartLoading, setIsCartLoading, openCart
+            isCartLoading, setIsCartLoading, openCart,
+            modalProduct, setModalProduct, openProductModal, closeProductModal
         }}>
             {children}
         </AppContext.Provider>

@@ -1,8 +1,6 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useApp } from '../AppContext';
 import { Minus, Plus } from 'lucide-react';
-import ProductDetailModal from './ProductDetailModal';
 
 const getImageUrl = (item) => {
     if (!item) return '/images/placeholder.svg';
@@ -24,9 +22,7 @@ const getImageUrl = (item) => {
 };
 
 export default function ProductCard({ product }) {
-    const navigate = useNavigate();
-    const { cart, addToCart, updateCartQty, setIsCartOpen } = useApp();
-    const [isModalOpen, setIsModalOpen] = useState(false);
+    const { cart, addToCart, updateCartQty, setIsCartOpen, openProductModal } = useApp();
 
     const pPrice = product.has_variations && product.variations && product.variations.length > 0
         ? parseFloat(product.variations[0].price).toFixed(2)
@@ -37,13 +33,13 @@ export default function ProductCard({ product }) {
     const totalQty = matchingCartItems.reduce((sum, item) => sum + item.quantity, 0);
 
     const handleCardClick = () => {
-        setIsModalOpen(true);
+        openProductModal(product);
     };
 
     const handleAdd = (e) => {
         e.stopPropagation();
         if (product.has_variations && product.variations && product.variations.length > 1) {
-            setIsModalOpen(true);
+            openProductModal(product);
             return;
         }
         const variation = product.has_variations && product.variations && product.variations.length > 0 
@@ -81,14 +77,13 @@ export default function ProductCard({ product }) {
         || "Every dessert tells a story. Every bite is a moment of pure bliss at Sweet Spot.";
 
     return (
-        <>
-            <div 
-                onClick={handleCardClick}
-                className="bg-white rounded-[22px] md:rounded-[26px] p-3.5 sm:p-4 border border-neutral-200/70 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer text-left w-full select-none"
-            >
+        <div 
+            onClick={handleCardClick}
+            className="bg-white rounded-2xl p-3.5 sm:p-4 border border-neutral-200/70 shadow-xs hover:shadow-md transition-all duration-300 flex flex-col justify-between group cursor-pointer text-left w-full select-none"
+        >
             <div>
                 {/* Product Image */}
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#faf7f2] rounded-[18px] border border-neutral-100 mb-3.5">
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#faf7f2] rounded-xl border border-neutral-100 mb-3.5">
                     <img 
                         src={getImageUrl(product)} 
                         alt={product.name}
@@ -175,12 +170,5 @@ export default function ProductCard({ product }) {
                 )}
             </div>
         </div>
-
-        <ProductDetailModal 
-            isOpen={isModalOpen} 
-            onClose={() => setIsModalOpen(false)} 
-            product={product} 
-        />
-    </>
     );
 }
