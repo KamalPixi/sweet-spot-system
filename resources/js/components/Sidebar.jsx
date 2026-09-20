@@ -98,8 +98,8 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                             <ArrowRight size={14} className="opacity-0 group-hover:opacity-100 group-hover:translate-x-1 transition-all text-rose-400" />
                         </a>
                         <a 
-                            href="/products" 
-                            onClick={(e) => { e.preventDefault(); navigate('/products'); setIsMenuOpen(false); }}
+                            href="/menu" 
+                            onClick={(e) => { e.preventDefault(); navigate('/menu'); setIsMenuOpen(false); }}
                             className="px-4 py-3 rounded-2xl text-base font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all flex items-center justify-between group"
                         >
                             <span>Our Menu</span>

@@ -25,6 +25,7 @@ const ProductDetail = lazy(() => import('./ProductDetail'));
 const CustomerPortal = lazy(() => import('./customer/pages/CustomerPortal'));
 const Shop = lazy(() => import('./Shop'));
 const ResetPassword = lazy(() => import('./ResetPassword'));
+const PdfMenu = lazy(() => import('./PdfMenu'));
 
 const getImageUrl = (item) => {
     if (!item) return '/images/placeholder.svg';
@@ -272,6 +273,8 @@ function TitleUpdater() {
             const slug = path.split('/').pop();
             const categoryName = slug ? slug.replace(/-/g, ' ').replace(/\b\w/g, c => c.toUpperCase()) : 'Category';
             title = `${categoryName} | Sweet Spot System`;
+        } else if (path === '/menu' || path === '/pdf-menu') {
+            title = 'Our Menu | Sweet Spot System';
         } else if (path === '/products') {
             title = 'Shop Our Menu | Sweet Spot System';
         } else if (path.startsWith('/product/')) {
@@ -324,6 +327,8 @@ export default function MainApp() {
                         <Route path="/collection-setup" element={<CollectionSetup />} />
                         <Route path="/categories" element={<Categories />} />
                         <Route path="/categories/:categorySlug" element={<CategoryDetail />} />
+                        <Route path="/menu" element={<PdfMenu />} />
+                        <Route path="/pdf-menu" element={<PdfMenu />} />
                         <Route path="/products" element={<Shop />} />
                         <Route path="/product/:productSlug" element={<ProductDetail />} />
                         <Route path="/cart" element={<Checkout />} />
