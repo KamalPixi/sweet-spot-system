@@ -636,10 +636,10 @@ export default function CustomerPortal() {
                                     )}
 
                                     {/* 3. Two-Column Dashboard Split: Recent Orders & Recent Notifications */}
-                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
                                         {/* Left: Recent Orders Preview (7 cols) */}
-                                        <div className="lg:col-span-7 space-y-4">
-                                            <div className="flex items-center justify-between">
+                                        <div className="lg:col-span-7 space-y-4 flex flex-col">
+                                            <div className="flex items-center justify-between h-6">
                                                 <h2 className="text-sm font-black uppercase tracking-wider text-neutral-800">
                                                     Recent Orders
                                                 </h2>
@@ -654,14 +654,14 @@ export default function CustomerPortal() {
                                             </div>
 
                                             {orders.length === 0 && completedOrders.length === 0 ? (
-                                                <div className="bg-white border border-dashed border-neutral-200 rounded-[20px] p-8 text-center">
+                                                <div className="bg-white border border-dashed border-neutral-200/90 rounded-[22px] p-6 sm:p-8 text-center flex-1 flex flex-col items-center justify-center min-h-[190px] shadow-xs">
                                                     <ShoppingBag size={28} className="mx-auto text-neutral-300 mb-2" />
                                                     <p className="text-xs font-bold text-neutral-700">No orders placed yet</p>
                                                     <p className="text-[11px] text-neutral-400 mt-0.5 mb-3">Your previous treat orders will appear here.</p>
                                                     <button
                                                         type="button"
                                                         onClick={() => navigate('/products')}
-                                                        className="text-xs font-bold text-[#8e5233] hover:underline"
+                                                        className="text-xs font-bold text-[#8e5233] hover:underline cursor-pointer"
                                                     >
                                                         Start your first order →
                                                     </button>
@@ -708,8 +708,8 @@ export default function CustomerPortal() {
                                         </div>
 
                                         {/* Right: Notifications Feed & Quick Shortcuts (5 cols) */}
-                                        <div className="lg:col-span-5 space-y-4">
-                                            <div className="flex items-center justify-between">
+                                        <div className="lg:col-span-5 space-y-4 flex flex-col">
+                                            <div className="flex items-center justify-between h-6">
                                                 <h2 className="text-sm font-black uppercase tracking-wider text-neutral-800">
                                                     Recent Alerts
                                                 </h2>
@@ -726,8 +726,8 @@ export default function CustomerPortal() {
                                             </div>
 
                                             {notifications.length === 0 ? (
-                                                <div className="bg-white border border-dashed border-neutral-200 rounded-[20px] p-6 text-center">
-                                                    <Bell size={24} className="mx-auto text-neutral-300 mb-2" />
+                                                <div className="bg-white border border-dashed border-neutral-200/90 rounded-[22px] p-6 sm:p-8 text-center flex-1 flex flex-col items-center justify-center min-h-[190px] shadow-xs">
+                                                    <Bell size={28} className="mx-auto text-neutral-300 mb-2" />
                                                     <p className="text-xs font-bold text-neutral-700">All caught up!</p>
                                                     <p className="text-[11px] text-neutral-400 mt-0.5">No recent alerts or order updates.</p>
                                                 </div>
@@ -769,27 +769,6 @@ export default function CustomerPortal() {
                                                     })}
                                                 </div>
                                             )}
-
-                                            {/* Account Quick Card */}
-                                            <div className="bg-gradient-to-br from-[#24161b] to-[#1c1115] rounded-[20px] p-5 text-white shadow-md">
-                                                <div className="flex items-center gap-2 text-[#e5b582] text-xs font-bold uppercase tracking-wider mb-1">
-                                                    <ShieldCheck size={14} />
-                                                    <span>Account Security</span>
-                                                </div>
-                                                <p className="text-xs text-neutral-300">
-                                                    Manage your contact details, update passwords, and review receipts anytime.
-                                                </p>
-                                                <div className="mt-3.5 pt-3 border-t border-white/10 flex items-center justify-between">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setActiveTab('profile')}
-                                                        className="text-xs font-bold text-[#e5b582] hover:underline flex items-center gap-1"
-                                                    >
-                                                        <span>Edit Profile & Password</span>
-                                                        <ArrowRight size={12} />
-                                                    </button>
-                                                </div>
-                                            </div>
                                         </div>
                                     </div>
                                 </div>
