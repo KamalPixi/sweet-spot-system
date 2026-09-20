@@ -187,8 +187,8 @@ export default function Auth({ defaultMode = 'login' }) {
                 user={user}
             />
 
-            {/* Main Overlapping Storefront Container */}
-            <div className="w-full mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-3 sm:px-6 pt-4 sm:pt-6 pb-10 md:px-10 md:pt-8 md:pb-16 flex-grow flex flex-col items-center bg-[#fdfaf5] shadow-lg shadow-[#24161b]/5">
+            {/* Main Overlapping Storefront Container with balanced vertical padding */}
+            <div className="w-full mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-3 sm:px-6 pt-6 sm:pt-8 pb-12 md:px-10 md:pt-12 md:pb-16 flex-grow flex flex-col items-center justify-center bg-[#fdfaf5] shadow-lg shadow-[#24161b]/5">
                 <div className="w-full max-w-6xl mx-auto">
                     {/* Integrated Editorial Split Card with strictly locked dimensions on desktop */}
                     <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-2xl shadow-[#24161b]/10 overflow-hidden grid grid-cols-1 lg:grid-cols-12 lg:h-[640px] min-h-[600px]">
