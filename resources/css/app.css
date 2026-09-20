@@ -65,6 +65,16 @@ body {
     opacity: 1;
 }
 
+/* When auth-expand-grid is collapsed (in login mode), prevent Tailwind's space-y-4 on form from adding gap */
+.auth-expand-grid:not(.expanded) {
+    margin-top: 0 !important;
+    margin-bottom: 0 !important;
+}
+
+.auth-expand-grid:not(.expanded) + * {
+    margin-top: 0 !important;
+}
+
 .auth-expand-inner {
     overflow: hidden;
 }

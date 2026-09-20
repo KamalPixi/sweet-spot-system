@@ -53,9 +53,8 @@ export default function Auth({ defaultMode = 'login' }) {
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
 
-    // Feature toggles for Phone vs Email
-    const [loginMethod, setLoginMethod] = useState('phone');       // 'phone' | 'email'
-    const [registerMethod, setRegisterMethod] = useState('phone'); // 'phone' | 'email'
+    // Feature toggle for Phone vs Email (shared between Sign In and Register)
+    const [contactMethod, setContactMethod] = useState('phone');   // 'phone' | 'email'
     const [forgotMethod, setForgotMethod] = useState('phone');     // 'phone' | 'email'
 
     const [resetCode, setResetCode] = useState('');
@@ -76,13 +75,13 @@ export default function Auth({ defaultMode = 'login' }) {
 
         if (mode === 'login') {
             url = '/api/customer/login';
-            const inputVal = loginMethod === 'email' ? email : phone;
+            const inputVal = contactMethod === 'email' ? email : phone;
             payload = {
                 email_or_phone: inputVal,
                 password
             };
             if (!inputVal) {
-                setError(`Please enter your ${loginMethod === 'email' ? 'email address' : 'UK phone number'}.`);
+                setError(`Please enter your ${contactMethod === 'email' ? 'email address' : 'UK phone number'}.`);
                 setLoading(false);
                 return;
             }
@@ -91,17 +90,17 @@ export default function Auth({ defaultMode = 'login' }) {
             payload = {
                 first_name: firstName,
                 last_name: lastName,
-                email: registerMethod === 'email' ? email : (email || null),
-                phone: registerMethod === 'phone' ? phone : (phone || null),
+                email: contactMethod === 'email' ? email : (email || null),
+                phone: contactMethod === 'phone' ? phone : (phone || null),
                 password,
                 password_confirmation: password
             };
-            if (registerMethod === 'phone' && !payload.phone) {
+            if (contactMethod === 'phone' && !payload.phone) {
                 setError('Please enter your UK phone number.');
                 setLoading(false);
                 return;
             }
-            if (registerMethod === 'email' && !payload.email) {
+            if (contactMethod === 'email' && !payload.email) {
                 setError('Please enter your email address.');
                 setLoading(false);
                 return;
@@ -299,9 +298,9 @@ export default function Auth({ defaultMode = 'login' }) {
                                 )}
 
                                 <form onSubmit={handleSubmit} className="space-y-4">
-                                    {/* Collapsible Registration Fields (First Name, Last Name, Register Contact Toggle) */}
+                                    {/* Collapsible Name Fields for Register Only */}
                                     <div className={`auth-expand-grid ${mode === 'register' ? 'expanded' : ''}`}>
-                                        <div className="auth-expand-inner space-y-4 pb-1">
+                                        <div className="auth-expand-inner">
                                             <div className="grid grid-cols-2 gap-3">
                                                 <div>
                                                     <label className="block text-xs font-medium text-neutral-700 mb-1.5">First Name</label>
@@ -326,81 +325,22 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     />
                                                 </div>
                                             </div>
-
-                                            {/* Register Contact Toggle (Phone vs Email) */}
-                                            <div>
-                                                <div className="flex items-center justify-between mb-1.5">
-                                                    <label className="text-xs font-medium text-neutral-700">
-                                                        {registerMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
-                                                    </label>
-                                                    <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => { setRegisterMethod('phone'); setEmail(''); }}
-                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
-                                                                registerMethod === 'phone'
-                                                                    ? 'bg-white text-[#24161b] shadow-xs'
-                                                                    : 'text-neutral-500 hover:text-neutral-900'
-                                                            }`}
-                                                        >
-                                                            Phone
-                                                        </button>
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => { setRegisterMethod('email'); setPhone(''); }}
-                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
-                                                                registerMethod === 'email'
-                                                                    ? 'bg-white text-[#24161b] shadow-xs'
-                                                                    : 'text-neutral-500 hover:text-neutral-900'
-                                                            }`}
-                                                        >
-                                                            Email
-                                                        </button>
-                                                    </div>
-                                                </div>
-
-                                                {registerMethod === 'phone' ? (
-                                                    <div className="relative flex items-center">
-                                                        <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
-                                                            <span className="text-sm">🇬🇧</span>
-                                                            <span className="text-xs font-semibold text-neutral-700">+44</span>
-                                                        </div>
-                                                        <input 
-                                                            type="tel" 
-                                                            required={mode === 'register'}
-                                                            value={phone}
-                                                            onChange={(e) => setPhone(e.target.value)}
-                                                            placeholder="07123 456789"
-                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
-                                                        />
-                                                    </div>
-                                                ) : (
-                                                    <input 
-                                                        type="email" 
-                                                        required={mode === 'register'}
-                                                        value={email}
-                                                        onChange={(e) => setEmail(e.target.value)}
-                                                        placeholder="jane.doe@example.com"
-                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b] rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 outline-none transition-all placeholder:text-neutral-400"
-                                                    />
-                                                )}
-                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Login Input (Same sleek Phone vs Email toggle matching Register) */}
-                                    {mode === 'login' && (
-                                        <div className="animate-auth-switch">
+                                    {/* Shared Contact Field (Phone vs Email toggle) for both Sign In and Register */}
+                                    {(mode === 'login' || mode === 'register') && (
+                                        <div>
                                             <div className="flex items-center justify-between mb-1.5">
                                                 <label className="text-xs font-medium text-neutral-700">
-                                                    {loginMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
+                                                    {contactMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
                                                 </label>
                                                 <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
                                                     <button
                                                         type="button"
-                                                        onClick={() => { setLoginMethod('phone'); setEmail(''); }}
+                                                        onClick={() => { setContactMethod('phone'); setEmail(''); }}
                                                         className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
-                                                            loginMethod === 'phone'
+                                                            contactMethod === 'phone'
                                                                 ? 'bg-white text-[#24161b] shadow-xs'
                                                                 : 'text-neutral-500 hover:text-neutral-900'
                                                         }`}
@@ -409,9 +349,9 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     </button>
                                                     <button
                                                         type="button"
-                                                        onClick={() => { setLoginMethod('email'); setPhone(''); }}
+                                                        onClick={() => { setContactMethod('email'); setPhone(''); }}
                                                         className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
-                                                            loginMethod === 'email'
+                                                            contactMethod === 'email'
                                                                 ? 'bg-white text-[#24161b] shadow-xs'
                                                                 : 'text-neutral-500 hover:text-neutral-900'
                                                         }`}
@@ -421,7 +361,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                 </div>
                                             </div>
 
-                                            {loginMethod === 'phone' ? (
+                                            {contactMethod === 'phone' ? (
                                                 <div className="relative flex items-center">
                                                     <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
                                                         <span className="text-sm">🇬🇧</span>
@@ -429,7 +369,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                     </div>
                                                     <input 
                                                         type="tel" 
-                                                        required={mode === 'login'}
+                                                        required={mode === 'login' || mode === 'register'}
                                                         value={phone}
                                                         onChange={(e) => setPhone(e.target.value)}
                                                         placeholder="07123 456789"
@@ -439,7 +379,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                             ) : (
                                                 <input 
                                                     type="email" 
-                                                    required={mode === 'login'}
+                                                    required={mode === 'login' || mode === 'register'}
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     placeholder="jane.doe@example.com"
