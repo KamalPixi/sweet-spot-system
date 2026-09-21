@@ -2603,22 +2603,43 @@ export default function AdminDashboard() {
                                                                                      type="button"
                                                                                      onClick={() => handlePrintOrderTicket(order.id)}
                                                                                      disabled={printingOrderId === order.id}
-                                                                                     className={`p-2 border rounded-lg transition-all flex items-center justify-center ${
+                                                                                     className={`px-2.5 py-1.5 border rounded-lg transition-all flex items-center gap-1.5 cursor-pointer disabled:opacity-50 ${
                                                                                          order.print_count > 0 
-                                                                                             ? 'bg-emerald-50/60 border-emerald-200 text-emerald-700 hover:bg-emerald-100' 
-                                                                                             : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-900 hover:text-neutral-950'
+                                                                                             ? 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100 hover:border-emerald-300' 
+                                                                                             : order.has_active_print_job
+                                                                                                 ? 'bg-amber-50 border-amber-200 text-amber-700 animate-pulse'
+                                                                                                 : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-900 hover:text-neutral-950'
                                                                                      }`}
-                                                                                     title={order.print_count > 0 ? `Reprint Ticket (${order.print_count}x)` : 'Print Ticket on Star TSP100'}
+                                                                                     title={
+                                                                                         order.print_count > 0 
+                                                                                             ? `Printed ${order.print_count} time${order.print_count > 1 ? 's' : ''}${order.printed_at ? ` · Last: ${formatDateTime(order.printed_at)}` : ''} — Click to reprint`
+                                                                                             : order.has_active_print_job
+                                                                                                 ? 'Print job in queue'
+                                                                                                 : 'Print Ticket on Star TSP100'
+                                                                                     }
                                                                                  >
                                                                                      {printingOrderId === order.id ? (
-                                                                                         <Loader2 size={14} className="animate-spin text-amber-600" />
+                                                                                         <Loader2 size={13} className="animate-spin text-amber-600" />
                                                                                      ) : (
-                                                                                         <Printer size={14} />
+                                                                                         <Printer size={13} className={order.print_count > 0 ? 'text-emerald-600' : ''} />
+                                                                                     )}
+                                                                                     {order.print_count > 0 ? (
+                                                                                         <span className="font-mono text-[10px] font-bold text-emerald-700">
+                                                                                             x{order.print_count}
+                                                                                         </span>
+                                                                                     ) : order.has_active_print_job ? (
+                                                                                         <span className="text-[9.5px] font-bold text-amber-700">
+                                                                                             Queue
+                                                                                         </span>
+                                                                                     ) : (
+                                                                                         <span className="text-[10px] font-medium text-neutral-400">
+                                                                                             0
+                                                                                         </span>
                                                                                      )}
                                                                                  </button>
                                                                                  <button
                                                                                      onClick={() => navigate(`/admin/orders/${order.order_number}`)}
-                                                                                     className="p-2 bg-neutral-50 border border-neutral-200 text-neutral-600 hover:text-neutral-900 hover:border-neutral-950 rounded-lg transition-all flex items-center justify-center"
+                                                                                     className="p-1.5 bg-neutral-50 border border-neutral-200 text-neutral-600 hover:text-neutral-900 hover:border-neutral-950 rounded-lg transition-all flex items-center justify-center cursor-pointer"
                                                                                      title="View Order Details"
                                                                                  >
                                                                                      <Eye size={14} />
