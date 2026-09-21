@@ -1175,6 +1175,58 @@ export default function AdminDashboard() {
         );
     };
 
+    const [savingSection, setSavingSection] = useState(null);
+
+    // Save Specific Settings Section
+    const handleSaveSection = async (sectionKeys, sectionName) => {
+        setSavingSection(sectionName);
+        setError(null);
+        setSuccessMessage(null);
+
+        const payload = new FormData();
+        sectionKeys.forEach((key) => {
+            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image') {
+                payload.append(`configs[${key}]`, settingsForm[key] || '');
+            }
+        });
+
+        if (sectionKeys.includes('store_logo') && storeLogoFile) {
+            payload.append('store_logo', storeLogoFile);
+        }
+        if (sectionKeys.includes('store_logo_white') && storeLogoWhiteFile) {
+            payload.append('store_logo_white', storeLogoWhiteFile);
+        }
+        if (sectionKeys.includes('store_image') && storeImageFile) {
+            payload.append('store_image', storeImageFile);
+        }
+
+        try {
+            const res = await fetch('/api/admin/configs', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                },
+                body: payload
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success(`${sectionName} saved successfully!`);
+                setSettings(d.data);
+                setSettingsForm(d.data);
+                if (sectionKeys.includes('store_logo')) setStoreLogoFile(null);
+                if (sectionKeys.includes('store_logo_white')) setStoreLogoWhiteFile(null);
+                if (sectionKeys.includes('store_image')) setStoreImageFile(null);
+            } else {
+                toast.error(d.message || `Failed to save ${sectionName}`);
+            }
+        } catch (err) {
+            console.error(`Error saving ${sectionName}:`, err);
+            toast.error(`Error saving ${sectionName}`);
+        } finally {
+            setSavingSection(null);
+        }
+    };
+
     // Save Settings Config
     const handleSaveSettings = async (e) => {
         e.preventDefault();
@@ -3975,451 +4027,508 @@ export default function AdminDashboard() {
                                 </div>
 
                                 {settingsSubTab === 'configs' ? (
-                                    <div className="bg-white border border-neutral-200 p-8 rounded-xl shadow-sm text-left w-full">
-                                        <form onSubmit={handleSaveSettings} className="space-y-6">
-                                            
-                                            {/* Group 1: Store Information */}
-                                            <div className="space-y-4">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    <Store size={16} className="text-neutral-500" /> Store Information
+                                    <div className="space-y-6 w-full text-left">
+                                        
+                                        {/* Card 1: Store Information & Logos */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    <Store size={18} className="text-neutral-500" /> Store Profile & Logos
                                                 </h2>
-                                                <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 pb-4 border-b border-neutral-100">
-                                                    {/* Branded Store Logo (Light Backgrounds) */}
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-20 h-20 rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden flex items-center justify-center relative shrink-0">
-                                                            {storeLogoFile ? (
-                                                                <img src={URL.createObjectURL(storeLogoFile)} alt="Preview" className="w-full h-full object-contain p-2" />
-                                                            ) : settingsForm.store_logo ? (
-                                                                <img src={settingsForm.store_logo} alt="Store Logo" className="w-full h-full object-contain p-2" />
-                                                            ) : (
-                                                                <span className="text-[10px] text-neutral-400 font-bold uppercase">No Logo</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="space-y-1.5">
-                                                            <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">Branded Store Logo (Light Bg)</label>
-                                                            <input 
-                                                                type="file" 
-                                                                accept="image/*"
-                                                                onChange={(e) => {
-                                                                    if (e.target.files && e.target.files[0]) {
-                                                                        setStoreLogoFile(e.target.files[0]);
-                                                                    }
-                                                                }}
-                                                                className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
-                                                            />
-                                                            <p className="text-[9px] text-neutral-400">Used for top of emails, login page, and light headers.</p>
-                                                        </div>
-                                                    </div>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['store_logo', 'store_logo_white', 'store_image', 'store_name', 'store_email', 'store_phone'], 'Store Information')}
+                                                    disabled={savingSection === 'Store Information'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Store Information' ? 'Saving...' : 'Save Store Info'}
+                                                </button>
+                                            </div>
 
-                                                    {/* White Store Logo (Dark Backgrounds) */}
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-20 h-20 rounded-xl border border-neutral-700 bg-neutral-900 overflow-hidden flex items-center justify-center relative shrink-0">
-                                                            {storeLogoWhiteFile ? (
-                                                                <img src={URL.createObjectURL(storeLogoWhiteFile)} alt="Preview" className="w-full h-full object-contain p-2" />
-                                                            ) : settingsForm.store_logo_white ? (
-                                                                <img src={settingsForm.store_logo_white} alt="Store Logo White" className="w-full h-full object-contain p-2" />
-                                                            ) : (
-                                                                <span className="text-[10px] text-neutral-400 font-bold uppercase">No Logo</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="space-y-1.5">
-                                                            <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">White Store Logo (Dark Bg)</label>
-                                                            <input 
-                                                                type="file" 
-                                                                accept="image/*"
-                                                                onChange={(e) => {
-                                                                    if (e.target.files && e.target.files[0]) {
-                                                                        setStoreLogoWhiteFile(e.target.files[0]);
-                                                                    }
-                                                                }}
-                                                                className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
-                                                            />
-                                                            <p className="text-[9px] text-neutral-400">Used for store footer and dark headers.</p>
-                                                        </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-4 border-b border-neutral-100">
+                                                {/* Branded Store Logo (Light Backgrounds) */}
+                                                <div className="flex items-center gap-6">
+                                                    <div className="w-20 h-20 rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden flex items-center justify-center relative shrink-0">
+                                                        {storeLogoFile ? (
+                                                            <img src={URL.createObjectURL(storeLogoFile)} alt="Preview" className="w-full h-full object-contain p-2" />
+                                                        ) : settingsForm.store_logo ? (
+                                                            <img src={settingsForm.store_logo} alt="Store Logo" className="w-full h-full object-contain p-2" />
+                                                        ) : (
+                                                            <span className="text-[10px] text-neutral-400 font-bold uppercase">No Logo</span>
+                                                        )}
                                                     </div>
-
-                                                    {/* Storefront Section Photo */}
-                                                    <div className="flex items-center gap-6">
-                                                        <div className="w-20 h-20 rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden flex items-center justify-center relative shrink-0">
-                                                            {storeImageFile ? (
-                                                                <img src={URL.createObjectURL(storeImageFile)} alt="Preview" className="w-full h-full object-cover" />
-                                                            ) : settingsForm.store_image ? (
-                                                                <img src={settingsForm.store_image} alt="Store Image" className="w-full h-full object-cover" />
-                                                            ) : (
-                                                                <span className="text-[10px] text-neutral-400 font-bold uppercase">No Photo</span>
-                                                            )}
-                                                        </div>
-                                                        <div className="space-y-1.5">
-                                                            <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">Storefront Photo</label>
-                                                            <input 
-                                                                type="file" 
-                                                                accept="image/*"
-                                                                onChange={(e) => {
-                                                                    if (e.target.files && e.target.files[0]) {
-                                                                        setStoreImageFile(e.target.files[0]);
-                                                                    }
-                                                                }}
-                                                                className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
-                                                            />
-                                                            <p className="text-[9px] text-neutral-400">Used on landing page "Where dreams Meet Cream" section.</p>
-                                                        </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">Branded Store Logo (Light Bg)</label>
+                                                        <input 
+                                                            type="file" 
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                if (e.target.files && e.target.files[0]) {
+                                                                    setStoreLogoFile(e.target.files[0]);
+                                                                }
+                                                            }}
+                                                            className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
+                                                        />
+                                                        <p className="text-[9px] text-neutral-400">Used for top of emails, login page, and light headers.</p>
                                                     </div>
                                                 </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Name</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.store_name || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_name: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
+
+                                                {/* White Store Logo (Dark Backgrounds) */}
+                                                <div className="flex items-center gap-6">
+                                                    <div className="w-20 h-20 rounded-xl border border-neutral-700 bg-neutral-900 overflow-hidden flex items-center justify-center relative shrink-0">
+                                                        {storeLogoWhiteFile ? (
+                                                            <img src={URL.createObjectURL(storeLogoWhiteFile)} alt="Preview" className="w-full h-full object-contain p-2" />
+                                                        ) : settingsForm.store_logo_white ? (
+                                                            <img src={settingsForm.store_logo_white} alt="Store Logo White" className="w-full h-full object-contain p-2" />
+                                                        ) : (
+                                                            <span className="text-[10px] text-neutral-400 font-bold uppercase">No Logo</span>
+                                                        )}
                                                     </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Email Address</label>
+                                                    <div className="space-y-1.5">
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">White Store Logo (Dark Bg)</label>
                                                         <input 
-                                                            type="email" 
-                                                            value={settingsForm.store_email || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_email: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                            type="file" 
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                if (e.target.files && e.target.files[0]) {
+                                                                    setStoreLogoWhiteFile(e.target.files[0]);
+                                                                }
+                                                            }}
+                                                            className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
                                                         />
+                                                        <p className="text-[9px] text-neutral-400">Used for store footer and dark headers.</p>
                                                     </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Phone Number</label>
+                                                </div>
+
+                                                {/* Storefront Section Photo */}
+                                                <div className="flex items-center gap-6">
+                                                    <div className="w-20 h-20 rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden flex items-center justify-center relative shrink-0">
+                                                        {storeImageFile ? (
+                                                            <img src={URL.createObjectURL(storeImageFile)} alt="Preview" className="w-full h-full object-cover" />
+                                                        ) : settingsForm.store_image ? (
+                                                            <img src={settingsForm.store_image} alt="Store Image" className="w-full h-full object-cover" />
+                                                        ) : (
+                                                            <span className="text-[10px] text-neutral-400 font-bold uppercase">No Photo</span>
+                                                        )}
+                                                    </div>
+                                                    <div className="space-y-1.5">
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">Storefront Photo</label>
                                                         <input 
-                                                            type="text" 
-                                                            value={settingsForm.store_phone || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_phone: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                            type="file" 
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                if (e.target.files && e.target.files[0]) {
+                                                                    setStoreImageFile(e.target.files[0]);
+                                                                }
+                                                            }}
+                                                            className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
                                                         />
+                                                        <p className="text-[9px] text-neutral-400">Used on landing page "Where dreams Meet Cream" section.</p>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            {/* Group 2: Location & Coordinates */}
-                                            <div className="space-y-4 pt-4 border-t border-neutral-100">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    <MapPin size={16} className="text-neutral-500" /> Location & Coordinates
-                                                </h2>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Street Address</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.store_address || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_address: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Postcode</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.store_postcode || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_postcode: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Latitude (Coordinates)</label>
-                                                        <input 
-                                                            type="number" 
-                                                            step="any"
-                                                            value={settingsForm.store_latitude || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_latitude: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Longitude (Coordinates)</label>
-                                                        <input 
-                                                            type="number" 
-                                                            step="any"
-                                                            value={settingsForm.store_longitude || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_longitude: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Group 3: Delivery parameters */}
-                                            <div className="space-y-4 pt-4 border-t border-neutral-100">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    <Truck size={16} className="text-neutral-500" /> Delivery Parameters
-                                                </h2>
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Max Delivery Radius (Miles)</label>
-                                                        <input 
-                                                            type="number" 
-                                                            step="0.1"
-                                                            value={settingsForm.store_delivery_max_radius_miles || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, store_delivery_max_radius_miles: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Flat Delivery Fee (£)</label>
-                                                        <input 
-                                                            type="number" 
-                                                            step="0.01"
-                                                            value={settingsForm.delivery_fee || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, delivery_fee: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                            placeholder="e.g. 3.00"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Free Delivery Threshold (£)</label>
-                                                        <input 
-                                                            type="number" 
-                                                            step="0.01"
-                                                            value={settingsForm.free_delivery_threshold || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, free_delivery_threshold: e.target.value })}
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                            placeholder="e.g. 15.00"
-                                                        />
-                                                        <p className="text-[10px] text-neutral-400 mt-1">Orders at or above this amount get free delivery.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Group 4: Social Links */}
-                                            <div className="space-y-4 pt-4 border-t border-neutral-100">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    <Users size={16} className="text-neutral-500" /> Social Links
-                                                </h2>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Instagram URL</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.social_instagram || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, social_instagram: e.target.value })}
-                                                            placeholder="https://instagram.com/yourbrand"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">TikTok URL</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.social_tiktok || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, social_tiktok: e.target.value })}
-                                                            placeholder="https://tiktok.com/@yourbrand"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Facebook URL</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.social_facebook || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, social_facebook: e.target.value })}
-                                                            placeholder="https://facebook.com/yourbrand"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Twitter / X URL</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.social_twitter || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, social_twitter: e.target.value })}
-                                                            placeholder="https://twitter.com/yourbrand"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Group 5: SEO & Metadata */}
-                                            <div className="space-y-4 pt-4 border-t border-neutral-100 text-left">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    <Globe size={16} className="text-neutral-500" /> SEO & Metadata Settings
-                                                </h2>
-                                                <div className="space-y-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Default Browser Title</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.seo_title || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, seo_title: e.target.value })}
-                                                            placeholder="e.g. Handcrafted Cakes & Specialty Coffee | Sweet Spot System"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                        <p className="text-[10px] text-neutral-400 mt-1">Shown in browser tab and search engine results. Keeps it under 60 characters.</p>
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Meta Description</label>
-                                                        <textarea 
-                                                            rows={3}
-                                                            value={settingsForm.seo_description || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, seo_description: e.target.value })}
-                                                            placeholder="Enter a brief summary of your shop for search engines..."
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
-                                                        />
-                                                        <p className="text-[10px] text-neutral-400 mt-1">Brief summary shown in search results. Highly recommended to keep between 120 and 160 characters.</p>
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Meta Keywords</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.seo_keywords || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, seo_keywords: e.target.value })}
-                                                            placeholder="e.g. cakes, coffee, london, store, artisanal, pastries"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
-                                                        />
-                                                        <p className="text-[10px] text-neutral-400 mt-1">Comma-separated list of search terms representing your business.</p>
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            {/* Group 6: Why Choose Us / The Sweet Spot Difference */}
-                                            <div className="space-y-4 pt-4 border-t border-neutral-100 text-left">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    "Why Choose Us" / Difference Section
-                                                </h2>
-                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Section Badge Tag</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.diff_badge || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, diff_badge: e.target.value })}
-                                                            placeholder="Why Choose Us"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Heading Line 1</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.diff_title_1 || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, diff_title_1: e.target.value })}
-                                                            placeholder="The Sweet Spot"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
-                                                        />
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Heading Line 2 (Highlighted)</label>
-                                                        <input 
-                                                            type="text" 
-                                                            value={settingsForm.diff_title_2 || ''}
-                                                            onChange={(e) => setSettingsForm({ ...settingsForm, diff_title_2: e.target.value })}
-                                                            placeholder="Difference"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
-                                                        />
-                                                    </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Name</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.store_name || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_name: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
                                                 </div>
                                                 <div>
-                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Section Subtitle Paragraph</label>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Email Address</label>
+                                                    <input 
+                                                        type="email" 
+                                                        value={settingsForm.store_email || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_email: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Phone Number</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.store_phone || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_phone: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card 2: Location & Coordinates */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    <MapPin size={18} className="text-neutral-500" /> Location & Coordinates
+                                                </h2>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['store_address', 'store_postcode', 'store_latitude', 'store_longitude'], 'Location Settings')}
+                                                    disabled={savingSection === 'Location Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Location Settings' ? 'Saving...' : 'Save Location'}
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Street Address</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.store_address || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_address: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Store Postcode</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.store_postcode || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_postcode: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Latitude (Coordinates)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        step="any"
+                                                        value={settingsForm.store_latitude || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_latitude: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Longitude (Coordinates)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        step="any"
+                                                        value={settingsForm.store_longitude || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_longitude: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card 3: Delivery Parameters */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    <Truck size={18} className="text-neutral-500" /> Delivery Parameters
+                                                </h2>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['store_delivery_max_radius_miles', 'delivery_fee', 'free_delivery_threshold'], 'Delivery Parameters')}
+                                                    disabled={savingSection === 'Delivery Parameters'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Delivery Parameters' ? 'Saving...' : 'Save Delivery'}
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Max Delivery Radius (Miles)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        step="0.1"
+                                                        value={settingsForm.store_delivery_max_radius_miles || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, store_delivery_max_radius_miles: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Flat Delivery Fee (£)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        step="0.01"
+                                                        value={settingsForm.delivery_fee || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, delivery_fee: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        placeholder="e.g. 3.00"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Free Delivery Threshold (£)</label>
+                                                    <input 
+                                                        type="number" 
+                                                        step="0.01"
+                                                        value={settingsForm.free_delivery_threshold || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, free_delivery_threshold: e.target.value })}
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        placeholder="e.g. 15.00"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Orders at or above this amount get free delivery.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card 4: Social Links */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    <Users size={18} className="text-neutral-500" /> Social Links
+                                                </h2>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['social_instagram', 'social_tiktok', 'social_facebook', 'social_twitter'], 'Social Links')}
+                                                    disabled={savingSection === 'Social Links'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Social Links' ? 'Saving...' : 'Save Social Links'}
+                                                </button>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Instagram URL</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.social_instagram || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_instagram: e.target.value })}
+                                                        placeholder="https://instagram.com/yourbrand"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">TikTok URL</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.social_tiktok || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_tiktok: e.target.value })}
+                                                        placeholder="https://tiktok.com/@yourbrand"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Facebook URL</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.social_facebook || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_facebook: e.target.value })}
+                                                        placeholder="https://facebook.com/yourbrand"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Twitter / X URL</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.social_twitter || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_twitter: e.target.value })}
+                                                        placeholder="https://twitter.com/yourbrand"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card 5: SEO & Metadata Settings */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    <Globe size={18} className="text-neutral-500" /> SEO & Metadata Settings
+                                                </h2>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['seo_title', 'seo_description', 'seo_keywords'], 'SEO Settings')}
+                                                    disabled={savingSection === 'SEO Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'SEO Settings' ? 'Saving...' : 'Save SEO Settings'}
+                                                </button>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Default Browser Title</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.seo_title || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, seo_title: e.target.value })}
+                                                        placeholder="e.g. Handcrafted Cakes & Specialty Coffee | Sweet Spot System"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Shown in browser tab and search engine results. Keeps it under 60 characters.</p>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Meta Description</label>
                                                     <textarea 
-                                                        rows={2}
-                                                        value={settingsForm.diff_description || ''}
-                                                        onChange={(e) => setSettingsForm({ ...settingsForm, diff_description: e.target.value })}
-                                                        placeholder="What makes us special? It's the little things — made with intention, served with love."
+                                                        rows={3}
+                                                        value={settingsForm.seo_description || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, seo_description: e.target.value })}
+                                                        placeholder="Enter a brief summary of your shop for search engines..."
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Brief summary shown in search results. Highly recommended to keep between 120 and 160 characters.</p>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Meta Keywords</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.seo_keywords || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, seo_keywords: e.target.value })}
+                                                        placeholder="e.g. cakes, coffee, london, store, artisanal, pastries"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Comma-separated list of search terms representing your business.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Card 6: Why Choose Us / The Sweet Spot Difference */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    "Why Choose Us" / Difference Section
+                                                </h2>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['diff_badge', 'diff_title_1', 'diff_title_2', 'diff_description', 'diff_item_1_title', 'diff_item_1_content', 'diff_item_2_title', 'diff_item_2_content', 'diff_item_3_title', 'diff_item_3_content'], 'Difference Highlights')}
+                                                    disabled={savingSection === 'Difference Highlights'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Difference Highlights' ? 'Saving...' : 'Save Difference Section'}
+                                                </button>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Section Badge Tag</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.diff_badge || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, diff_badge: e.target.value })}
+                                                        placeholder="Why Choose Us"
                                                         className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
                                                     />
                                                 </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Heading Line 1</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.diff_title_1 || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, diff_title_1: e.target.value })}
+                                                        placeholder="The Sweet Spot"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Heading Line 2 (Highlighted)</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.diff_title_2 || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, diff_title_2: e.target.value })}
+                                                        placeholder="Difference"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Section Subtitle Paragraph</label>
+                                                <textarea 
+                                                    rows={2}
+                                                    value={settingsForm.diff_description || ''}
+                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_description: e.target.value })}
+                                                    placeholder="What makes us special? It's the little things — made with intention, served with love."
+                                                    className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                />
+                                            </div>
 
-                                                <div className="space-y-4 pt-2">
-                                                    <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 border-b border-neutral-100 pb-1">
-                                                        Accordion Feature Cards (3 Highlights)
-                                                    </p>
-                                                    
-                                                    {/* Card 1 */}
-                                                    <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
-                                                        <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 1</span>
-                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                            <div className="md:col-span-1">
-                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
-                                                                <input 
-                                                                    type="text"
-                                                                    value={settingsForm.diff_item_1_title || ''}
-                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_1_title: e.target.value })}
-                                                                    placeholder="Made with love"
-                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
-                                                                />
-                                                            </div>
-                                                            <div className="md:col-span-2">
-                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
-                                                                <textarea 
-                                                                    rows={2}
-                                                                    value={settingsForm.diff_item_1_content || ''}
-                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_1_content: e.target.value })}
-                                                                    placeholder="Every dessert is crafted by hand using traditional recipes..."
-                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
-                                                                />
-                                                            </div>
+                                            <div className="space-y-4 pt-2">
+                                                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 border-b border-neutral-100 pb-1">
+                                                    Accordion Feature Cards (3 Highlights)
+                                                </p>
+                                                
+                                                {/* Card 1 */}
+                                                <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
+                                                    <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 1</span>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                        <div className="md:col-span-1">
+                                                            <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
+                                                            <input 
+                                                                type="text"
+                                                                value={settingsForm.diff_item_1_title || ''}
+                                                                onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_1_title: e.target.value })}
+                                                                placeholder="Made with love"
+                                                                className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                            />
+                                                        </div>
+                                                        <div className="md:col-span-2">
+                                                            <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
+                                                            <textarea 
+                                                                rows={2}
+                                                                value={settingsForm.diff_item_1_content || ''}
+                                                                onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_1_content: e.target.value })}
+                                                                placeholder="Every dessert is crafted by hand using traditional recipes..."
+                                                                className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                            />
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                    {/* Card 2 */}
-                                                    <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
-                                                        <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 2</span>
-                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                            <div className="md:col-span-1">
-                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
-                                                                <input 
-                                                                    type="text"
-                                                                    value={settingsForm.diff_item_2_title || ''}
-                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_2_title: e.target.value })}
-                                                                    placeholder="Premium Ingredients"
-                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
-                                                                />
-                                                            </div>
-                                                            <div className="md:col-span-2">
-                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
-                                                                <textarea 
-                                                                    rows={2}
-                                                                    value={settingsForm.diff_item_2_content || ''}
-                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_2_content: e.target.value })}
-                                                                    placeholder="We source real Madagascan vanilla pods..."
-                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
-                                                                />
-                                                            </div>
+                                                {/* Card 2 */}
+                                                <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
+                                                    <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 2</span>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                        <div className="md:col-span-1">
+                                                            <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
+                                                            <input 
+                                                                type="text"
+                                                                value={settingsForm.diff_item_2_title || ''}
+                                                                onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_2_title: e.target.value })}
+                                                                placeholder="Premium Ingredients"
+                                                                className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                            />
+                                                        </div>
+                                                        <div className="md:col-span-2">
+                                                            <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
+                                                            <textarea 
+                                                                rows={2}
+                                                                value={settingsForm.diff_item_2_content || ''}
+                                                                onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_2_content: e.target.value })}
+                                                                placeholder="We source real Madagascan vanilla pods..."
+                                                                className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                            />
                                                         </div>
                                                     </div>
+                                                </div>
 
-                                                    {/* Card 3 */}
-                                                    <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
-                                                        <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 3</span>
-                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                                                            <div className="md:col-span-1">
-                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
-                                                                <input 
-                                                                    type="text"
-                                                                    value={settingsForm.diff_item_3_title || ''}
-                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_3_title: e.target.value })}
-                                                                    placeholder="Hygienic Promise"
-                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
-                                                                />
-                                                            </div>
-                                                            <div className="md:col-span-2">
-                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
-                                                                <textarea 
-                                                                    rows={2}
-                                                                    value={settingsForm.diff_item_3_content || ''}
-                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_3_content: e.target.value })}
-                                                                    placeholder="Our kitchen strictly adheres to five-star food hygiene..."
-                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
-                                                                />
-                                                            </div>
+                                                {/* Card 3 */}
+                                                <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
+                                                    <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 3</span>
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                        <div className="md:col-span-1">
+                                                            <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
+                                                            <input 
+                                                                type="text"
+                                                                value={settingsForm.diff_item_3_title || ''}
+                                                                onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_3_title: e.target.value })}
+                                                                placeholder="Hygienic Promise"
+                                                                className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                            />
+                                                        </div>
+                                                        <div className="md:col-span-2">
+                                                            <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
+                                                            <textarea 
+                                                                rows={2}
+                                                                value={settingsForm.diff_item_3_content || ''}
+                                                                onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_3_content: e.target.value })}
+                                                                placeholder="Our kitchen strictly adheres to five-star food hygiene..."
+                                                                className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                            />
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
-
-                                            <button type="submit" className="w-full mt-6 bg-primary text-white font-bold py-3 hover:bg-primary-hover transition-colors text-xs rounded-lg uppercase tracking-wider cursor-pointer shadow-xs">
-                                                Save Settings Configurations
-                                            </button>
-                                        </form>
+                                        </div>
                                     </div>
                                 ) : (
                                     /* FAQ Management Panel */
