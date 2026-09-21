@@ -40,6 +40,9 @@ class OrderResource extends JsonResource
             'payment_transaction_id' => $this->payment_transaction_id,
             'printed_at' => $this->printed_at,
             'print_count' => $this->print_count,
+            'has_active_print_job' => $this->relationLoaded('printJobs')
+                ? $this->printJobs->whereIn('status', ['queued', 'printing'])->isNotEmpty()
+                : $this->printJobs()->whereIn('status', ['queued', 'printing'])->exists(),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'customer' => $this->relationLoaded('customer')

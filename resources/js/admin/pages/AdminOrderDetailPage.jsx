@@ -42,6 +42,7 @@ import {
     UserCheck,
     SlidersHorizontal,
     ArchiveRestore,
+    XCircle,
 } from 'lucide-react';
 
 const formatCurrency = (value) => `£${parseFloat(value || 0).toFixed(2)}`;
@@ -79,6 +80,7 @@ export default function AdminOrderDetailPage() {
     const hasLoadedNotificationsRef = useRef(false);
     const { playNotificationSound } = useNotificationSound();
     const [printing, setPrinting] = useState(false);
+    const [cancellingPrint, setCancellingPrint] = useState(false);
     const [selectedProvider, setSelectedProvider] = useState('uber_direct');
     const [dispatchingCourier, setDispatchingCourier] = useState(false);
     const [advancingStatus, setAdvancingStatus] = useState(false);
@@ -106,6 +108,33 @@ export default function AdminOrderDetailPage() {
             toast.error('Print request failed.');
         } finally {
             setPrinting(false);
+        }
+    };
+
+    const handleCancelOrderPrints = async () => {
+        if (!order?.id) return;
+        if (!confirm('Cancel all pending print jobs for this order?')) return;
+        setCancellingPrint(true);
+        try {
+            const res = await fetch(`/api/admin/orders/${order.id}/prints`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success(d.message || 'Print job(s) cancelled successfully.');
+                fetchOrder();
+            } else {
+                toast.error(d.message || 'Failed to cancel print.');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Cancel print request failed.');
+        } finally {
+            setCancellingPrint(false);
         }
     };
 
@@ -517,11 +546,23 @@ export default function AdminOrderDetailPage() {
 
                         {order && (
                             <div className="flex flex-wrap items-center gap-2">
+                                {order.has_active_print_job && (
+                                    <button
+                                        type="button"
+                                        onClick={handleCancelOrderPrints}
+                                        disabled={cancellingPrint}
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                                        title="Cancel active print queue job for this order"
+                                    >
+                                        <XCircle size={14} className="text-rose-600" />
+                                        <span>{cancellingPrint ? 'Cancelling...' : 'Cancel Active Print'}</span>
+                                    </button>
+                                )}
                                 <button
                                     type="button"
                                     onClick={handlePrintTicket}
                                     disabled={printing}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50"
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer"
                                 >
                                     <Printer size={14} className="text-amber-400" />
                                     <span>{printing ? 'Enqueuing Print...' : order.print_count > 0 ? `Reprint Receipt (x${order.print_count})` : 'Print Kitchen Receipt'}</span>

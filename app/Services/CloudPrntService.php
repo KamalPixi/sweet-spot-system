@@ -19,9 +19,26 @@ class CloudPrntService
 
     /**
      * Enqueue a receipt print job for an order.
+     * Prevents duplicate prints if a job is already queued or printing, unless $forceReprint is true.
      */
-    public function queueOrderReceipt(Order $order, ?string $printerMac = null): PrintJob
+    public function queueOrderReceipt(Order $order, ?string $printerMac = null, bool $forceReprint = false): ?PrintJob
     {
+        // Guard against duplicate auto-print queueing from different triggers (webhook vs page landing)
+        if (!$forceReprint) {
+            $existingActiveJob = PrintJob::where('order_id', $order->id)
+                ->whereIn('status', ['queued', 'printing'])
+                ->first();
+
+            if ($existingActiveJob) {
+                return $existingActiveJob;
+            }
+
+            // If the order has already been printed at least once and this isn't a forced reprint, skip
+            if ($order->print_count > 0 || $order->printed_at !== null) {
+                return null;
+            }
+        }
+
         $order->loadMissing(['items', 'customer', 'deliveryAddress']);
 
         $markupContent = $this->generateStarMarkup($order);
@@ -126,6 +143,40 @@ class CloudPrntService
         }
 
         return true;
+    }
+
+    /**
+     * Cancel an active or queued print job.
+     */
+    public function cancelJob(int|string $jobIdOrToken): bool
+    {
+        $job = is_numeric($jobIdOrToken)
+            ? PrintJob::find($jobIdOrToken)
+            : PrintJob::where('job_token', $jobIdOrToken)->first();
+
+        if (!$job || !in_array($job->status, ['queued', 'printing'])) {
+            return false;
+        }
+
+        $job->update([
+            'status' => 'cancelled',
+            'error_message' => 'Cancelled by admin',
+        ]);
+
+        return true;
+    }
+
+    /**
+     * Cancel all active print jobs for a specific order.
+     */
+    public function cancelOrderJobs(int $orderId): int
+    {
+        return PrintJob::where('order_id', $orderId)
+            ->whereIn('status', ['queued', 'printing'])
+            ->update([
+                'status' => 'cancelled',
+                'error_message' => 'Cancelled by admin',
+            ]);
     }
 
     /**

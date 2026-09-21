@@ -192,7 +192,23 @@ class OrderController extends Controller
                             'payment_status' => 'paid',
                             'status' => 'pending'
                         ]);
-                        $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+
+                        if ($previousStatus === 'awaiting_payment') {
+                            User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
+                            if ($order->customer) {
+                                $order->customer->notify(new \App\Notifications\CustomerOrderConfirmationNotification($order));
+                            }
+                            $this->realtimeBroadcastService->broadcastOrderCreated($order);
+                        } else {
+                            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+                        }
+
+                        // Always queue receipt print upon confirmed payment (deduplicated by CloudPrntService)
+                        try {
+                            $this->cloudPrntService->queueOrderReceipt($order);
+                        } catch (Exception $e) {
+                            logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
+                        }
                     } elseif ($intent->status === 'requires_payment_method' || $intent->status === 'canceled') {
                         $previousStatus = $order->status;
                         $order->update([

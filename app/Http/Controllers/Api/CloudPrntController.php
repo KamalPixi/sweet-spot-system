@@ -66,12 +66,12 @@ class CloudPrntController extends Controller
     }
 
     /**
-     * Admin: Manually trigger print for an order.
+     * Admin: Manually trigger print for an order (always forces reprint).
      */
     public function manualPrint(Request $request, int $orderId): JsonResponse
     {
         $order = Order::findOrFail($orderId);
-        $job = $this->cloudPrntService->queueOrderReceipt($order);
+        $job = $this->cloudPrntService->queueOrderReceipt($order, null, true);
 
         return response()->json([
             'success' => true,
@@ -81,6 +81,40 @@ class CloudPrntController extends Controller
                 'status' => $job->status,
                 'created_at' => $job->created_at,
             ],
+        ]);
+    }
+
+    /**
+     * Admin: Cancel an active or queued print job.
+     */
+    public function cancelPrintJob(Request $request, int $jobId): JsonResponse
+    {
+        $cancelled = $this->cloudPrntService->cancelJob($jobId);
+
+        if (!$cancelled) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Job cannot be cancelled (it may have already printed or does not exist).',
+            ], 422);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Print job cancelled successfully.',
+        ]);
+    }
+
+    /**
+     * Admin: Cancel active prints for an order.
+     */
+    public function cancelOrderPrints(Request $request, int $orderId): JsonResponse
+    {
+        $count = $this->cloudPrntService->cancelOrderJobs($orderId);
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} active print job(s) cancelled for this order.",
+            'cancelled_count' => $count,
         ]);
     }
 
