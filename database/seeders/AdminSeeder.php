@@ -19,7 +19,7 @@ class AdminSeeder extends Seeder
     {
         // 1. Create Default Admin User
         User::updateOrCreate(
-            ['email' => 'admin@sweetspot.co.uk'],
+            ['email' => 'admin@sweetspotlondon.co.uk'],
             [
                 'name' => 'Admin Staff',
                 'password' => bcrypt('password'),
@@ -28,16 +28,16 @@ class AdminSeeder extends Seeder
 
         // 2. Create Store Configurations
         $configs = [
-            'store_name' => 'Sweet Spot System',
-            'store_postcode' => 'W1D 1AN', // Soho, London
+            'store_name' => 'Sweet Spot',
+            'store_postcode' => 'IG11 8UW', // Soho, London
             'store_delivery_radius_miles' => '3.0',
             'store_delivery_charge_per_mile' => '1.50',
             'store_delivery_base_fee' => '2.50',
-            'store_address' => '10 Soho Street, London',
-            'store_latitude' => '51.5133',
-            'store_longitude' => '-0.1307',
-            'store_email' => 'contact@sweetspot.co.uk',
-            'store_phone' => '+44 20 7123 4567',
+            'store_address' => '19, Faircross Parade, Upney Ln, Barking',
+            'store_latitude' => '51.545587548659775',
+            'store_longitude' => '0.09481839827376755',
+            'store_email' => 'contact@sweetspotlondon.co.uk',
+            'store_phone' => '+44 20 3795 5048',
             'store_logo' => '/storage/brand_logo.png',
             'store_logo_white' => '/storage/brand_logo_white.png',
         ];
