@@ -85,6 +85,27 @@ class CloudPrntController extends Controller
     }
 
     /**
+     * Admin: Trigger hardware diagnostic test print slip.
+     */
+    public function testPrint(Request $request): JsonResponse
+    {
+        $printerMac = $request->input('printer_mac');
+        $notes = $request->input('notes');
+
+        $job = $this->cloudPrntService->queueTestReceipt($printerMac, $notes);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hardware test slip enqueued! Star CloudPRNT printer will fetch on next poll.',
+            'data' => [
+                'job_token' => $job->job_token,
+                'status' => $job->status,
+                'created_at' => $job->created_at,
+            ],
+        ]);
+    }
+
+    /**
      * Admin: List print queue and history.
      */
     public function listJobs(Request $request): JsonResponse

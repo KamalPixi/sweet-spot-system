@@ -124,7 +124,9 @@ Route::middleware('throttle:global_api')->group(function () {
             Route::put('/orders/{id}/status', [OrderController::class, 'updateStatus']);
             Route::post('/orders/{id}/print', [CloudPrntController::class, 'manualPrint']);
             Route::post('/orders/{id}/dispatch-uber', [UberDirectController::class, 'dispatchOrder']);
+            Route::post('/orders/{id}/advance-delivery-status', [UberDirectController::class, 'advanceDeliveryStatus']);
             Route::get('/printer/jobs', [CloudPrntController::class, 'listJobs']);
+            Route::post('/printer/test', [CloudPrntController::class, 'testPrint']);
             
             // Admin Collection Slots Management
             Route::post('/collection-slots', [CollectionSlotController::class, 'store']);

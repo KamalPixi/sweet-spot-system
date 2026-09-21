@@ -79,7 +79,9 @@ export default function AdminOrderDetailPage() {
     const hasLoadedNotificationsRef = useRef(false);
     const { playNotificationSound } = useNotificationSound();
     const [printing, setPrinting] = useState(false);
-    const [dispatchingUber, setDispatchingUber] = useState(false);
+    const [selectedProvider, setSelectedProvider] = useState('uber_direct');
+    const [dispatchingCourier, setDispatchingCourier] = useState(false);
+    const [advancingStatus, setAdvancingStatus] = useState(false);
 
     const handlePrintTicket = async () => {
         if (!order?.id) return;
@@ -107,11 +109,38 @@ export default function AdminOrderDetailPage() {
         }
     };
 
-    const handleDispatchUber = async () => {
+    const handleDispatchCourier = async () => {
         if (!order?.id) return;
-        setDispatchingUber(true);
+        setDispatchingCourier(true);
         try {
             const res = await fetch(`/api/admin/orders/${order.id}/dispatch-uber`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({ provider: selectedProvider }),
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success(d.message || 'Courier dispatched successfully!');
+                fetchOrder();
+            } else {
+                toast.error(d.message || 'Failed to dispatch courier.');
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error('Courier dispatch failed.');
+        } finally {
+            setDispatchingCourier(false);
+        }
+    };
+
+    const handleAdvanceCourierStatus = async () => {
+        if (!order?.id) return;
+        setAdvancingStatus(true);
+        try {
+            const res = await fetch(`/api/admin/orders/${order.id}/advance-delivery-status`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -120,16 +149,16 @@ export default function AdminOrderDetailPage() {
             });
             const d = await res.json();
             if (d.success) {
-                toast.success('Uber Direct courier dispatched!');
+                toast.success(d.message || 'Courier status advanced!');
                 fetchOrder();
             } else {
-                toast.error(d.message || 'Failed to dispatch Uber courier.');
+                toast.error(d.message || 'Failed to advance status.');
             }
         } catch (err) {
             console.error(err);
-            toast.error('Courier dispatch failed.');
+            toast.error('Failed to advance courier status.');
         } finally {
-            setDispatchingUber(false);
+            setAdvancingStatus(false);
         }
     };
 
@@ -633,11 +662,11 @@ export default function AdminOrderDetailPage() {
                                     </div>
 
                                     {order.type === 'delivery' && (
-                                        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm space-y-3">
+                                        <div className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm space-y-4">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
                                                     <Truck size={16} className="text-neutral-900" />
-                                                    <h2 className="text-sm font-bold text-neutral-900">Uber Direct Delivery</h2>
+                                                    <h2 className="text-sm font-bold text-neutral-900">Courier Delivery Dispatch</h2>
                                                 </div>
                                                 <span className="px-2.5 py-0.5 rounded-full bg-neutral-100 text-neutral-800 text-[10px] font-black uppercase tracking-wider">
                                                     {order.uber_status || 'Pending Dispatch'}
@@ -645,40 +674,75 @@ export default function AdminOrderDetailPage() {
                                             </div>
 
                                             {order.uber_delivery_id ? (
-                                                <div className="p-3 bg-neutral-50 rounded-xl space-y-2 border border-neutral-100 text-xs">
-                                                    <div className="flex justify-between">
+                                                <div className="p-3.5 bg-neutral-50 rounded-xl space-y-2.5 border border-neutral-100 text-xs">
+                                                    <div className="flex justify-between items-center">
+                                                        <span className="text-neutral-400">Provider:</span>
+                                                        <span className="font-bold text-neutral-800 uppercase text-[10px] bg-white border border-neutral-200 px-2 py-0.5 rounded">
+                                                            {order.delivery_provider?.replace('_', ' ') || 'Uber Direct'}
+                                                        </span>
+                                                    </div>
+                                                    <div className="flex justify-between items-center">
                                                         <span className="text-neutral-400">Tracking Ref:</span>
                                                         <span className="font-mono font-bold text-neutral-800">{order.uber_delivery_id}</span>
                                                     </div>
                                                     {order.uber_courier_name && (
-                                                        <div className="flex justify-between">
+                                                        <div className="flex justify-between items-center">
                                                             <span className="text-neutral-400">Courier:</span>
                                                             <span className="font-bold text-neutral-800">{order.uber_courier_name} {order.uber_courier_phone ? `(${order.uber_courier_phone})` : ''}</span>
                                                         </div>
                                                     )}
                                                     {order.uber_tracking_url && (
-                                                        <a
-                                                            href={order.uber_tracking_url}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800 pt-1"
-                                                        >
-                                                            <span>Live Courier Map</span>
-                                                            <ExternalLink size={12} />
-                                                        </a>
+                                                        <div className="pt-1 flex items-center justify-between border-t border-neutral-200/60">
+                                                            <a
+                                                                href={order.uber_tracking_url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center gap-1.5 text-xs font-bold text-amber-700 hover:text-amber-800"
+                                                            >
+                                                                <span>Live Courier Map</span>
+                                                                <ExternalLink size={12} />
+                                                            </a>
+
+                                                            {order.uber_status !== 'delivered' && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={handleAdvanceCourierStatus}
+                                                                    disabled={advancingStatus}
+                                                                    className="px-2.5 py-1 bg-amber-500/10 hover:bg-amber-500/20 text-amber-800 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors disabled:opacity-50 cursor-pointer"
+                                                                    title="Simulate driver moving to next delivery milestone"
+                                                                >
+                                                                    {advancingStatus ? 'Advancing...' : '⚡ Advance Status'}
+                                                                </button>
+                                                            )}
+                                                        </div>
                                                     )}
                                                 </div>
                                             ) : (
-                                                <div className="space-y-2">
-                                                    <p className="text-xs text-neutral-500">No courier dispatched yet for this order.</p>
+                                                <div className="space-y-3">
+                                                    <div>
+                                                        <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-400 mb-1.5">
+                                                            Select Delivery Provider
+                                                        </label>
+                                                        <select
+                                                            value={selectedProvider}
+                                                            onChange={(e) => setSelectedProvider(e.target.value)}
+                                                            className="w-full bg-neutral-50 border border-neutral-300 px-3 py-2 text-xs font-bold text-neutral-800 rounded-lg focus:outline-none focus:border-neutral-950 transition-colors"
+                                                        >
+                                                            <option value="uber_direct">Uber Direct (Standard On-Demand)</option>
+                                                            <option value="stuart">Stuart Delivery (Express Courier)</option>
+                                                            <option value="in_house">In-House Fleet (Sweet Spot Bakery Van)</option>
+                                                            <option value="simulated">SwiftCourier Simulator (Test Courier)</option>
+                                                        </select>
+                                                    </div>
+
                                                     <button
                                                         type="button"
-                                                        onClick={handleDispatchUber}
-                                                        disabled={dispatchingUber}
-                                                        className="w-full py-2.5 px-4 bg-neutral-950 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
+                                                        onClick={handleDispatchCourier}
+                                                        disabled={dispatchingCourier}
+                                                        className="w-full py-2.5 px-4 bg-neutral-950 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
                                                     >
                                                         <Truck size={14} className="text-amber-400" />
-                                                        <span>{dispatchingUber ? 'Dispatching Courier...' : 'Dispatch Uber Direct Courier'}</span>
+                                                        <span>{dispatchingCourier ? 'Dispatching Courier...' : 'Dispatch Courier'}</span>
                                                     </button>
                                                 </div>
                                             )}

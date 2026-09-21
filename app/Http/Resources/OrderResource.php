@@ -29,6 +29,11 @@ class OrderResource extends JsonResource
             'uber_courier_phone' => $this->uber_courier_phone,
             'uber_courier_location' => $this->uber_courier_location,
             'uber_fee' => $this->uber_fee,
+            // Clean helper aliases for courier info across providers
+            'courier_name' => $this->uber_courier_name,
+            'courier_phone' => $this->uber_courier_phone,
+            'courier_status' => $this->uber_status,
+            'courier_tracking_url' => $this->uber_tracking_url,
             'total' => $this->total,
             'payment_status' => $this->payment_status,
             'payment_method' => $this->payment_method,

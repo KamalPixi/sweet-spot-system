@@ -91,13 +91,11 @@ class OrderController extends Controller
                 }
                 $this->realtimeBroadcastService->broadcastOrderCreated($order);
 
-                // Auto-print to Star CloudPRNT if enabled
-                if (config('services.star_cloudprnt.auto_print', true)) {
-                    try {
-                        $this->cloudPrntService->queueOrderReceipt($order);
-                    } catch (Exception $e) {
-                        logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
-                    }
+                // Always queue receipt print to Star CloudPRNT on new order
+                try {
+                    $this->cloudPrntService->queueOrderReceipt($order);
+                } catch (Exception $e) {
+                    logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
                 }
             }
 
@@ -623,13 +621,11 @@ class OrderController extends Controller
                 }
                 $this->realtimeBroadcastService->broadcastOrderCreated($order);
 
-                // Auto-print receipt upon successful payment
-                if (config('services.star_cloudprnt.auto_print', true)) {
-                    try {
-                        $this->cloudPrntService->queueOrderReceipt($order);
-                    } catch (Exception $e) {
-                        logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
-                    }
+                // Always queue receipt print upon successful payment
+                try {
+                    $this->cloudPrntService->queueOrderReceipt($order);
+                } catch (Exception $e) {
+                    logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
                 }
             } else {
                 $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);

@@ -40,6 +40,26 @@ class CloudPrntService
     }
 
     /**
+     * Enqueue a hardware diagnostic test print slip.
+     */
+    public function queueTestReceipt(?string $printerMac = null, ?string $customNotes = null): PrintJob
+    {
+        $markupContent = $this->generateTestMarkup($customNotes);
+
+        $printJob = PrintJob::create([
+            'order_id' => null,
+            'job_token' => 'TEST_' . strtoupper(Str::random(12)),
+            'printer_mac' => $printerMac,
+            'status' => 'queued',
+            'content_type' => 'text/vnd.star.markup',
+            'content' => $markupContent,
+            'attempts' => 0,
+        ]);
+
+        return $printJob;
+    }
+
+    /**
      * Handle printer poll request and decide whether a job is ready.
      */
     public function handlePoll(array $pollData): array
@@ -192,6 +212,57 @@ class CloudPrntService
         $lines[] = "[line: count 1]";
         $lines[] = "[align: center]";
         $lines[] = "Thank you for visiting Sweet Spot!";
+        $lines[] = "[feed: count 4]";
+        $lines[] = "[cut: feed]";
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * Generate diagnostic test slip Star Document Markup (TSP100 80mm).
+     */
+    public function generateTestMarkup(?string $customNotes = null): string
+    {
+        $storeName = $this->storeConfigService->get('store_name', 'SWEET SPOT SYSTEM');
+        $storePhone = $this->storeConfigService->get('store_phone', '');
+        $dateFormatted = now()->format('d/m/Y H:i:s');
+
+        $lines = [];
+        $lines[] = "[align: center]";
+        $lines[] = "[bold: on][mag: width 2; height 2]{$storeName}[mag][bold: off]";
+        if ($storePhone) {
+            $lines[] = "Tel: {$storePhone}";
+        }
+        $lines[] = "[line: count 1]";
+        $lines[] = "[bold: on][mag: width 2; height 2]HARDWARE TEST SLIP[mag][bold: off]";
+        $lines[] = "Star CloudPRNT Protocol Verified";
+        $lines[] = "Timestamp: {$dateFormatted}";
+        $lines[] = "[line: count 1]";
+
+        $lines[] = "[align: left]";
+        $lines[] = "[bold: on]PRINTER DIAGNOSTICS:[bold: off]";
+        $lines[] = "Model: Star Micronics TSP100 Series";
+        $lines[] = "Emulation: Star Line Mode / StarPRNT";
+        $lines[] = "Paper Width: 80mm (48 Columns)";
+        $lines[] = "Cloud Protocol: HTTP/JSON Polling (Star CloudPRNT)";
+        $lines[] = "Status: Online & Ready";
+        $lines[] = "[line: count 1]";
+
+        $lines[] = "[bold: on]FONT & EMPHASIS TEST:[bold: off]";
+        $lines[] = "Regular Text: Sweet Spot London Bakery";
+        $lines[] = "[bold: on]Bold Text: Fresh Artisan Desserts[bold: off]";
+        $lines[] = "[under: on]Underlined Text: https://sweetspot.test[under: off]";
+        $lines[] = "[invert: on] INVERTED HIGH-CONTRAST HEADER [invert: off]";
+        $lines[] = "[line: count 1]";
+
+        if ($customNotes) {
+            $lines[] = "[bold: on]Operator Note:[bold: off]";
+            $lines[] = $customNotes;
+            $lines[] = "[line: count 1]";
+        }
+
+        $lines[] = "[align: center]";
+        $lines[] = "[bold: on]*** TEST COMPLETE - CUTTER OK ***[bold: off]";
         $lines[] = "[feed: count 4]";
         $lines[] = "[cut: feed]";
 

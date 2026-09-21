@@ -10,7 +10,7 @@ import {
     Activity, ArrowRight, Bell, CheckCheck, ChevronRight, Clock,
     Loader2, LogOut, Mail, MapPin, Package, Pencil, Save, ShoppingBag,
     Trash2, User, X, Phone, CircleCheck, ExternalLink,
-    Lock, ChefHat, AlertCircle, ArrowUpRight, LayoutDashboard
+    Lock, ChefHat, AlertCircle, ArrowUpRight, LayoutDashboard, Truck
 } from 'lucide-react';
 
 /* ─── Helpers ─────────────────────────────────────────── */
@@ -605,6 +605,32 @@ export default function CustomerPortal() {
                                                 </button>
                                             </div>
 
+                                            {(latestActiveOrder.uber_status || latestActiveOrder.courier_status) && (
+                                                <div className="mt-2 p-3 bg-[#e5b582]/15 border border-[#e5b582]/30 rounded-xl flex items-center justify-between text-xs">
+                                                    <div className="flex items-center gap-2">
+                                                        <Truck size={14} className="text-[#24161b]" />
+                                                        <span className="font-bold text-[#24161b]">
+                                                            Courier: {latestActiveOrder.uber_courier_name || latestActiveOrder.courier_name || 'Assigned'}
+                                                        </span>
+                                                        <span className="px-2 py-0.5 rounded-full bg-[#24161b] text-[#e5b582] text-[9px] font-black uppercase tracking-wider">
+                                                            {latestActiveOrder.uber_status || latestActiveOrder.courier_status}
+                                                        </span>
+                                                    </div>
+                                                    {(latestActiveOrder.uber_tracking_url || latestActiveOrder.courier_tracking_url) && (
+                                                        <a
+                                                            href={latestActiveOrder.uber_tracking_url || latestActiveOrder.courier_tracking_url}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            onClick={(e) => e.stopPropagation()}
+                                                            className="inline-flex items-center gap-1 text-[11px] font-bold text-[#8e5233] hover:underline"
+                                                        >
+                                                            <span>Live Map</span>
+                                                            <ExternalLink size={11} />
+                                                        </a>
+                                                    )}
+                                                </div>
+                                            )}
+
                                             <div className="pt-2">
                                                 <OrderStepper status={latestActiveOrder.status} type={latestActiveOrder.type} />
                                             </div>
@@ -892,8 +918,33 @@ export default function CustomerPortal() {
                                                                     </span>
                                                                 </div>
                                                             </div>
+                                                            {(order.uber_status || order.courier_status) && (
+                                                                <div className="mt-4 p-3 bg-neutral-50 border border-neutral-200/70 rounded-xl flex items-center justify-between text-xs">
+                                                                    <div className="flex items-center gap-2">
+                                                                        <Truck size={14} className="text-[#8e5233]" />
+                                                                        <span className="font-bold text-neutral-800">
+                                                                            Courier: {order.uber_courier_name || order.courier_name || 'Assigned'}
+                                                                        </span>
+                                                                        <span className="px-2 py-0.5 rounded-full bg-[#8e5233] text-white text-[9px] font-black uppercase tracking-wider">
+                                                                            {order.uber_status || order.courier_status}
+                                                                        </span>
+                                                                    </div>
+                                                                    {(order.uber_tracking_url || order.courier_tracking_url) && (
+                                                                        <a
+                                                                            href={order.uber_tracking_url || order.courier_tracking_url}
+                                                                            target="_blank"
+                                                                            rel="noopener noreferrer"
+                                                                            onClick={(e) => e.stopPropagation()}
+                                                                            className="inline-flex items-center gap-1 text-[11px] font-bold text-[#8e5233] hover:underline"
+                                                                        >
+                                                                            <span>Live Map</span>
+                                                                            <ExternalLink size={11} />
+                                                                        </a>
+                                                                    )}
+                                                                </div>
+                                                            )}
 
-                                                            <div className="mt-5 pt-4 border-t border-neutral-100">
+                                                            <div className="mt-4 pt-4 border-t border-neutral-100">
                                                                 <OrderStepper status={order.status} type={order.type} />
                                                             </div>
                                                         </div>

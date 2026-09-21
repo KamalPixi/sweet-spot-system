@@ -59,7 +59,7 @@ class UberDirectController extends Controller
     }
 
     /**
-     * Admin: Manually dispatch courier via Uber Direct for an order.
+     * Admin: Manually dispatch courier via chosen provider for an order.
      */
     public function dispatchOrder(Request $request, int $orderId): JsonResponse
     {
@@ -68,16 +68,51 @@ class UberDirectController extends Controller
         if ($order->type !== 'delivery') {
             return response()->json([
                 'success' => false,
-                'message' => 'Only delivery orders can be dispatched via Uber Direct.',
+                'message' => 'Only delivery orders can be dispatched via courier.',
+            ], 400);
+        }
+
+        $provider = $request->input('provider', 'uber_direct');
+
+        try {
+            $result = $this->uberDirectService->createDelivery($order, $provider);
+            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $order->status);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Courier dispatched successfully.',
+                'data' => $result,
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
+     * Admin: Advance simulated delivery status (pending -> pickup -> dropoff -> delivered).
+     */
+    public function advanceDeliveryStatus(Request $request, int $orderId): JsonResponse
+    {
+        $order = Order::findOrFail($orderId);
+
+        if ($order->type !== 'delivery') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Only delivery orders can have delivery status advanced.',
             ], 400);
         }
 
         try {
-            $result = $this->uberDirectService->createDelivery($order);
+            $previousStatus = $order->status;
+            $result = $this->uberDirectService->advanceDeliveryStatus($order);
+            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Uber Direct courier dispatched successfully.',
+                'message' => "Courier status advanced to '{$result['uber_status']}'.",
                 'data' => $result,
             ]);
         } catch (Exception $e) {

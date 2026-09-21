@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useApp } from './AppContext';
-import { CheckCircle, Clock, MapPin, Coffee, ArrowRight, ArrowLeft, Loader2, Search, Key, RefreshCw, AlertCircle, Menu, X, LogOut, User, Copy, Check } from 'lucide-react';
+import { CheckCircle, Clock, MapPin, Coffee, ArrowRight, ArrowLeft, Loader2, Search, Key, RefreshCw, AlertCircle, Menu, X, LogOut, User, Copy, Check, Truck, ExternalLink, Phone } from 'lucide-react';
 import toast from 'react-hot-toast';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -338,6 +338,58 @@ export default function OrderTracking() {
                                             <p className="text-neutral-505 uppercase">{order.delivery_address?.postcode}, {order.delivery_address?.city}</p>
                                         </div>
                                     </div>
+
+                                    {(order.uber_status || order.uber_courier_name || order.courier_name) && (
+                                        <div className="mt-3 p-3.5 bg-[#8e5233]/5 border border-[#8e5233]/20 rounded-xl space-y-2">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-1.5 text-[#8e5233] font-bold">
+                                                    <Truck size={14} />
+                                                    <span className="text-[11px] font-black uppercase tracking-wider">
+                                                        {order.delivery_provider ? order.delivery_provider.replace('_', ' ') : 'Live Courier'}
+                                                    </span>
+                                                </div>
+                                                <span className="px-2 py-0.5 rounded-full bg-[#8e5233] text-white text-[9px] font-black uppercase tracking-wider">
+                                                    {order.uber_status || order.courier_status || 'Assigned'}
+                                                </span>
+                                            </div>
+
+                                            {(order.uber_courier_name || order.courier_name) && (
+                                                <div className="flex items-center justify-between text-[11px] pt-1">
+                                                    <span className="text-neutral-500">Driver:</span>
+                                                    <span className="font-bold text-neutral-900">
+                                                        {order.uber_courier_name || order.courier_name}
+                                                    </span>
+                                                </div>
+                                            )}
+
+                                            {(order.uber_courier_phone || order.courier_phone) && (
+                                                <div className="flex items-center justify-between text-[11px]">
+                                                    <span className="text-neutral-500">Contact:</span>
+                                                    <a
+                                                        href={`tel:${order.uber_courier_phone || order.courier_phone}`}
+                                                        className="font-bold text-[#8e5233] hover:underline inline-flex items-center gap-1"
+                                                    >
+                                                        <Phone size={10} />
+                                                        <span>{order.uber_courier_phone || order.courier_phone}</span>
+                                                    </a>
+                                                </div>
+                                            )}
+
+                                            {(order.uber_tracking_url || order.courier_tracking_url) && (
+                                                <div className="pt-2 border-t border-[#8e5233]/15">
+                                                    <a
+                                                        href={order.uber_tracking_url || order.courier_tracking_url}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="w-full py-2 px-3 bg-[#8e5233] hover:bg-[#723e25] text-white rounded-lg text-[11px] font-bold transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                                                    >
+                                                        <span>Track Courier on Live Map</span>
+                                                        <ExternalLink size={12} />
+                                                    </a>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="space-y-3 text-xs">

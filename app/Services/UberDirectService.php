@@ -110,92 +110,171 @@ class UberDirectService
     }
 
     /**
-     * Create/Dispatch a live courier delivery with Uber Direct for an order.
+     * Create/Dispatch a live courier delivery with a selected provider.
      */
-    public function createDelivery(Order $order): array
+     public function createDelivery(Order $order, string $provider = 'uber_direct'): array
+     {
+         $order->loadMissing(['customer', 'deliveryAddress', 'items']);
+
+         if (!$order->deliveryAddress) {
+             throw new Exception('Order has no delivery address.');
+         }
+
+         // Available providers: uber_direct, stuart, in_house, simulated
+         $providerMap = [
+             'uber_direct' => [
+                 'name' => 'Uber Direct',
+                 'courier_name' => 'Marco V. (Uber Direct Courier)',
+                 'courier_phone' => '+44 7911 123456',
+                 'prefix' => 'ub_',
+                 'base_url' => 'https://track.uber.com/v1/deliveries/',
+             ],
+             'stuart' => [
+                 'name' => 'Stuart Delivery',
+                 'courier_name' => 'Liam D. (Stuart Rider)',
+                 'courier_phone' => '+44 7922 654321',
+                 'prefix' => 'st_',
+                 'base_url' => 'https://tracking.stuart.com/job/',
+             ],
+             'in_house' => [
+                 'name' => 'In-House Fleet',
+                 'courier_name' => 'David K. (Sweet Spot Bakery Van)',
+                 'courier_phone' => '+44 7933 789012',
+                 'prefix' => 'ss_',
+                 'base_url' => 'https://fleet.sweetspotsystem.co.uk/track/',
+             ],
+             'simulated' => [
+                 'name' => 'SwiftCourier Simulator',
+                 'courier_name' => 'Alex P. (Simulated Dispatch)',
+                 'courier_phone' => '+44 7944 998877',
+                 'prefix' => 'sc_',
+                 'base_url' => 'https://swiftcourier.sim/tracking/',
+             ],
+         ];
+
+         $selectedMeta = $providerMap[$provider] ?? $providerMap['uber_direct'];
+
+         if ($provider !== 'uber_direct' || !$this->isConfigured()) {
+             // Realistic simulated dispatch response
+             $mockDeliveryId = $selectedMeta['prefix'] . uniqid();
+             $trackingUrl = $selectedMeta['base_url'] . $mockDeliveryId;
+
+             $order->update([
+                 'delivery_provider' => $provider,
+                 'uber_delivery_id' => $mockDeliveryId,
+                 'uber_tracking_url' => $trackingUrl,
+                 'uber_status' => 'pending',
+                 'uber_courier_name' => $selectedMeta['courier_name'],
+                 'uber_courier_phone' => $selectedMeta['courier_phone'],
+                 'uber_fee' => 4.50,
+             ]);
+
+             return [
+                 'id' => $mockDeliveryId,
+                 'provider' => $provider,
+                 'provider_name' => $selectedMeta['name'],
+                 'tracking_url' => $trackingUrl,
+                 'status' => 'pending',
+                 'courier' => [
+                     'name' => $selectedMeta['courier_name'],
+                     'phone' => $selectedMeta['courier_phone'],
+                 ],
+                 'fee' => 4.50,
+             ];
+         }
+
+         $token = $this->getAccessToken();
+         $storeDetails = $this->getStorePickupDetails();
+
+         $dropoff = [
+             'street_address' => array_filter([
+                 $order->deliveryAddress->address_line_1,
+                 $order->deliveryAddress->address_line_2,
+             ]),
+             'city' => $order->deliveryAddress->city,
+             'postal_code' => $order->deliveryAddress->postcode,
+             'country' => 'GB',
+         ];
+
+         $manifestItems = [];
+         foreach ($order->items as $item) {
+             $manifestItems[] = [
+                 'name' => $item->product_name . ($item->variation_name ? " ({$item->variation_name})" : ''),
+                 'quantity' => (int) $item->quantity,
+                 'price' => (int) round($item->price * 100),
+             ];
+         }
+
+         $payload = [
+             'pickup_name' => $storeDetails['name'],
+             'pickup_address' => json_encode($storeDetails['address']),
+             'pickup_phone_number' => $storeDetails['phone_number'],
+             'dropoff_name' => trim(($order->customer?->first_name ?? 'Guest') . ' ' . ($order->customer?->last_name ?? '')),
+             'dropoff_address' => json_encode($dropoff),
+             'dropoff_phone_number' => $order->customer?->phone ?? '+447000000000',
+             'manifest_items' => $manifestItems,
+             'external_store_id' => 'sweet-spot-london',
+             'external_id' => $order->order_number,
+         ];
+
+         $response = Http::withToken($token)
+             ->post("{$this->baseUrl}/{$this->customerId}/deliveries", $payload);
+
+         if ($response->failed()) {
+             Log::error("Uber Direct create delivery failure for {$order->order_number}: " . $response->body());
+             throw new Exception('Uber Direct delivery creation failed: ' . ($response->json('message') ?? 'API error'));
+         }
+
+         $data = $response->json();
+
+         $order->update([
+             'delivery_provider' => 'uber_direct',
+             'uber_delivery_id' => $data['id'] ?? null,
+             'uber_tracking_url' => $data['tracking_url'] ?? null,
+             'uber_status' => $data['status'] ?? 'pending',
+             'uber_fee' => isset($data['fee']) ? round($data['fee'] / 100, 2) : null,
+             'uber_courier_name' => $data['courier']['name'] ?? null,
+             'uber_courier_phone' => $data['courier']['phone_number'] ?? null,
+         ]);
+
+         return $data;
+     }
+
+    /**
+     * Advance delivery status for simulator / admin testing.
+     * Cycle: pending -> pickup -> dropoff -> delivered
+     */
+    public function advanceDeliveryStatus(Order $order): array
     {
-        $order->loadMissing(['customer', 'deliveryAddress', 'items']);
+        $currentCourierStatus = $order->uber_status ?? 'pending';
 
-        if (!$order->deliveryAddress) {
-            throw new Exception('Order has no delivery address.');
-        }
-
-        if (!$this->isConfigured()) {
-            // Simulated mock dispatch response
-            $mockDeliveryId = 'mock_uber_' . uniqid();
-            $trackingUrl = "https://track.uber.com/v1/deliveries/{$mockDeliveryId}";
-
-            $order->update([
-                'delivery_provider' => 'uber_direct',
-                'uber_delivery_id' => $mockDeliveryId,
-                'uber_tracking_url' => $trackingUrl,
-                'uber_status' => 'pending',
-                'uber_courier_name' => 'Pending Assignment',
-            ]);
-
-            return [
-                'id' => $mockDeliveryId,
-                'tracking_url' => $trackingUrl,
-                'status' => 'pending',
-                'fee' => 4.50,
-            ];
-        }
-
-        $token = $this->getAccessToken();
-        $storeDetails = $this->getStorePickupDetails();
-
-        $dropoff = [
-            'street_address' => array_filter([
-                $order->deliveryAddress->address_line_1,
-                $order->deliveryAddress->address_line_2,
-            ]),
-            'city' => $order->deliveryAddress->city,
-            'postal_code' => $order->deliveryAddress->postcode,
-            'country' => 'GB',
+        $statusCycle = [
+            'pending' => 'pickup',
+            'pickup' => 'dropoff',
+            'dropoff' => 'delivered',
+            'delivered' => 'delivered',
         ];
 
-        $manifestItems = [];
-        foreach ($order->items as $item) {
-            $manifestItems[] = [
-                'name' => $item->product_name . ($item->variation_name ? " ({$item->variation_name})" : ''),
-                'quantity' => (int) $item->quantity,
-                'price' => (int) round($item->price * 100),
-            ];
-        }
+        $nextCourierStatus = $statusCycle[$currentCourierStatus] ?? 'pickup';
 
-        $payload = [
-            'pickup_name' => $storeDetails['name'],
-            'pickup_address' => json_encode($storeDetails['address']),
-            'pickup_phone_number' => $storeDetails['phone_number'],
-            'dropoff_name' => trim(($order->customer?->first_name ?? 'Guest') . ' ' . ($order->customer?->last_name ?? '')),
-            'dropoff_address' => json_encode($dropoff),
-            'dropoff_phone_number' => $order->customer?->phone ?? '+447000000000',
-            'manifest_items' => $manifestItems,
-            'external_store_id' => 'sweet-spot-london',
-            'external_id' => $order->order_number,
+        $orderUpdates = [
+            'uber_status' => $nextCourierStatus,
         ];
 
-        $response = Http::withToken($token)
-            ->post("{$this->baseUrl}/{$this->customerId}/deliveries", $payload);
-
-        if ($response->failed()) {
-            Log::error("Uber Direct create delivery failure for {$order->order_number}: " . $response->body());
-            throw new Exception('Uber Direct delivery creation failed: ' . ($response->json('message') ?? 'API error'));
+        // Also advance order status to match courier milestone
+        if ($nextCourierStatus === 'delivered') {
+            $orderUpdates['status'] = 'completed';
+        } elseif (in_array($nextCourierStatus, ['pickup', 'dropoff'])) {
+            $orderUpdates['status'] = 'ready'; // Out for delivery
         }
 
-        $data = $response->json();
+        $order->update($orderUpdates);
 
-        $order->update([
-            'delivery_provider' => 'uber_direct',
-            'uber_delivery_id' => $data['id'] ?? null,
-            'uber_tracking_url' => $data['tracking_url'] ?? null,
-            'uber_status' => $data['status'] ?? 'pending',
-            'uber_fee' => isset($data['fee']) ? round($data['fee'] / 100, 2) : null,
-            'uber_courier_name' => $data['courier']['name'] ?? null,
-            'uber_courier_phone' => $data['courier']['phone_number'] ?? null,
-        ]);
-
-        return $data;
+        return [
+            'previous_status' => $currentCourierStatus,
+            'uber_status' => $nextCourierStatus,
+            'order_status' => $order->status,
+        ];
     }
 
     /**

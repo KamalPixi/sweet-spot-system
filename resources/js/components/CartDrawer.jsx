@@ -70,14 +70,16 @@ export default function CartDrawer() {
             <div 
                 ref={drawerRef}
                 onClick={(e) => e.stopPropagation()}
-                className={`fixed z-50 top-2 bottom-2 right-2 sm:top-4 sm:bottom-4 sm:right-4 w-[calc(100%-16px)] sm:w-[500px] md:w-[520px] max-w-xl bg-white rounded-2xl shadow-2xl border border-neutral-100/90 flex flex-col justify-between overflow-hidden transition-all duration-300 ease-out transform ${
+                className={`fixed z-50 top-2 bottom-2 right-2 sm:top-4 sm:bottom-4 sm:right-4 w-[calc(100%-16px)] sm:w-[500px] md:w-[520px] max-w-xl bg-[#24161b] rounded-2xl shadow-2xl border border-black/15 flex flex-col justify-between overflow-hidden transition-all duration-300 ease-out transform ${
                     isCartOpen 
                         ? 'translate-x-0 opacity-100 scale-100' 
                         : 'translate-x-12 opacity-0 scale-95 pointer-events-none'
                 }`}
             >
-                {/* Header Row */}
-                <div className="px-5 py-4 sm:px-6 sm:py-4.5 border-b border-neutral-100 flex justify-between items-center bg-white shrink-0">
+                {/* Upper White Section: Header + Scrollable Cart Items */}
+                <div className="flex flex-col flex-1 min-h-0 bg-white">
+                    {/* Header Row */}
+                    <div className="px-5 py-4 sm:px-6 sm:py-4.5 border-b border-neutral-100 flex justify-between items-center bg-white shrink-0">
                     <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-[#24161b] text-[#e5b582] flex items-center justify-center shadow-xs">
                             <img 
@@ -208,10 +210,11 @@ export default function CartDrawer() {
                         ))
                     )}
                 </div>
+                </div>
 
-                {/* Floating Summary & Checkout Bar */}
+                {/* Docked Summary & Checkout Bar (Full-width, integrated with container bottom) */}
                 {cart.length > 0 && (
-                    <div className="p-4 sm:p-5 m-3 sm:m-4 rounded-xl bg-[#24161b] text-white shadow-xl space-y-3 border border-white/10 shrink-0 text-left">
+                    <div className="w-full px-5 py-4 sm:px-6 sm:py-5 bg-[#24161b] text-white space-y-3 border-t border-black/20 shrink-0 text-left">
                         <div className="flex justify-between items-baseline">
                             <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
                                 Subtotal

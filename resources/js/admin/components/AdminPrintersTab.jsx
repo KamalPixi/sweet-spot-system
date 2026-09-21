@@ -41,26 +41,27 @@ export default function AdminPrintersTab({ token }) {
         return () => clearInterval(interval);
     }, [token]);
 
-    const handleManualTestPrint = async () => {
-        // Enqueue a test print job by calling manual print on the latest order or test payload
-        if (jobs.length === 0 && !jobs[0]?.order_id) {
-            toast.error('No orders available to run test receipt.');
-            return;
-        }
+    const [showTestModal, setShowTestModal] = useState(false);
+    const [testNotes, setTestNotes] = useState('');
 
-        const targetOrderId = jobs[0]?.order_id;
+    const handleRunTestPrint = async (notes = null) => {
         setTestingPrint(true);
         try {
-            const res = await fetch(`/api/admin/orders/${targetOrderId}/print`, {
+            const res = await fetch('/api/admin/printer/test', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`,
                 },
+                body: JSON.stringify({
+                    notes: notes || testNotes || 'Star CloudPRNT Hardware Test Slip triggered by Admin',
+                }),
             });
             const data = await res.json();
             if (data.success) {
                 toast.success('Test receipt queued! Star TSP100 will fetch on next poll.');
+                setShowTestModal(false);
+                setTestNotes('');
                 fetchPrintJobs(true);
             } else {
                 toast.error(data.message || 'Failed to enqueue test receipt.');
@@ -136,22 +137,21 @@ export default function AdminPrintersTab({ token }) {
                             fetchPrintJobs();
                         }}
                         disabled={loading || refreshing}
-                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-neutral-300 hover:border-neutral-900 text-neutral-800 text-xs font-bold transition-colors shadow-xs"
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-neutral-300 hover:border-neutral-900 text-neutral-800 text-xs font-bold transition-colors shadow-xs cursor-pointer"
                     >
                         <RefreshCw size={14} className={refreshing ? 'animate-spin' : ''} />
                         <span>Refresh Queue</span>
                     </button>
-                    {jobs.length > 0 && (
-                        <button
-                            type="button"
-                            onClick={handleManualTestPrint}
-                            disabled={testingPrint}
-                            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-colors shadow-sm"
-                        >
-                            <Printer size={15} className="text-amber-400" />
-                            <span>{testingPrint ? 'Enqueuing...' : 'Print Test Slip'}</span>
-                        </button>
-                    )}
+                    <button
+                        type="button"
+                        onClick={() => setShowTestModal(true)}
+                        disabled={testingPrint}
+                        className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                        title="Send diagnostic test print ticket to Star CloudPRNT printer"
+                    >
+                        <Printer size={15} className="text-amber-400" />
+                        <span>{testingPrint ? 'Enqueuing...' : 'Print Test Slip'}</span>
+                    </button>
                 </div>
             </div>
 
@@ -325,9 +325,70 @@ export default function AdminPrintersTab({ token }) {
                         <div className="pt-2 flex justify-end">
                             <button
                                 onClick={() => setSelectedJob(null)}
-                                className="px-4 py-2 rounded-xl bg-neutral-950 text-white text-xs font-bold"
+                                className="px-4 py-2 rounded-xl bg-neutral-950 text-white text-xs font-bold cursor-pointer"
                             >
                                 Close Inspector
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Test Print Slip Modal */}
+            {showTestModal && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-xs z-50 flex items-center justify-center p-4 animate-fadeIn">
+                    <div className="bg-white rounded-2xl max-w-md w-full p-6 space-y-4 shadow-2xl border border-neutral-200">
+                        <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 rounded-xl bg-neutral-950 text-amber-400">
+                                    <Printer size={18} />
+                                </div>
+                                <div>
+                                    <h3 className="text-sm font-black text-neutral-900">Hardware Test Print</h3>
+                                    <p className="text-[10px] text-neutral-400">Star CloudPRNT TSP100 Series</p>
+                                </div>
+                            </div>
+                            <button
+                                onClick={() => setShowTestModal(false)}
+                                className="text-neutral-400 hover:text-neutral-900 text-sm font-bold p-1.5 rounded-lg hover:bg-neutral-100 cursor-pointer"
+                            >
+                                ✕
+                            </button>
+                        </div>
+
+                        <p className="text-xs text-neutral-600 leading-relaxed">
+                            This will generate a diagnostic Star Markup ticket covering font styling, high-contrast inverted text, width/height scaling, line feeds, and the auto-cutter.
+                        </p>
+
+                        <div>
+                            <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1.5">
+                                Optional Operator Note / Test Message
+                            </label>
+                            <input
+                                type="text"
+                                value={testNotes}
+                                onChange={(e) => setTestNotes(e.target.value)}
+                                placeholder="e.g. Morning service check / Counter #1"
+                                className="w-full bg-neutral-50 border border-neutral-200 focus:border-neutral-950 focus:ring-1 focus:ring-neutral-950 rounded-xl px-3.5 py-2.5 text-xs text-neutral-800 focus:outline-none transition-all"
+                            />
+                        </div>
+
+                        <div className="pt-2 flex items-center justify-end gap-2.5">
+                            <button
+                                type="button"
+                                onClick={() => setShowTestModal(false)}
+                                className="px-4 py-2.5 rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 text-xs font-bold transition-colors cursor-pointer"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => handleRunTestPrint()}
+                                disabled={testingPrint}
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                            >
+                                <Printer size={14} className="text-amber-400" />
+                                <span>{testingPrint ? 'Enqueuing...' : 'Dispatch Test Ticket'}</span>
                             </button>
                         </div>
                     </div>
