@@ -91,7 +91,7 @@ export default function Landing() {
             {/* Main Landing Sections */}
             <main className="flex-1 w-full bg-[#24161b]">
                 {/* 1. Hero Section */}
-                <HeroSection onOrderClick={handleOrderNow} />
+                <HeroSection onOrderClick={handleOrderNow} configs={configs} />
 
                 {/* 2. Floating White Section Container (overlaps Hero above & Footer below) */}
                 <div className="w-full -mt-6 md:-mt-8 mb-[-32px] md:mb-[-48px] rounded-2xl md:rounded-3xl relative z-30 bg-white shadow-2xl overflow-hidden">
