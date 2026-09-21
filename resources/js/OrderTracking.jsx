@@ -198,7 +198,7 @@ export default function OrderTracking() {
             return (
                 <div className="max-w-2xl w-full mx-auto my-4 sm:my-8 animate-fadeIn text-center">
                     {/* Editorial Badge */}
-                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-[#fdfaf5] border border-neutral-200 shadow-xs mb-5">
+                    <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white border border-neutral-200 shadow-xs mb-5">
                         <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         <span className="text-[11px] font-black uppercase tracking-widest text-[#24161b]">
                             Live Artisanal Kitchen Telemetry
@@ -213,7 +213,7 @@ export default function OrderTracking() {
                     </p>
 
                     {/* Main High-Craft Lookup Box */}
-                    <div className="bg-[#fdfaf5] border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-xs text-left mb-8">
+                    <div className="bg-white border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-xs text-left mb-8">
                         <form onSubmit={handleLookupSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-[#24161b] text-xs font-bold uppercase tracking-wider mb-2 pl-1">
@@ -270,7 +270,7 @@ export default function OrderTracking() {
 
                     {/* 3 Value Pillars */}
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
-                        <div className="p-4 rounded-2xl bg-[#fdfaf5] border border-neutral-200/70">
+                        <div className="p-4 rounded-2xl bg-white border border-neutral-200/70 shadow-2xs">
                             <div className="w-8 h-8 rounded-xl bg-[#24161b] text-[#e5b582] flex items-center justify-center mb-3">
                                 <Flame size={16} />
                             </div>
@@ -278,7 +278,7 @@ export default function OrderTracking() {
                             <p className="text-[11px] text-neutral-500 mt-1 leading-snug">Track live kitchen preparation & freshness updates.</p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-[#fdfaf5] border border-neutral-200/70">
+                        <div className="p-4 rounded-2xl bg-white border border-neutral-200/70 shadow-2xs">
                             <div className="w-8 h-8 rounded-xl bg-[#24161b] text-[#e5b582] flex items-center justify-center mb-3">
                                 <Bike size={16} />
                             </div>
@@ -286,7 +286,7 @@ export default function OrderTracking() {
                             <p className="text-[11px] text-neutral-500 mt-1 leading-snug">Uber Direct courier tracking on real-time map.</p>
                         </div>
 
-                        <div className="p-4 rounded-2xl bg-[#fdfaf5] border border-neutral-200/70">
+                        <div className="p-4 rounded-2xl bg-white border border-neutral-200/70 shadow-2xs">
                             <div className="w-8 h-8 rounded-xl bg-[#24161b] text-[#e5b582] flex items-center justify-center mb-3">
                                 <Store size={16} />
                             </div>
@@ -473,7 +473,7 @@ export default function OrderTracking() {
                 </div>
 
                 {/* ── NEW ARTISANAL TIMELINE PROGRESS CARD ── */}
-                <div className="bg-[#fdfaf5] border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-sm">
+                <div className="bg-white border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-xs">
                     <div className="flex items-center justify-between mb-8 pb-3 border-b border-neutral-200/70">
                         <div className="flex items-center gap-2">
                             <Clock size={16} className="text-[#f43f5e]" />
@@ -538,7 +538,7 @@ export default function OrderTracking() {
                     <div className="lg:col-span-7 space-y-6">
                         
                         {/* Fulfillment Card */}
-                        <div className="bg-[#fdfaf5] border border-neutral-200/90 rounded-[28px] p-6 sm:p-7 shadow-sm space-y-5">
+                        <div className="bg-white border border-neutral-200/90 rounded-[28px] p-6 sm:p-7 shadow-xs space-y-5">
                             <div className="flex items-center justify-between pb-3 border-b border-neutral-200/70">
                                 <div className="flex items-center gap-2">
                                     {order.type === 'delivery' ? (
@@ -716,7 +716,7 @@ export default function OrderTracking() {
 
                     {/* ════════ RIGHT COLUMN: Artisanal Receipt & Summary (5 cols) ════════ */}
                     <div className="lg:col-span-5 space-y-6">
-                        <div className="bg-[#fdfaf5] border border-neutral-200/90 rounded-[28px] p-6 sm:p-7 shadow-sm space-y-5">
+                        <div className="bg-white border border-neutral-200/90 rounded-[28px] p-6 sm:p-7 shadow-xs space-y-5">
                             <div className="flex items-center justify-between pb-3 border-b border-neutral-200/70">
                                 <div className="flex items-center gap-2">
                                     <UtensilsCrossed size={17} className="text-[#f43f5e]" />
