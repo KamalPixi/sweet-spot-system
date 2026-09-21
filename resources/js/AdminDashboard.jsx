@@ -2059,24 +2059,24 @@ export default function AdminDashboard() {
                             ];
 
                             return (
-                                <div className="space-y-6">
-                                    <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-4">
+                                <div className="space-y-4">
+                                    <div className="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-3">
                                         <div>
-                                            <p className="text-xs font-bold text-[#C5A880] uppercase tracking-widest mb-1">Business Intelligence</p>
-                                            <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Reports</h1>
-                                            <p className="text-xs text-neutral-500 mt-1">
+                                            <p className="text-[10px] font-bold text-[#C5A880] uppercase tracking-widest mb-0.5">Business Intelligence</p>
+                                            <h1 className="text-2xl font-black text-neutral-900 tracking-tight">Reports</h1>
+                                            <p className="text-[11px] text-neutral-500 mt-0.5">
                                                 Real sales, order, payment, and fulfilment analytics for {reports.report_range?.label || 'selected range'}.
                                             </p>
                                         </div>
 
                                         <div className="flex flex-col lg:flex-row gap-2 lg:items-center">
-                                            <div className="flex flex-wrap gap-1.5 bg-white border border-neutral-200 rounded-xl p-1">
+                                            <div className="flex flex-wrap gap-1 bg-white border border-neutral-200 rounded-xl p-1">
                                                 {rangeOptions.map(option => (
                                                     <button
                                                         key={option.id}
                                                         type="button"
                                                         onClick={() => setReportRange(option.id)}
-                                                        className={`px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors ${
+                                                        className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors ${
                                                             reportRange === option.id
                                                                 ? 'bg-neutral-950 text-white'
                                                                 : 'text-neutral-500 hover:bg-neutral-50'
@@ -2089,7 +2089,7 @@ export default function AdminDashboard() {
                                             <button
                                                 type="button"
                                                 onClick={exportReportsCsv}
-                                                className="px-4 py-2 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold rounded-xl transition-colors"
+                                                className="px-3.5 py-1.5 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
                                             >
                                                 Export CSV
                                             </button>
@@ -2097,14 +2097,14 @@ export default function AdminDashboard() {
                                     </div>
 
                                     {reportRange === 'custom' && (
-                                        <div className="bg-white border border-neutral-200 rounded-xl p-4 flex flex-col sm:flex-row gap-3 sm:items-center">
+                                        <div className="bg-white border border-neutral-200 rounded-xl p-3 flex flex-col sm:flex-row gap-3 sm:items-center">
                                             <div>
                                                 <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-400 mb-1">Start Date</label>
                                                 <input
                                                     type="date"
                                                     value={reportStartDate}
                                                     onChange={(e) => setReportStartDate(e.target.value)}
-                                                    className="bg-neutral-50 border border-neutral-300 px-3 py-2 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg"
+                                                    className="bg-neutral-50 border border-neutral-300 px-2.5 py-1.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg"
                                                 />
                                             </div>
                                             <div>
@@ -2113,30 +2113,32 @@ export default function AdminDashboard() {
                                                     type="date"
                                                     value={reportEndDate}
                                                     onChange={(e) => setReportEndDate(e.target.value)}
-                                                    className="bg-neutral-50 border border-neutral-300 px-3 py-2 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg"
+                                                    className="bg-neutral-50 border border-neutral-300 px-2.5 py-1.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg"
                                                 />
                                             </div>
                                         </div>
                                     )}
 
-                                    <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-4">
+                                    <div className="grid grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 gap-3">
                                         {[
-                                            { label: 'Revenue', value: formatCurrency(period.sales), sub: `${period.paid_orders || 0} paid orders` },
+                                            { label: 'Revenue', value: formatCurrency(period.sales), sub: `${period.paid_orders || 0} paid` },
                                             { label: 'Orders', value: period.orders || 0, sub: `${period.unpaid_orders || 0} unpaid · ${period.failed_orders || 0} failed` },
-                                            { label: 'Average Order Value', value: formatCurrency(period.average_order_value), sub: 'Paid orders only' },
+                                            { label: 'Avg Order Value', value: formatCurrency(period.average_order_value), sub: 'Paid orders only' },
                                             { label: 'Items Sold', value: period.items_sold || 0, sub: `${period.unique_items_sold || 0} unique items` },
                                             { label: 'Fulfilment Rate', value: `${period.fulfillment_rate || 0}%`, sub: `${period.cancel_rate || 0}% cancelled` },
                                         ].map(card => (
-                                            <div key={card.label} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">{card.label}</span>
-                                                <span className="text-2xl font-black text-neutral-900 block mt-2">{card.value}</span>
-                                                <span className="text-[11px] text-neutral-400 mt-1 block">{card.sub}</span>
+                                            <div key={card.label} className="bg-white border border-neutral-200 rounded-xl px-4 py-3 shadow-xs">
+                                                <div className="flex items-center justify-between">
+                                                    <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">{card.label}</span>
+                                                    <span className="text-[10px] text-neutral-400 truncate max-w-[90px] text-right">{card.sub}</span>
+                                                </div>
+                                                <span className="text-2xl font-black text-neutral-900 block mt-1">{card.value}</span>
                                             </div>
                                         ))}
                                     </div>
 
-                                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-5">
-                                        <div className="xl:col-span-3 bg-white border border-neutral-200 rounded-xl shadow-sm p-5">
+                                    <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+                                        <div className="xl:col-span-3 bg-white border border-neutral-200 rounded-xl shadow-sm p-4">
                                             <div className="flex items-center justify-between gap-4 mb-5">
                                                 <div>
                                                     <h2 className="text-sm font-bold text-neutral-900">Sales Trend</h2>
@@ -2317,43 +2319,45 @@ export default function AdminDashboard() {
 
                         {/* 2. ORDERS GRID TAB */}
                         {activeTab === 'orders' && (
-                            <div className="space-y-8">
-                                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
+                            <div className="space-y-4">
+                                <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-3">
                                     <div>
-                                        <p className="text-xs font-bold text-[#C5A880] uppercase tracking-widest mb-1">Order Operations</p>
-                                        <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Admin Order Dashboard</h1>
-                                        <p className="text-xs text-neutral-500 mt-1">Review current workload, group orders, and update fulfilment or payment status.</p>
+                                        <p className="text-[10px] font-bold text-[#C5A880] uppercase tracking-widest mb-0.5">Order Operations</p>
+                                        <h1 className="text-2xl font-black text-neutral-900 tracking-tight">Admin Order Dashboard</h1>
+                                        <p className="text-[11px] text-neutral-500 mt-0.5">Review current workload, group orders, and update fulfilment or payment status.</p>
                                     </div>
                                     <div className="text-xs text-neutral-400">
                                         Showing <span className="font-black text-neutral-900">{filteredOrders.length}</span> of <span className="font-black text-neutral-900">{orders.length}</span> orders
                                     </div>
                                 </div>
 
-                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                                     {[
                                         { label: 'Active Queue', value: orderSummary.active, sub: 'Pending, preparing, ready' },
                                         { label: 'Needs Prep', value: orderSummary.pending, sub: 'New orders waiting' },
                                         { label: 'Ready', value: orderSummary.ready, sub: 'Awaiting handoff' },
                                         { label: 'Unpaid', value: orderSummary.unpaid, sub: 'Payment needs attention' },
                                     ].map(card => (
-                                        <div key={card.label} className="bg-white border border-neutral-200 rounded-xl p-5 shadow-sm">
-                                            <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-widest block">{card.label}</span>
-                                            <span className="text-3xl font-black text-neutral-900 block mt-2">{card.value}</span>
-                                            <span className="text-[11px] text-neutral-400 mt-1 block">{card.sub}</span>
+                                        <div key={card.label} className="bg-white border border-neutral-200 rounded-xl px-4 py-3 shadow-xs">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider block">{card.label}</span>
+                                                <span className="text-[10px] text-neutral-400 hidden sm:inline">{card.sub}</span>
+                                            </div>
+                                            <span className="text-2xl font-black text-neutral-900 block mt-1">{card.value}</span>
                                         </div>
                                     ))}
                                 </div>
 
-                                <div className="bg-white border border-neutral-200 rounded-xl shadow-sm p-4 space-y-4">
-                                    <div className="flex flex-col xl:flex-row gap-4 xl:items-center xl:justify-between">
+                                <div className="bg-white border border-neutral-200 rounded-xl shadow-sm p-3.5 space-y-3">
+                                    <div className="flex flex-col xl:flex-row gap-3 xl:items-center xl:justify-between">
                                         <div className="relative flex-grow max-w-xl">
-                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={16} />
+                                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" size={15} />
                                             <input
                                                 type="text"
                                                 value={orderQuery}
                                                 onChange={(e) => setOrderQuery(e.target.value)}
                                                 placeholder="Search order ref, customer, phone, email, or postcode"
-                                                className="w-full bg-white border border-neutral-300 pl-10 pr-10 py-2.5 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                className="w-full bg-white border border-neutral-300 pl-9 pr-9 py-2 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
                                             />
                                             {orderQuery && (
                                                 <button
@@ -2369,7 +2373,7 @@ export default function AdminDashboard() {
                                             <select
                                                 value={orderStatusFilter}
                                                 onChange={(e) => setOrderStatusFilter(e.target.value)}
-                                                className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                                className="bg-white border border-neutral-300 px-2.5 py-2 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
                                             >
                                                 <option value="active">Active Queue</option>
                                                 <option value="all">All Statuses</option>
@@ -2383,7 +2387,7 @@ export default function AdminDashboard() {
                                             <select
                                                 value={orderTypeFilter}
                                                 onChange={(e) => setOrderTypeFilter(e.target.value)}
-                                                className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                                className="bg-white border border-neutral-300 px-2.5 py-2 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
                                             >
                                                 <option value="all">All Types</option>
                                                 <option value="delivery">Home Delivery</option>
@@ -2393,7 +2397,7 @@ export default function AdminDashboard() {
                                             <select
                                                 value={orderPaymentFilter}
                                                 onChange={(e) => setOrderPaymentFilter(e.target.value)}
-                                                className="bg-white border border-neutral-300 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
+                                                className="bg-white border border-neutral-300 px-2.5 py-2 focus:outline-none text-[10px] font-bold uppercase text-neutral-700 focus:border-neutral-950 rounded-lg"
                                             >
                                                 <option value="all">All Payments</option>
                                                 <option value="unpaid">Unpaid</option>
@@ -2403,7 +2407,7 @@ export default function AdminDashboard() {
                                             <select
                                                 value={orderGroupMode}
                                                 onChange={(e) => setOrderGroupMode(e.target.value)}
-                                                className="bg-neutral-950 border border-neutral-950 px-3 py-2.5 focus:outline-none text-[10px] font-bold uppercase text-white rounded-lg"
+                                                className="bg-neutral-950 border border-neutral-950 px-2.5 py-2 focus:outline-none text-[10px] font-bold uppercase text-white rounded-lg"
                                             >
                                                 <option value="status">Group by Status</option>
                                                 <option value="type">Group by Type</option>
@@ -2412,26 +2416,26 @@ export default function AdminDashboard() {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-xs">
-                                        <button onClick={() => { setOrderStatusFilter('pending'); setOrderGroupMode('status'); }} className="text-left bg-amber-50 border border-amber-100 rounded-lg p-3 hover:bg-amber-100 transition-colors">
-                                            <span className="font-black text-amber-800 block">{orderSummary.pending}</span>
-                                            <span className="text-amber-700">Pending</span>
+                                    <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
+                                        <button onClick={() => { setOrderStatusFilter('pending'); setOrderGroupMode('status'); }} className="text-left bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 hover:bg-amber-100 transition-colors flex items-center justify-between">
+                                            <span className="text-amber-700 font-bold text-[11px]">Pending</span>
+                                            <span className="font-black text-amber-800 text-sm">{orderSummary.pending}</span>
                                         </button>
-                                        <button onClick={() => { setOrderStatusFilter('preparing'); setOrderGroupMode('status'); }} className="text-left bg-blue-50 border border-blue-100 rounded-lg p-3 hover:bg-blue-100 transition-colors">
-                                            <span className="font-black text-blue-800 block">{orderSummary.preparing}</span>
-                                            <span className="text-blue-700">Preparing</span>
+                                        <button onClick={() => { setOrderStatusFilter('preparing'); setOrderGroupMode('status'); }} className="text-left bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 hover:bg-blue-100 transition-colors flex items-center justify-between">
+                                            <span className="text-blue-700 font-bold text-[11px]">Preparing</span>
+                                            <span className="font-black text-blue-800 text-sm">{orderSummary.preparing}</span>
                                         </button>
-                                        <button onClick={() => { setOrderTypeFilter('delivery'); setOrderGroupMode('type'); }} className="text-left bg-neutral-50 border border-neutral-200 rounded-lg p-3 hover:bg-neutral-100 transition-colors">
-                                            <span className="font-black text-neutral-900 block">{orderSummary.delivery}</span>
-                                            <span className="text-neutral-600">Delivery</span>
+                                        <button onClick={() => { setOrderTypeFilter('delivery'); setOrderGroupMode('type'); }} className="text-left bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-2 hover:bg-neutral-100 transition-colors flex items-center justify-between">
+                                            <span className="text-neutral-600 font-bold text-[11px]">Delivery</span>
+                                            <span className="font-black text-neutral-900 text-sm">{orderSummary.delivery}</span>
                                         </button>
-                                        <button onClick={() => { setOrderTypeFilter('collection'); setOrderGroupMode('type'); }} className="text-left bg-neutral-50 border border-neutral-200 rounded-lg p-3 hover:bg-neutral-100 transition-colors">
-                                            <span className="font-black text-neutral-900 block">{orderSummary.collection}</span>
-                                            <span className="text-neutral-600">Collection</span>
+                                        <button onClick={() => { setOrderTypeFilter('collection'); setOrderGroupMode('type'); }} className="text-left bg-neutral-50 border border-neutral-200 rounded-lg px-3 py-2 hover:bg-neutral-100 transition-colors flex items-center justify-between">
+                                            <span className="text-neutral-600 font-bold text-[11px]">Collection</span>
+                                            <span className="font-black text-neutral-900 text-sm">{orderSummary.collection}</span>
                                         </button>
-                                        <button onClick={() => { setOrderTypeFilter('dine_in'); setOrderGroupMode('type'); }} className="text-left bg-emerald-50 border border-emerald-100 rounded-lg p-3 hover:bg-emerald-100 transition-colors">
-                                            <span className="font-black text-emerald-800 block">{orderSummary.dine_in}</span>
-                                            <span className="text-emerald-700">Dine-In Table</span>
+                                        <button onClick={() => { setOrderTypeFilter('dine_in'); setOrderGroupMode('type'); }} className="text-left bg-emerald-50 border border-emerald-100 rounded-lg px-3 py-2 hover:bg-emerald-100 transition-colors flex items-center justify-between">
+                                            <span className="text-emerald-700 font-bold text-[11px]">Dine-In Table</span>
+                                            <span className="font-black text-emerald-800 text-sm">{orderSummary.dine_in}</span>
                                         </button>
                                     </div>
                                 </div>
