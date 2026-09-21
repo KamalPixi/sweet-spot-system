@@ -374,7 +374,6 @@ export default function AdminTablesTab({ orders = [], configs: configsProp }) {
                     {selectedTable ? (
                         <div className="bg-white border border-neutral-200 rounded-xl p-6 shadow-sm text-center">
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100/70 text-amber-800 text-[10px] font-extrabold uppercase tracking-wider mb-4">
-                                <Sparkles size={11} className="text-amber-600" />
                                 <span>Table QR Preview</span>
                             </div>
 
