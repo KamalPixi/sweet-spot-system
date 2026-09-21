@@ -255,9 +255,9 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
                 onClick={onClose}
             />
 
-            {/* Popover Card */}
+            {/* Popover Card Wrapper with Connected Arrow */}
             <div 
-                className="fixed pointer-events-auto w-[calc(100%-2rem)] max-w-[420px] max-h-[min(540px,calc(100vh-2rem))] flex flex-col bg-white rounded-2xl shadow-2xl border border-neutral-200/90 text-neutral-900 animate-fadeIn"
+                className="fixed pointer-events-auto w-[calc(100%-2rem)] max-w-[420px] max-h-[min(540px,calc(100vh-2rem))] flex flex-col rounded-2xl animate-fadeIn"
                 style={{ 
                     filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.3))',
                     ...(popoverPos.isReady && window.innerWidth >= 768
@@ -278,13 +278,15 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
                 {/* Connected Arrow pointing left directly to the Order Now button (Desktop) */}
                 {window.innerWidth >= 768 && popoverPos.isReady && (
                     <div 
-                        className="hidden md:block absolute -left-2 w-4 h-4 bg-white border-b border-l border-neutral-200 transform rotate-45 z-20"
+                        className="hidden md:block absolute -left-2 w-4 h-4 bg-white border-b border-l border-neutral-200 transform rotate-45 z-30"
                         style={{ top: `${popoverPos.arrowTop || 32}px` }}
                     />
                 )}
 
-                {/* Header & Tabs */}
-                <div className="bg-neutral-50/80 border-b border-neutral-200/70 p-4 relative">
+                {/* Inner Card Container with strict overflow-hidden & rounded-2xl so all corners are beautifully smooth */}
+                <div className="relative w-full h-full flex flex-col bg-white rounded-2xl border border-neutral-200/90 text-neutral-900 overflow-hidden shadow-2xl">
+                    {/* Header & Tabs */}
+                    <div className="bg-neutral-50/80 border-b border-neutral-200/70 p-4 relative">
                     <div className="flex items-center justify-between mb-3">
                         <div className="flex items-center gap-1.5">
                             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
@@ -506,6 +508,7 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
                         </button>
                     </form>
                 )}
+                </div>
             </div>
         </div>
     );
