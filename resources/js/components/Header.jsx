@@ -18,21 +18,21 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
 
     return (
         <div className="bg-primary">
-            <div className="w-full h-[72px] md:h-[80px] bg-primary relative overflow-hidden">
-                <header className="w-full h-full px-4 md:px-12 flex justify-between items-center z-30 bg-transparent relative transform translate-y-[2px]">
-                    {/* Left Actions Group (Width matches Right group for visual optical balance) */}
-                    <div className="flex items-center min-w-[120px] md:min-w-[160px] justify-start">
+            <div className="w-full h-[72px] md:h-[80px] bg-primary relative">
+                <header className="w-full h-full px-5 md:px-10 lg:px-16 grid grid-cols-3 items-center z-30 bg-transparent relative transform translate-y-[2px]">
+                    {/* Left: Hamburger menu */}
+                    <div className="flex items-center justify-start">
                         <button 
                             onClick={() => setIsMenuOpen(true)} 
-                            className="text-white hover:text-white/80 transition-colors p-1.5 pl-0 cursor-pointer focus:outline-none flex items-center justify-center"
+                            className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none flex items-center justify-center"
                             aria-label="Open menu"
                         >
-                            <MenuIcon className="w-6 h-6" strokeWidth={2} />
+                            <MenuIcon className="w-5 h-5" strokeWidth={2} />
                         </button>
                     </div>
 
-                    {/* Visually & Optically Centered Logo */}
-                    <div className="flex-1 flex items-center justify-center">
+                    {/* Center: Brand Logo (Exactly in the middle 1/3) */}
+                    <div className="flex items-center justify-center">
                         <div 
                             className="cursor-pointer flex items-center justify-center select-none" 
                             onClick={() => navigate('/')}
@@ -40,23 +40,23 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                             <img 
                                 src="/logo-white-sweetspot.png" 
                                 alt="Sweet Spot" 
-                                className="h-9 sm:h-11 w-auto object-contain transition-transform hover:scale-105" 
+                                className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
                             />
                         </div>
                     </div>
 
-                    {/* Right Actions Group */}
-                    <div className="flex items-center min-w-[120px] md:min-w-[160px] justify-end space-x-1 md:space-x-4">
-                        <HeaderSearchButton className="p-1 md:p-2" />
+                    {/* Right: Actions (Search, Cart, User) */}
+                    <div className="flex items-center justify-end space-x-1 sm:space-x-2 md:space-x-3">
+                        <HeaderSearchButton className="p-1.5" />
                         {!isCartRoute && (
                             <HeaderCartButton />
                         )}
                         <button 
                             onClick={() => navigate(user ? '/account' : '/login')} 
-                            className="text-white hover:text-white/80 transition-colors p-1 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
+                            className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none flex items-center justify-center"
                             aria-label="User"
                         >
-                            <UserIcon className="w-[21px] h-[21px]" strokeWidth={1.75} />
+                            <UserIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
                         </button>
                     </div>
                 </header>

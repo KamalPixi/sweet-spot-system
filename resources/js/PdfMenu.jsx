@@ -116,37 +116,41 @@ export default function PdfMenu() {
         <div className="min-h-screen flex flex-col justify-between bg-[#24161b] text-neutral-900 font-sans selection:bg-rose-500 selection:text-white relative">
             <div>
                 {/* 1. Dark Plum Header */}
-                <header className="w-full py-3 sm:py-3.5 px-5 md:px-10 lg:px-16 flex justify-between items-center bg-transparent z-40 relative">
+                <header className="w-full py-3 sm:py-3.5 px-5 md:px-10 lg:px-16 grid grid-cols-3 items-center bg-transparent z-40 relative">
                     {/* Left: Hamburger menu */}
-                    <button 
-                        onClick={() => setIsMenuOpen(true)} 
-                        className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none"
-                        aria-label="Open navigation menu"
-                    >
-                        <MenuIcon className="w-5 h-5" strokeWidth={2} />
-                    </button>
+                    <div className="flex items-center justify-start">
+                        <button 
+                            onClick={() => setIsMenuOpen(true)} 
+                            className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none flex items-center justify-center"
+                            aria-label="Open navigation menu"
+                        >
+                            <MenuIcon className="w-5 h-5" strokeWidth={2} />
+                        </button>
+                    </div>
 
-                    {/* Center: Brand Logo */}
-                    <div 
-                        onClick={() => navigate('/')} 
-                        className="cursor-pointer flex items-center justify-center select-none"
-                    >
-                        <img 
-                            src="/logo-white-sweetspot.png" 
-                            alt="Sweet Spot" 
-                            className="h-8 sm:h-9.5 w-auto object-contain transition-transform hover:scale-105" 
-                        />
+                    {/* Center: Brand Logo (Middle 1/3) */}
+                    <div className="flex items-center justify-center">
+                        <div 
+                            onClick={() => navigate('/')} 
+                            className="cursor-pointer flex items-center justify-center select-none"
+                        >
+                            <img 
+                                src="/logo-white-sweetspot.png" 
+                                alt="Sweet Spot" 
+                                className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
+                            />
+                        </div>
                     </div>
 
                     {/* Right: Actions (Search, Cart, User) */}
-                    <div className="flex items-center space-x-1.5 sm:space-x-3">
+                    <div className="flex items-center justify-end space-x-1 sm:space-x-2 md:space-x-3">
                         <HeaderSearchButton className="p-1.5" />
 
                         <HeaderCartButton />
 
                         <button 
                             onClick={() => navigate(user ? '/account' : '/login')} 
-                            className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
+                            className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none flex items-center justify-center"
                             aria-label="User account"
                         >
                             <UserIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
