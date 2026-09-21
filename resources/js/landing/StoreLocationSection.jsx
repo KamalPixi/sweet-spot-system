@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { MapPin, Coffee, Maximize2, X, Sparkles } from 'lucide-react';
+import { MapPin, Coffee, Maximize2, X, Store } from 'lucide-react';
 
 export default function StoreLocationSection({ configs = {} }) {
     const address = configs.store_address || '19, Faircross Parade, Upney Ln';
@@ -68,7 +68,7 @@ export default function StoreLocationSection({ configs = {} }) {
                             {/* Bottom Label Tag */}
                             <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between pointer-events-none">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-medium text-white/90 border border-white/10 shadow-xs">
-                                    <Sparkles size={12} className="text-amber-300" /> Storefront
+                                    <Store size={13} className="text-rose-400" /> Storefront
                                 </span>
                             </div>
                         </div>
