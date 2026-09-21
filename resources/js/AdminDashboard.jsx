@@ -1956,7 +1956,7 @@ export default function AdminDashboard() {
                                                     </thead>
                                                     <tbody className="divide-y divide-stone-100/70">
                                                         {reports.recent_orders.map((o, idx) => {
-                                                            const cfg = statusConfig[o.status] || { pill: 'bg-stone-100 text-stone-600 border-stone-200', label: o.status };
+                                                            const cfg = statusConfigs[o.status] || { pill: 'bg-stone-100 text-stone-600 border-stone-200', label: o.status };
                                                             return (
                                                                 <tr
                                                                     key={idx}
