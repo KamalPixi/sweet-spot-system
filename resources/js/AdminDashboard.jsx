@@ -8,6 +8,7 @@ import AdminTable from './admin/components/AdminTable';
 import { AdminStatCard, AdminStatGrid } from './admin/components/AdminStatCard';
 import AdminTablesTab from './admin/components/AdminTablesTab';
 import AdminPrintersTab from './admin/components/AdminPrintersTab';
+import AdminCollectionSlotsTab from './admin/components/AdminCollectionSlotsTab';
 import useRealtimeChannel from './hooks/useRealtimeChannel';
 import useNotificationSound from './hooks/useNotificationSound';
 import { getEchoSocketId } from './lib/realtime';
@@ -4797,168 +4798,11 @@ export default function AdminDashboard() {
                         )}
                         {/* COLLECTION SLOTS TAB */}
                         {activeTab === 'collectionSlots' && (
-                            <div className="space-y-8 animate-fade-in">
-                                <div>
-                                    <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Collection Time Slots</h1>
-                                    <p className="text-xs text-neutral-500 mt-1">Configure opening times, closing times, and slot booking intervals for store collections.</p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                                    {openingHours.map(hour => {
-                                        const isEditing = editingHourId === hour.id;
-                                        return (
-                                            <div 
-                                                key={hour.id} 
-                                                className={`bg-white border rounded-xl shadow-xs overflow-hidden transition-all duration-250 ${
-                                                    isEditing 
-                                                        ? 'border-neutral-400 ring-4 ring-neutral-100' 
-                                                        : 'border-neutral-200 hover:border-neutral-350'
-                                                }`}
-                                            >
-                                                {/* Card Header */}
-                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/50">
-                                                    <span className="text-xs font-black text-neutral-900 uppercase tracking-wider">{hour.day_of_week}</span>
-                                                    <span className={`px-2 py-0.5 text-[9px] font-extrabold rounded-full border ${
-                                                        isEditing 
-                                                            ? editIsClosed 
-                                                                ? 'bg-red-50 text-red-700 border-red-200' 
-                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                                            : hour.is_closed 
-                                                                ? 'bg-red-50 text-red-700 border-red-200' 
-                                                                : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                                                    }`}>
-                                                        {isEditing 
-                                                            ? editIsClosed ? 'CLOSED' : 'OPEN'
-                                                            : hour.is_closed ? 'CLOSED' : 'OPEN'
-                                                        }
-                                                    </span>
-                                                </div>
-
-                                                {/* Card Body */}
-                                                <div className="p-5 space-y-4">
-                                                    {isEditing ? (
-                                                        <div className="space-y-4 text-xs">
-                                                            {/* Operating Toggle */}
-                                                            <div className="flex items-center justify-between">
-                                                                <span className="font-bold text-neutral-600">Store Open?</span>
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => setEditIsClosed(prev => !prev)}
-                                                                    className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                                                        !editIsClosed ? 'bg-neutral-950' : 'bg-neutral-200'
-                                                                    }`}
-                                                                >
-                                                                    <span
-                                                                        className={`pointer-events-none inline-block h-4.5 w-4.5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                                                                            !editIsClosed ? 'translate-x-4' : 'translate-x-0'
-                                                                        }`}
-                                                                    />
-                                                                </button>
-                                                            </div>
-
-                                                            {!editIsClosed && (
-                                                                <>
-                                                                    {/* Hours inputs */}
-                                                                    <div className="grid grid-cols-2 gap-3">
-                                                                        <div>
-                                                                            <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Open Time</label>
-                                                                            <input 
-                                                                                type="text" 
-                                                                                value={editOpenTime}
-                                                                                onChange={(e) => setEditOpenTime(e.target.value)}
-                                                                                placeholder="e.g. 08:00:00"
-                                                                                className="w-full bg-white border border-neutral-250 rounded-lg px-2.5 py-1.5 focus:border-neutral-950 focus:outline-none text-neutral-900"
-                                                                            />
-                                                                        </div>
-                                                                        <div>
-                                                                            <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Close Time</label>
-                                                                            <input 
-                                                                                type="text" 
-                                                                                value={editCloseTime}
-                                                                                onChange={(e) => setEditCloseTime(e.target.value)}
-                                                                                placeholder="e.g. 22:00:00"
-                                                                                className="w-full bg-white border border-neutral-250 rounded-lg px-2.5 py-1.5 focus:border-neutral-950 focus:outline-none text-neutral-900"
-                                                                            />
-                                                                        </div>
-                                                                    </div>
-
-                                                                    {/* Interval Select */}
-                                                                    <div>
-                                                                        <label className="block text-[10px] font-bold text-neutral-400 uppercase mb-1">Slot Booking Interval</label>
-                                                                        <select
-                                                                            value={editSlotInterval}
-                                                                            onChange={(e) => setEditSlotInterval(parseInt(e.target.value, 10))}
-                                                                            className="w-full bg-white border border-neutral-250 rounded-lg px-2.5 py-1.5 focus:border-neutral-950 focus:outline-none text-neutral-900"
-                                                                        >
-                                                                            <option value={15}>15 Minutes (Recommended)</option>
-                                                                            <option value={30}>30 Minutes</option>
-                                                                            <option value={45}>45 Minutes</option>
-                                                                            <option value={60}>60 Minutes (1 Hour)</option>
-                                                                            <option value={120}>120 Minutes (2 Hours)</option>
-                                                                        </select>
-                                                                    </div>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    ) : (
-                                                        <div className="space-y-2 text-xs">
-                                                            {hour.is_closed ? (
-                                                                <div className="py-4 text-center text-neutral-400">
-                                                                    No slots are generated on this day.
-                                                                </div>
-                                                            ) : (
-                                                                <>
-                                                                    <div className="flex justify-between">
-                                                                        <span className="text-neutral-400 font-semibold">Operating Hours</span>
-                                                                        <span className="font-bold text-neutral-800">
-                                                                            {hour.open_time.slice(0, 5)} - {hour.close_time.slice(0, 5)}
-                                                                        </span>
-                                                                    </div>
-                                                                    <div className="flex justify-between border-t border-neutral-100 pt-2">
-                                                                        <span className="text-neutral-400 font-semibold">Slot Interval</span>
-                                                                        <span className="font-bold text-neutral-800">{hour.slot_interval} minutes</span>
-                                                                    </div>
-                                                                </>
-                                                            )}
-                                                        </div>
-                                                    )}
-                                                </div>
-
-                                                {/* Card Footer Actions */}
-                                                <div className="px-5 py-3 border-t border-neutral-100 flex items-center justify-end gap-2 bg-neutral-50/20">
-                                                    {isEditing ? (
-                                                        <>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setEditingHourId(null)}
-                                                                className="px-3 py-1.5 border border-neutral-200 text-neutral-500 hover:bg-neutral-50 hover:text-neutral-950 text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
-                                                            >
-                                                                Cancel
-                                                            </button>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleSaveOpeningHour(hour.id)}
-                                                                className="px-3 py-1.5 bg-neutral-950 hover:bg-neutral-800 text-white text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
-                                                            >
-                                                                Save Day
-                                                            </button>
-                                                        </>
-                                                    ) : (
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => startEditingOpeningHour(hour)}
-                                                            className="flex items-center gap-1 px-3 py-1.5 border border-neutral-200 text-neutral-600 hover:border-neutral-950 hover:text-neutral-950 text-[11px] font-bold rounded-lg transition-colors cursor-pointer"
-                                                        >
-                                                            <Edit size={12} />
-                                                            <span>Configure</span>
-                                                        </button>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
+                            <AdminCollectionSlotsTab 
+                                token={token}
+                                openingHours={openingHours}
+                                onUpdated={fetchData}
+                            />
                         )}
 
                         {/* 11. TABLES & QR CODE ORDERING TAB */}
