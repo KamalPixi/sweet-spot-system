@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import OrderPopover from './OrderPopover';
 
 export default function HeroSection({ onOrderClick, configs = {} }) {
     const [imageError, setImageError] = useState(false);
+    const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
     // Dynamic config overrides with defaults
     const heroBgImage = configs?.hero_bg_image || '/images/hero-bg.png';
@@ -11,8 +13,8 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
     const heroTitleHighlight = configs?.hero_title_highlight || 'Sweetness';
     const heroSubtitle = configs?.hero_subtitle || 'We are the best dessert spot for your cravings. Handcrafted waffles, sundaes, and shakes served fresh daily.';
     const heroButtonText = configs?.hero_button_text || 'Order Now';
-
     const hasBgImage = !imageError && Boolean(heroBgImage);
+    const buttonRef = React.useRef(null);
 
     return (
         <section 
@@ -59,14 +61,23 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
                         {heroSubtitle}
                     </p>
 
-                    <div className="mt-5 sm:mt-6 flex items-center gap-4">
+                    <div className="mt-5 sm:mt-6 relative flex items-center">
                         <button
-                            onClick={onOrderClick}
-                            className="bg-[#3a2327]/90 hover:bg-[#4d2e34] text-white/95 hover:text-white border border-white/20 hover:border-white/40 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-[13px] font-medium tracking-wide transition-all duration-300 shadow-md shadow-black/20 hover:shadow-black/40 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center gap-2"
+                            ref={buttonRef}
+                            type="button"
+                            onClick={() => setIsPopoverOpen(prev => !prev)}
+                            className="bg-[#3a2327]/90 hover:bg-[#4d2e34] text-white/95 hover:text-white border border-white/20 hover:border-white/40 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-[13px] font-medium tracking-wide transition-all duration-300 shadow-md shadow-black/20 hover:shadow-black/40 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center gap-2 z-20"
                         >
                             <span>{heroButtonText}</span>
                             <ArrowRight size={13} className="opacity-70 group-hover:translate-x-0.5 transition-transform" />
                         </button>
+
+                        {/* Connected Popover (Right / Under on Desktop with connected arrow pin) */}
+                        <OrderPopover
+                            isOpen={isPopoverOpen}
+                            onClose={() => setIsPopoverOpen(false)}
+                            anchorRef={buttonRef}
+                        />
                     </div>
                 </div>
 
