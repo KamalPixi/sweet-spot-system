@@ -821,8 +821,11 @@ export default function OrderTracking() {
                 user={user}
             />
 
-            {/* Modern Floating Artisanal Container matching Landing & Categories */}
-            <main className="w-full -mt-3 sm:-mt-4 mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-4 pt-6 pb-14 sm:px-8 md:px-12 md:pt-8 md:pb-20 bg-white shadow-2xl flex-grow flex flex-col items-center">
+            {/* Standard Gap below Header & Logo */}
+            <div className="w-full h-2 sm:h-3 bg-transparent" />
+
+            {/* Main Overlapping Storefront Container with curved top and bottom edges */}
+            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-4 pt-6 pb-14 sm:px-8 md:px-12 md:pt-8 md:pb-20 bg-white shadow-2xl flex-grow flex flex-col items-center">
                 {renderContent()}
             </main>
 
