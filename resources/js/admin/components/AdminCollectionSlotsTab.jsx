@@ -628,9 +628,11 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
             </div>
 
             {/* EDIT DAY MODAL */}
-            {editingDay && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs animate-fade-in">
-                    <div className="bg-white border border-neutral-200 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden animate-scale-in">
+            {editingDay && (() => {
+                const isModalSaving = savingId === editingDay.id;
+                return (
+                    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-900/60 backdrop-blur-xs animate-fade-in">
+                        <div className="bg-white border border-neutral-200 rounded-xl max-w-lg w-full shadow-2xl overflow-hidden animate-scale-in">
                         {/* Modal Header */}
                         <div className="p-5 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/60">
                             <div className="flex items-center gap-3">
@@ -814,10 +816,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                 </button>
                                 <button
                                     type="submit"
-                                    disabled={isSaving}
+                                    disabled={isModalSaving}
                                     className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors shadow-sm disabled:opacity-50 cursor-pointer"
                                 >
-                                    {isSaving ? (
+                                    {isModalSaving ? (
                                         <>
                                             <RefreshCw size={13} className="animate-spin" />
                                             <span>Saving...</span>
@@ -833,7 +835,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                         </form>
                     </div>
                 </div>
-            )}
+                );
+            })()}
         </div>
     );
 }
