@@ -3409,26 +3409,7 @@ export default function AdminDashboard() {
                                                 </div>
                                             )}
 
-                                            {/* Related products selector */}
-                                            <div className="bg-neutral-50 p-5 border border-neutral-200 text-left rounded-xl">
-                                                <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2.5">Select Related Products</label>
-                                                <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-2 bg-white border border-neutral-200 rounded-lg">
-                                                    {productRelatedOptions.filter(p => p.id !== prodEditId).map((p) => (
-                                                        <button
-                                                            key={p.id}
-                                                            type="button"
-                                                            onClick={() => handleRelatedProductToggle(p.id)}
-                                                            className={`px-3 py-1.5 border text-xs font-semibold transition-all cursor-pointer ${
-                                                                prodRelatedIds.includes(p.id)
-                                                                    ? 'bg-primary border-primary text-white rounded-full'
-                                                                    : 'bg-neutral-50 border-neutral-200 hover:border-neutral-400 text-neutral-600 rounded-full'
-                                                            }`}
-                                                        >
-                                                            {p.name}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </div>
+
 
                                             <div className="flex items-center space-x-3 pt-4 border-t border-neutral-200">
                                                 <button type="submit" className="bg-primary hover:bg-primary-hover text-white font-bold px-6 py-2.5 text-xs transition-colors rounded-lg cursor-pointer shadow-xs">
