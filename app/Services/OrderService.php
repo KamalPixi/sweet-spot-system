@@ -179,10 +179,10 @@ class OrderService
             $total = round($subtotal + $deliveryFee, 2);
 
             // 4. Create Order record
-            $orderNumber = 'PL-' . strtoupper(Str::random(8));
+            $orderNumber = 'SS-' . strtoupper(Str::random(8));
             // Ensure uniqueness of order number
             while (Order::where('order_number', $orderNumber)->exists()) {
-                $orderNumber = 'PL-' . strtoupper(Str::random(8));
+                $orderNumber = 'SS-' . strtoupper(Str::random(8));
             }
 
             $paymentMethod = $data['payment_method'] ?? 'stripe';

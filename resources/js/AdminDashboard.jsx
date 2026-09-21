@@ -4321,7 +4321,7 @@ export default function AdminDashboard() {
                                                             type="text" 
                                                             value={settingsForm.seo_keywords || ''}
                                                             onChange={(e) => setSettingsForm({ ...settingsForm, seo_keywords: e.target.value })}
-                                                            placeholder="e.g. cakes, coffee, london, bakery, artisanal, pastries"
+                                                            placeholder="e.g. cakes, coffee, london, store, artisanal, pastries"
                                                             className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
                                                         />
                                                         <p className="text-[10px] text-neutral-400 mt-1">Comma-separated list of search terms representing your business.</p>

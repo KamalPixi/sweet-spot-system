@@ -300,7 +300,7 @@ class CloudPrntService
         $lines[] = "[line: count 1]";
 
         $lines[] = "[bold: on]FONT & EMPHASIS TEST:[bold: off]";
-        $lines[] = "Regular Text: Sweet Spot London Bakery";
+        $lines[] = "Regular Text: Sweet Spot London Store";
         $lines[] = "[bold: on]Bold Text: Fresh Artisan Desserts[bold: off]";
         $lines[] = "[under: on]Underlined Text: https://sweetspot.test[under: off]";
         $lines[] = "[invert: on] INVERTED HIGH-CONTRAST HEADER [invert: off]";

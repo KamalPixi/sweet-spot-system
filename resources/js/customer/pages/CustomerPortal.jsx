@@ -575,7 +575,7 @@ export default function CustomerPortal() {
                                         </div>
                                     </div>
 
-                                    {/* 2. Active Order Tracker OR Bakery Invitation Banner */}
+                                    {/* 2. Active Order Tracker OR Store Invitation Banner */}
                                     {latestActiveOrder && !['completed', 'cancelled'].includes(latestActiveOrder.status) ? (
                                         <div className="bg-white border-2 border-[#e5b582]/50 rounded-2xl p-6 sm:p-7 shadow-lg shadow-[#24161b]/5 relative overflow-hidden">
                                             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-neutral-100">
@@ -590,7 +590,7 @@ export default function CustomerPortal() {
                                                         Order #{latestActiveOrder.order_number}
                                                     </h3>
                                                     <p className="text-xs text-neutral-500 mt-0.5">
-                                                        {latestActiveOrder.items?.[0]?.product_name || 'Fresh Bakery Items'}
+                                                        {latestActiveOrder.items?.[0]?.product_name || 'Fresh Store Items'}
                                                         {latestActiveOrder.items?.length > 1 ? ` + ${latestActiveOrder.items.length - 1} more` : ''} · £{parseFloat(latestActiveOrder.total || 0).toFixed(2)}
                                                     </p>
                                                 </div>
@@ -1114,7 +1114,7 @@ export default function CustomerPortal() {
                                             </div>
                                             <h3 className="text-base font-serif font-black text-[#24161b]">Your inbox is clear</h3>
                                             <p className="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
-                                                Order status updates, bakery alerts, and delivery confirmations will arrive right here.
+                                                Order status updates, store alerts, and delivery confirmations will arrive right here.
                                             </p>
                                         </div>
                                     ) : (

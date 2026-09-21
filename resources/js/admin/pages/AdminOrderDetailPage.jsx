@@ -771,7 +771,7 @@ export default function AdminOrderDetailPage() {
                                                         >
                                                             <option value="uber_direct">Uber Direct (Standard On-Demand)</option>
                                                             <option value="stuart">Stuart Delivery (Express Courier)</option>
-                                                            <option value="in_house">In-House Fleet (Sweet Spot Bakery Van)</option>
+                                                            <option value="in_house">In-House Fleet (Sweet Spot Store Van)</option>
                                                             <option value="simulated">SwiftCourier Simulator (Test Courier)</option>
                                                         </select>
                                                     </div>

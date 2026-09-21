@@ -268,7 +268,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                         {mode === 'register' && 'Create your account to order treats.'}
                                         {mode === 'forgot_password' && 'Enter your contact info to reset password.'}
                                         {mode === 'verify_code' && `Enter the 6-digit code sent to ${forgotInput}.`}
-                                        {mode === 'admin' && 'Bakery staff access only.'}
+                                        {mode === 'admin' && 'Store staff access only.'}
                                     </p>
                                 </div>
 

@@ -130,7 +130,7 @@ export default function OrderTracking() {
         { 
             name: isDelivery ? 'Out for Delivery' : 'Ready for Counter', 
             short: isDelivery ? 'Dispatched' : 'Ready',
-            desc: isDelivery ? 'Courier on the road' : 'Boxed at bakery counter',
+            desc: isDelivery ? 'Courier on the road' : 'Boxed at store counter',
             icon: isDelivery ? Bike : Store
         },
         { 
@@ -165,7 +165,7 @@ export default function OrderTracking() {
                     }
                     : {
                         title: 'Ready for Counter Pickup',
-                        subtitle: 'Your box is waiting fresh at our Plumstead bakery counter. Pop in anytime within your slot!',
+                        subtitle: 'Your box is waiting fresh at our Plumstead store counter. Pop in anytime within your slot!',
                         color: 'text-emerald-400'
                     };
             case 'completed':
@@ -228,7 +228,7 @@ export default function OrderTracking() {
                                         required
                                         value={lookupOrderNumber}
                                         onChange={(e) => setLookupOrderNumber(e.target.value.toUpperCase())}
-                                        placeholder="e.g. PL-JKTE4RYE"
+                                        placeholder="e.g. SS-JKTE4RYE"
                                         className="w-full bg-white border border-neutral-200 focus:border-[#24161b] focus:ring-2 focus:ring-[#24161b]/10 rounded-2xl pl-11 pr-4 py-3.5 text-sm font-bold text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400 uppercase tracking-wider font-mono shadow-xs"
                                     />
                                 </div>
@@ -307,7 +307,7 @@ export default function OrderTracking() {
                     <div className="w-16 h-16 rounded-2xl bg-[#24161b] text-[#e5b582] flex items-center justify-center mb-4 shadow-xl shadow-[#24161b]/10 animate-pulse">
                         <Loader2 className="animate-spin" size={30} />
                     </div>
-                    <p className="font-serif font-black text-lg text-[#24161b]">Connecting to Bakery Telemetry...</p>
+                    <p className="font-serif font-black text-lg text-[#24161b]">Connecting to Store Telemetry...</p>
                     <p className="text-neutral-500 text-xs mt-1">Retrieving oven and dispatch data for #{orderNumber}</p>
                 </div>
             );
@@ -422,7 +422,7 @@ export default function OrderTracking() {
                             <div className="flex items-center gap-2 flex-wrap">
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest bg-white/15 text-white border border-white/20 backdrop-blur-md">
                                     <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                                    <span>Live Bakery Sync</span>
+                                    <span>Live Store Sync</span>
                                 </span>
 
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#e5b582]/20 text-[#e5b582] border border-[#e5b582]/30">
@@ -478,7 +478,7 @@ export default function OrderTracking() {
                         <div className="flex items-center gap-2">
                             <Clock size={16} className="text-[#f43f5e]" />
                             <h3 className="text-xs font-black uppercase tracking-wider text-[#24161b]">
-                                Bakery Progress Tracker
+                                Store Progress Tracker
                             </h3>
                         </div>
                         <span className="text-[11px] font-bold text-[#24161b] bg-white border border-neutral-200 px-3 py-1 rounded-full uppercase tracking-wider shadow-2xs">
@@ -625,7 +625,7 @@ export default function OrderTracking() {
                                         ) : (
                                             <div className="pt-2">
                                                 <p className="text-[11px] text-neutral-400 italic">
-                                                    Live courier GPS link will appear here once driver picks up from our bakery.
+                                                    Live courier GPS link will appear here once driver picks up from our store.
                                                 </p>
                                             </div>
                                         )}
@@ -640,8 +640,8 @@ export default function OrderTracking() {
                                                 <Store size={16} />
                                             </div>
                                             <div>
-                                                <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Bakery Location</p>
-                                                <p className="font-black text-[#24161b] text-sm">Sweet Spot Bakery Counter</p>
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Store Location</p>
+                                                <p className="font-black text-[#24161b] text-sm">Sweet Spot Store Counter</p>
                                                 <p className="text-neutral-600 mt-0.5">114 Plumstead High St, London SE18 1SJ</p>
                                                 <p className="text-neutral-400 text-[11px] mt-0.5">Open Daily: 12:00 PM – 11:00 PM</p>
                                             </div>
@@ -702,14 +702,14 @@ export default function OrderTracking() {
                                 </div>
                                 <div>
                                     <h4 className="text-xs font-black text-[#24161b]">Need to update your order?</h4>
-                                    <p className="text-[11px] text-neutral-500 mt-0.5">Reach our Plumstead bakery staff directly.</p>
+                                    <p className="text-[11px] text-neutral-500 mt-0.5">Reach our Plumstead store staff directly.</p>
                                 </div>
                             </div>
                             <a
                                 href="tel:02081234567"
                                 className="px-4 py-2 rounded-full bg-[#fdfaf5] hover:bg-neutral-100 text-[#24161b] text-xs font-bold border border-neutral-200 transition-all shrink-0 cursor-pointer"
                             >
-                                Call Bakery
+                                Call Store
                             </a>
                         </div>
                     </div>

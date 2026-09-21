@@ -225,7 +225,7 @@ export default function SearchModal({ isOpen, onClose }) {
                                                         {product.name}
                                                     </h4>
                                                     <p className="text-xs text-white/40 truncate mt-0.5">
-                                                        {product.categoryName || 'Bakery Fresh'}
+                                                        {product.categoryName || 'Store Fresh'}
                                                     </p>
                                                 </div>
                                             </div>

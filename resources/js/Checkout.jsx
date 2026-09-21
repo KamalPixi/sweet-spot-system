@@ -1427,7 +1427,7 @@ export default function Checkout() {
                                                                         <p className="text-[11px] text-amber-700 mt-0.5">
                                                                             {orderType === 'delivery'
                                                                                 ? 'Add your address so we can dispatch your sweets promptly.'
-                                                                                : 'Pick a date and time so our bakery counter prepares your items fresh.'}
+                                                                                : 'Pick a date and time so our store counter prepares your items fresh.'}
                                                                         </p>
                                                                     </div>
                                                                 </div>
@@ -1591,7 +1591,7 @@ export default function Checkout() {
                                                         </div>
                                                         <div className="w-full bg-neutral-200 rounded-full h-1.5 overflow-hidden">
                                                             <div 
-                                                                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#e5b582] to-[#24161b]" 
+                                                                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-rose-500 to-[#24161b]" 
                                                                 style={{ width: `${Math.min((cartSubtotal / freeDeliveryThreshold) * 100, 100)}%` }} 
                                                             />
                                                         </div>

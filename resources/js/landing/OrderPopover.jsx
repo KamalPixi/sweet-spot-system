@@ -459,7 +459,7 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
                         <div className="p-2.5 bg-neutral-50 rounded-xl border border-neutral-200/70 text-[11px] flex items-start gap-2">
                             <MapPin size={14} className="text-[#8e5233] shrink-0 mt-0.5" />
                             <div>
-                                <p className="font-bold text-neutral-900">Bakery Collection Counter</p>
+                                <p className="font-bold text-neutral-900">Store Collection Counter</p>
                                 <p className="text-neutral-500 mt-0.5">{storeAddress}, {storePostcode}</p>
                             </div>
                         </div>

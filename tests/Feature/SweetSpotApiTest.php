@@ -327,7 +327,7 @@ class SweetSpotApiTest extends TestCase
 
         $order = Order::create([
             'customer_id' => $customer->id,
-            'order_number' => 'PL-ST-SUCCESS',
+            'order_number' => 'SS-ST-SUCCESS',
             'type' => 'collection',
             'status' => 'unpaid', // initial status
             'payment_status' => 'unpaid',
@@ -374,7 +374,7 @@ class SweetSpotApiTest extends TestCase
 
         $order = Order::create([
             'customer_id' => $customer->id,
-            'order_number' => 'PL-ST-FAILED',
+            'order_number' => 'SS-ST-FAILED',
             'type' => 'collection',
             'status' => 'unpaid',
             'payment_status' => 'unpaid',

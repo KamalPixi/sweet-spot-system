@@ -138,7 +138,7 @@ class UberDirectService
              ],
              'in_house' => [
                  'name' => 'In-House Fleet',
-                 'courier_name' => 'David K. (Sweet Spot Bakery Van)',
+                 'courier_name' => 'David K. (Sweet Spot Store Van)',
                  'courier_phone' => '+44 7933 789012',
                  'prefix' => 'ss_',
                  'base_url' => 'https://fleet.sweetspotsystem.co.uk/track/',

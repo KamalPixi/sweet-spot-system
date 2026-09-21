@@ -2,7 +2,7 @@
     $storeName = 'Sweet Spot System';
     $seoTitle = 'Handcrafted Treats & Coffee | Sweet Spot System';
     $seoDesc = 'Order handcrafted artisanal treats, cakes, and coffee online for delivery or collection.';
-    $seoKeywords = 'cakes, coffee, bakery, artisanal, pastries, sweet spot';
+    $seoKeywords = 'cakes, coffee, store, artisanal, pastries, sweet spot';
     $storeLogo = null;
 
     if (\Illuminate\Support\Facades\Schema::hasTable('store_configs')) {
