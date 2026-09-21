@@ -264,14 +264,14 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
     return (
         <div className="space-y-8 animate-fade-in">
             {/* Top Page Header */}
-            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 pb-2 border-b border-neutral-200/70">
+            <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 pb-2 border-b border-stone-200/70">
                 <div>
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200/80 text-amber-800 text-[10px] font-bold uppercase tracking-wider mb-2">
-                        <Clock size={12} className="text-amber-600" />
+                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/5 border border-primary/15 text-primary text-[10px] font-bold uppercase tracking-wider mb-2">
+                        <Clock size={12} className="text-secondary" />
                         <span>Store Pickup & Ordering</span>
                     </div>
-                    <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Collection Time Slots</h1>
-                    <p className="text-xs text-neutral-500 mt-1">
+                    <h1 className="text-3xl font-black text-stone-900 tracking-tight">Collection Time Slots</h1>
+                    <p className="text-xs text-stone-500 mt-1">
                         Configure daily store opening hours, collection availability, and customer checkout time slot intervals.
                     </p>
                 </div>
@@ -280,13 +280,13 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     <button
                         type="button"
                         onClick={() => setShowSimulator(prev => !prev)}
-                        className={`inline-flex items-center gap-2 px-3.5 py-2.5 rounded-xl text-xs font-bold transition-all shadow-xs ${
+                        className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs ${
                             showSimulator
-                                ? 'bg-amber-500 text-white hover:bg-amber-600'
-                                : 'bg-white border border-neutral-200 hover:border-amber-400 text-neutral-800'
+                                ? 'bg-primary text-white hover:bg-primary-hover'
+                                : 'bg-white border border-stone-250 hover:border-primary text-stone-800'
                         }`}
                     >
-                        <Eye size={14} className={showSimulator ? 'text-white' : 'text-amber-600'} />
+                        <Eye size={14} className={showSimulator ? 'text-accent' : 'text-secondary'} />
                         <span>{showSimulator ? 'Hide Live Slot Preview' : 'Test Customer Slots'}</span>
                     </button>
 
@@ -294,10 +294,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                         type="button"
                         onClick={() => fetchHours()}
                         disabled={loading}
-                        className="inline-flex items-center gap-1.5 px-3 py-2.5 rounded-xl bg-white border border-neutral-200 hover:border-neutral-300 text-neutral-600 hover:text-neutral-900 text-xs font-bold transition-all shadow-xs disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-stone-200 hover:border-stone-300 text-stone-600 hover:text-stone-900 text-xs font-bold transition-all shadow-2xs disabled:opacity-50"
                         title="Refresh collection hours"
                     >
-                        <RefreshCw size={13} className={loading ? 'animate-spin text-amber-600' : ''} />
+                        <RefreshCw size={13} className={loading ? 'animate-spin text-secondary' : ''} />
                         <span>Refresh</span>
                     </button>
                 </div>
@@ -305,16 +305,16 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
             {/* Compact KPI Analytics Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-white border border-neutral-200/80 rounded-xl p-3 shadow-2xs hover:border-amber-400/60 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Pickup Days</span>
+                        <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Pickup Days</span>
                         <span className="p-1 rounded-md bg-emerald-50 text-emerald-600">
                             <Calendar size={12} />
                         </span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
-                        <span className="text-lg font-black text-neutral-900">{activeDaysCount}</span>
-                        <span className="text-[10px] text-neutral-400 font-bold">/ 7 Days</span>
+                        <span className="text-lg font-black text-stone-900">{activeDaysCount}</span>
+                        <span className="text-[10px] text-stone-400 font-bold">/ 7 Days</span>
                     </div>
                     <div className="mt-0.5 flex items-center gap-1 text-[10px] text-emerald-600 font-bold">
                         <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
@@ -322,51 +322,51 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     </div>
                 </div>
 
-                <div className="bg-white border border-neutral-200/80 rounded-xl p-3 shadow-2xs hover:border-amber-400/60 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Weekly Coverage</span>
-                        <span className="p-1 rounded-md bg-amber-50 text-amber-600">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Weekly Coverage</span>
+                        <span className="p-1 rounded-md bg-secondary/10 text-secondary">
                             <Clock size={12} />
                         </span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
-                        <span className="text-lg font-black text-neutral-900">{totalWeeklyHours}</span>
-                        <span className="text-[10px] text-neutral-400 font-bold">Hrs / Wk</span>
+                        <span className="text-lg font-black text-stone-900">{totalWeeklyHours}</span>
+                        <span className="text-[10px] text-stone-400 font-bold">Hrs / Wk</span>
                     </div>
-                    <div className="mt-0.5 text-[10px] text-neutral-500 font-medium">
+                    <div className="mt-0.5 text-[10px] text-stone-500 font-medium">
                         Avg {(Number(totalWeeklyHours) / (activeDaysCount || 1)).toFixed(1)} hrs/open day
                     </div>
                 </div>
 
-                <div className="bg-white border border-neutral-200/80 rounded-xl p-3 shadow-2xs hover:border-amber-400/60 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Today's Window</span>
-                        <span className="p-1 rounded-md bg-blue-50 text-blue-600">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Today's Window</span>
+                        <span className="p-1 rounded-md bg-accent/25 text-primary">
                             <Sun size={12} />
                         </span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
-                        <span className="text-sm font-black text-neutral-900">
+                        <span className="text-sm font-black text-stone-900">
                             {todaySchedule?.is_closed ? 'Closed Today' : `${todaySchedule?.open_time?.slice(0, 5)} - ${todaySchedule?.close_time?.slice(0, 5)}`}
                         </span>
                     </div>
-                    <div className="mt-0.5 text-[10px] text-neutral-500 font-medium truncate">
+                    <div className="mt-0.5 text-[10px] text-stone-500 font-medium truncate">
                         {todaySchedule?.is_closed ? 'No collections' : `${todayDayName} · ${todaySchedule?.slot_interval}m slots`}
                     </div>
                 </div>
 
-                <div className="bg-white border border-neutral-200/80 rounded-xl p-3 shadow-2xs hover:border-amber-400/60 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-black uppercase tracking-wider text-neutral-400">Interval</span>
-                        <span className="p-1 rounded-md bg-purple-50 text-purple-600">
+                        <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Interval</span>
+                        <span className="p-1 rounded-md bg-primary/5 text-primary">
                             <Timer size={12} />
                         </span>
                     </div>
                     <div className="mt-1 flex items-baseline gap-1.5">
-                        <span className="text-lg font-black text-neutral-900">15 - 30</span>
-                        <span className="text-[10px] text-neutral-400 font-bold">Minutes</span>
+                        <span className="text-lg font-black text-stone-900">15 - 30</span>
+                        <span className="text-[10px] text-stone-400 font-bold">Minutes</span>
                     </div>
-                    <div className="mt-0.5 text-[10px] text-neutral-500 font-medium">
+                    <div className="mt-0.5 text-[10px] text-stone-500 font-medium">
                         Max 5 orders / slot buffer
                     </div>
                 </div>
@@ -374,39 +374,39 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
             {/* Customer Live Slot Simulator Drawer / Section */}
             {showSimulator && (
-                <div className="bg-gradient-to-br from-amber-500/5 via-white to-neutral-50 border-2 border-amber-300/80 rounded-xl p-4 shadow-sm space-y-3 animate-fade-in">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-amber-200/50 pb-3">
+                <div className="bg-gradient-to-br from-primary/[0.04] via-canvas to-surface border border-primary/20 rounded-xl p-4 shadow-sm space-y-3 animate-fade-in">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-primary/10 pb-3">
                         <div className="flex items-center gap-2">
-                            <div className="h-7 w-7 rounded-lg bg-amber-500 text-white flex items-center justify-center shadow-xs">
+                            <div className="h-7 w-7 rounded-lg bg-primary text-accent flex items-center justify-center shadow-xs">
                                 <Eye size={15} />
                             </div>
                             <div>
-                                <h3 className="text-xs font-black text-neutral-900 flex items-center gap-2">
+                                <h3 className="text-xs font-black text-stone-900 flex items-center gap-2">
                                     <span>Live Customer Slot Simulator</span>
-                                    <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-amber-100 text-amber-900">
+                                    <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/20">
                                         Checkout Preview
                                     </span>
                                 </h3>
-                                <p className="text-[11px] text-neutral-500 mt-0.5">
+                                <p className="text-[11px] text-stone-500 mt-0.5">
                                     Pick any date to preview the exact bookable collection time slots shown to customers during checkout.
                                 </p>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-2.5">
-                            <label className="text-[11px] font-bold text-neutral-600 flex items-center gap-1.5">
+                            <label className="text-[11px] font-bold text-stone-600 flex items-center gap-1.5">
                                 <span>Date:</span>
                                 <input
                                     type="date"
                                     value={simDate}
                                     onChange={(e) => setSimDate(e.target.value)}
-                                    className="px-2 py-1 bg-white border border-neutral-300 rounded-lg text-[11px] font-bold text-neutral-800 shadow-2xs focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 outline-none"
+                                    className="px-2 py-1 bg-white border border-stone-300 rounded-lg text-[11px] font-bold text-stone-800 shadow-2xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </label>
                             <button
                                 type="button"
                                 onClick={() => setShowSimulator(false)}
-                                className="p-1 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                                className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
                             >
                                 <X size={15} />
                             </button>
@@ -414,23 +414,23 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     </div>
 
                     {loadingSim ? (
-                        <div className="py-6 text-center text-xs text-neutral-400 flex items-center justify-center gap-2">
-                            <RefreshCw size={13} className="animate-spin text-amber-500" />
+                        <div className="py-6 text-center text-xs text-stone-400 flex items-center justify-center gap-2">
+                            <RefreshCw size={13} className="animate-spin text-secondary" />
                             <span>Calculating dynamic collection slots for {simDate}...</span>
                         </div>
                     ) : simSlots.length === 0 ? (
-                        <div className="py-5 text-center bg-white border border-neutral-200/80 rounded-lg">
-                            <XCircle size={20} className="text-neutral-300 mx-auto mb-1.5" />
-                            <p className="text-xs font-bold text-neutral-700">No collection slots available for this day</p>
-                            <p className="text-[10px] text-neutral-400 mt-0.5">The store may be closed or operating hours have passed for today.</p>
+                        <div className="py-5 text-center bg-white border border-stone-200/80 rounded-lg">
+                            <XCircle size={20} className="text-stone-300 mx-auto mb-1.5" />
+                            <p className="text-xs font-bold text-stone-700">No collection slots available for this day</p>
+                            <p className="text-[10px] text-stone-400 mt-0.5">The store may be closed or operating hours have passed for today.</p>
                         </div>
                     ) : (
                         <div>
                             <div className="flex items-center justify-between mb-2 text-xs">
-                                <span className="font-bold text-neutral-700 text-[11px]">
+                                <span className="font-bold text-stone-700 text-[11px]">
                                     {simSlots.length} Bookable Collection Slots Available
                                 </span>
-                                <span className="text-[10px] text-neutral-400">
+                                <span className="text-[10px] text-stone-400">
                                     Format: 12-Hour Local Store Time
                                 </span>
                             </div>
@@ -440,8 +440,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                         key={idx}
                                         className={`px-2 py-1.5 rounded-lg text-center border text-[11px] font-bold transition-all ${
                                             slot.is_available
-                                                ? 'bg-white border-emerald-200 text-neutral-800 hover:border-emerald-500 hover:shadow-2xs'
-                                                : 'bg-neutral-100 border-neutral-200 text-neutral-400 cursor-not-allowed'
+                                                ? 'bg-white border-stone-200 text-stone-800 hover:border-primary hover:text-primary hover:shadow-2xs'
+                                                : 'bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
                                         }`}
                                     >
                                         <div>{slot.time}</div>
@@ -477,37 +477,37 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             key={hour.id}
                             className={`bg-white border rounded-xl shadow-2xs transition-all duration-200 flex flex-col justify-between overflow-hidden group ${
                                 hour.is_closed 
-                                    ? 'border-neutral-200 opacity-75 hover:opacity-100' 
+                                    ? 'border-stone-200 opacity-75 hover:opacity-100' 
                                     : isToday 
-                                    ? 'border-amber-400 ring-1 ring-amber-400/30 shadow-xs' 
-                                    : 'border-neutral-200/80 hover:border-neutral-300 hover:shadow-xs'
+                                    ? 'border-primary ring-1 ring-primary/25 shadow-xs' 
+                                    : 'border-stone-200/80 hover:border-primary/40 hover:shadow-xs'
                             }`}
                         >
                             {/* Card Top Banner */}
                             <div>
-                                <div className="px-3.5 py-2.5 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/40">
+                                <div className="px-3.5 py-2.5 border-b border-stone-100 flex items-center justify-between bg-stone-50/40">
                                     <div className="flex items-center gap-2">
                                         <div className={`h-6.5 w-6.5 rounded-lg flex items-center justify-center font-black text-[11px] ${
                                             hour.is_closed 
-                                                ? 'bg-neutral-100 text-neutral-400' 
+                                                ? 'bg-stone-100 text-stone-400' 
                                                 : isToday
-                                                ? 'bg-amber-600 text-white'
-                                                : 'bg-neutral-900 text-white'
+                                                ? 'bg-primary text-accent'
+                                                : 'bg-primary/10 text-primary'
                                         }`}>
                                             {hour.day_of_week.slice(0, 3)}
                                         </div>
                                         <div>
                                             <div className="flex items-center gap-1">
-                                                <h3 className="text-xs font-black text-neutral-900">
+                                                <h3 className="text-xs font-black text-stone-900">
                                                     {hour.day_of_week}
                                                 </h3>
                                                 {isToday && (
-                                                    <span className="px-1 py-0.2 rounded bg-amber-100 text-amber-800 text-[8px] font-black uppercase tracking-wider">
+                                                    <span className="px-1 py-0.2 rounded bg-secondary/10 text-secondary text-[8px] font-black uppercase tracking-wider border border-secondary/20">
                                                         Today
                                                     </span>
                                                 )}
                                             </div>
-                                            <span className="text-[9px] font-bold text-neutral-400 block -mt-0.5">
+                                            <span className="text-[9px] font-bold text-stone-400 block -mt-0.5">
                                                 {isWeekend ? 'Weekend' : 'Weekday'}
                                             </span>
                                         </div>
@@ -534,11 +534,11 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                 <div className="p-3.5 space-y-2.5">
                                     {hour.is_closed ? (
                                         <div className="py-4 text-center">
-                                            <div className="h-7 w-7 rounded-full bg-neutral-100 text-neutral-400 mx-auto flex items-center justify-center mb-1.5">
+                                            <div className="h-7 w-7 rounded-full bg-stone-100 text-stone-400 mx-auto flex items-center justify-center mb-1.5">
                                                 <Moon size={14} />
                                             </div>
-                                            <p className="text-[11px] font-bold text-neutral-600">Store closed for pickup</p>
-                                            <p className="text-[9px] text-neutral-400 mt-0.5">
+                                            <p className="text-[11px] font-bold text-stone-600">Store closed for pickup</p>
+                                            <p className="text-[9px] text-stone-400 mt-0.5">
                                                 No collection slots bookable.
                                             </p>
                                         </div>
@@ -547,14 +547,14 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                             {/* Operating Hours Row */}
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-1.5 text-[11px]">
-                                                    <Clock size={12} className="text-neutral-400" />
-                                                    <span className="font-bold text-neutral-500">Hours</span>
+                                                    <Clock size={12} className="text-stone-400" />
+                                                    <span className="font-bold text-stone-500">Hours</span>
                                                 </div>
                                                 <div className="text-right">
-                                                    <span className="text-[11px] font-black text-neutral-900 block font-mono">
+                                                    <span className="text-[11px] font-black text-stone-900 block font-mono">
                                                         {hour.open_time?.slice(0, 5)} – {hour.close_time?.slice(0, 5)}
                                                     </span>
-                                                    <span className="text-[9px] font-bold text-amber-700 block">
+                                                    <span className="text-[9px] font-bold text-secondary block">
                                                         {formatTimeDisplay(hour.open_time)} – {formatTimeDisplay(hour.close_time)}
                                                     </span>
                                                 </div>
@@ -562,14 +562,14 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
                                             {/* Visual 24-Hour Schedule Bar */}
                                             <div className="space-y-0.5">
-                                                <div className="flex justify-between text-[8px] font-bold text-neutral-400">
+                                                <div className="flex justify-between text-[8px] font-bold text-stone-400">
                                                     <span>00:00</span>
-                                                    <span className="text-amber-700 font-extrabold">{hoursSpan}h open</span>
+                                                    <span className="text-primary font-black">{hoursSpan}h open</span>
                                                     <span>24:00</span>
                                                 </div>
-                                                <div className="h-1.5 w-full bg-neutral-100 rounded-full overflow-hidden relative">
+                                                <div className="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden relative">
                                                     <div 
-                                                        className="h-full bg-gradient-to-r from-amber-500 to-amber-600 rounded-full"
+                                                        className="h-full bg-gradient-to-r from-primary via-primary-light to-secondary rounded-full"
                                                         style={{
                                                             marginLeft: `${startPercent}%`,
                                                             width: `${widthPercent}%`
@@ -579,23 +579,23 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                             </div>
 
                                             {/* Slot Interval and Capacity Row */}
-                                            <div className="pt-1.5 border-t border-neutral-100 grid grid-cols-2 gap-2">
-                                                <div className="bg-neutral-50/70 p-1.5 rounded-lg border border-neutral-100">
-                                                    <span className="block text-[8px] font-black uppercase tracking-wider text-neutral-400 mb-0.5">
+                                            <div className="pt-1.5 border-t border-stone-100 grid grid-cols-2 gap-2">
+                                                <div className="bg-canvas p-1.5 rounded-lg border border-stone-200/70">
+                                                    <span className="block text-[8px] font-black uppercase tracking-wider text-stone-400 mb-0.5">
                                                         Interval
                                                     </span>
-                                                    <div className="flex items-center gap-1 text-[11px] font-black text-neutral-800">
-                                                        <Timer size={10} className="text-amber-600" />
+                                                    <div className="flex items-center gap-1 text-[11px] font-black text-stone-900">
+                                                        <Timer size={10} className="text-secondary" />
                                                         <span>{hour.slot_interval}m</span>
                                                     </div>
                                                 </div>
 
-                                                <div className="bg-neutral-50/70 p-1.5 rounded-lg border border-neutral-100">
-                                                    <span className="block text-[8px] font-black uppercase tracking-wider text-neutral-400 mb-0.5">
+                                                <div className="bg-canvas p-1.5 rounded-lg border border-stone-200/70">
+                                                    <span className="block text-[8px] font-black uppercase tracking-wider text-stone-400 mb-0.5">
                                                         Capacity
                                                     </span>
-                                                    <div className="flex items-center gap-1 text-[11px] font-black text-neutral-800">
-                                                        <Layers size={10} className="text-amber-600" />
+                                                    <div className="flex items-center gap-1 text-[11px] font-black text-stone-900">
+                                                        <Layers size={10} className="text-accent-hover" />
                                                         <span>~{estimatedSlots} slots</span>
                                                     </div>
                                                 </div>
@@ -606,17 +606,17 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             </div>
 
                             {/* Card Footer Actions */}
-                            <div className="px-3.5 py-2 bg-neutral-50/50 border-t border-neutral-100 flex items-center justify-between">
-                                <span className="text-[10px] text-neutral-400 font-medium">
+                            <div className="px-3.5 py-2 bg-stone-50/50 border-t border-stone-100 flex items-center justify-between">
+                                <span className="text-[10px] text-stone-400 font-medium">
                                     {hour.is_closed ? 'Closed all day' : `~${estimatedSlots} slots`}
                                 </span>
 
                                 <button
                                     type="button"
                                     onClick={() => handleOpenEdit(hour)}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-neutral-200 hover:border-amber-500 hover:text-amber-700 text-[11px] font-bold text-neutral-800 shadow-2xs transition-all cursor-pointer"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-stone-200 hover:border-primary hover:text-primary text-[11px] font-bold text-stone-800 shadow-2xs transition-all cursor-pointer"
                                 >
-                                    <Edit3 size={11} className="text-amber-600" />
+                                    <Edit3 size={11} className="text-secondary" />
                                     <span>Configure</span>
                                 </button>
                             </div>
@@ -625,45 +625,21 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                 })}
             </div>
 
-            {/* Quick Bulk Action Banner - Compact */}
-            <div className="p-3.5 rounded-xl bg-gradient-to-r from-neutral-900 to-neutral-800 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-xs">
-                <div className="flex items-center gap-2.5">
-                    <div className="h-8 w-8 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-500/30 shrink-0">
-                        <Zap size={16} />
-                    </div>
-                    <div>
-                        <h4 className="text-xs font-black text-white">Need to update all days at once?</h4>
-                        <p className="text-[11px] text-neutral-300 mt-0.5">
-                            Click Configure on any day to apply those hours across all weekdays or the entire 7-day schedule with 1 click.
-                        </p>
-                    </div>
-                </div>
-
-                <button
-                    type="button"
-                    onClick={() => handleOpenEdit(sortedHours[0] || { id: 1, day_of_week: 'Monday', open_time: '08:00', close_time: '22:00', slot_interval: 15 })}
-                    className="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 text-neutral-950 text-xs font-black transition-colors shrink-0 shadow-2xs"
-                >
-                    <Sliders size={13} />
-                    <span>Quick Bulk Configure</span>
-                </button>
-            </div>
-
             {/* EDIT DAY MODAL */}
             {editingDay && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-neutral-950/60 backdrop-blur-xs animate-fade-in">
-                    <div className="bg-white border border-neutral-200 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-scale-in">
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/60 backdrop-blur-xs animate-fade-in">
+                    <div className="bg-white border border-stone-200 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-scale-in">
                         {/* Modal Header */}
-                        <div className="p-5 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/50">
+                        <div className="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
                             <div className="flex items-center gap-2.5">
-                                <div className="h-9 w-9 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center font-black text-sm">
-                                    <Clock size={16} className="text-amber-600" />
+                                <div className="h-9 w-9 rounded-xl bg-primary text-accent flex items-center justify-center font-black text-sm">
+                                    <Clock size={16} className="text-accent" />
                                 </div>
                                 <div>
-                                    <h3 className="text-base font-black text-neutral-900">
+                                    <h3 className="text-base font-black text-stone-900">
                                         Configure {editingDay.day_of_week}
                                     </h3>
-                                    <p className="text-xs text-neutral-400">
+                                    <p className="text-xs text-stone-400">
                                         Set collection availability, store hours, and slot intervals.
                                     </p>
                                 </div>
@@ -671,7 +647,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             <button
                                 type="button"
                                 onClick={() => setEditingDay(null)}
-                                className="p-1.5 text-neutral-400 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
+                                className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
                             >
                                 <X size={18} />
                             </button>
@@ -680,12 +656,12 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                         {/* Modal Body */}
                         <form onSubmit={handleSaveDay} className="p-6 space-y-6">
                             {/* Open / Closed Switch */}
-                            <div className="p-4 bg-neutral-50/80 rounded-xl border border-neutral-200/80 flex items-center justify-between">
+                            <div className="p-4 bg-canvas rounded-xl border border-stone-200/80 flex items-center justify-between">
                                 <div>
-                                    <span className="text-xs font-black text-neutral-900 block">
+                                    <span className="text-xs font-black text-stone-900 block">
                                         Store Open for Collection
                                     </span>
-                                    <span className="text-[11px] text-neutral-500">
+                                    <span className="text-[11px] text-stone-500">
                                         When closed, no collection time slots will be bookable on this day.
                                     </span>
                                 </div>
@@ -693,7 +669,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     type="button"
                                     onClick={() => setEditForm(prev => ({ ...prev, is_closed: !prev.is_closed }))}
                                     className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                        !editForm.is_closed ? 'bg-amber-600' : 'bg-neutral-300'
+                                        !editForm.is_closed ? 'bg-primary' : 'bg-stone-300'
                                     }`}
                                 >
                                     <span
@@ -708,7 +684,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                 <>
                                     {/* Quick Preset Buttons */}
                                     <div className="space-y-2">
-                                        <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-400">
+                                        <label className="block text-[10px] font-black uppercase tracking-wider text-stone-400">
                                             Quick Presets
                                         </label>
                                         <div className="grid grid-cols-2 gap-2">
@@ -717,7 +693,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     key={idx}
                                                     type="button"
                                                     onClick={() => applyPreset(p)}
-                                                    className="text-left px-2.5 py-2 rounded-xl border border-neutral-200 hover:border-amber-400 hover:bg-amber-50/50 text-[11px] font-bold text-neutral-700 transition-colors"
+                                                    className="text-left px-2.5 py-2 rounded-xl border border-stone-200 hover:border-primary hover:bg-canvas text-[11px] font-bold text-stone-700 transition-colors"
                                                 >
                                                     {p.label}
                                                 </button>
@@ -728,7 +704,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     {/* Time Inputs */}
                                     <div className="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-500 mb-1.5">
+                                            <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1.5">
                                                 Opening Time
                                             </label>
                                             <div className="relative">
@@ -737,16 +713,16 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     value={editForm.open_time}
                                                     onChange={(e) => setEditForm({ ...editForm, open_time: e.target.value })}
                                                     required
-                                                    className="w-full px-3 py-2.5 bg-white border border-neutral-250 rounded-xl text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
+                                                    className="w-full px-3 py-2.5 bg-white border border-stone-300 rounded-xl text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                 />
                                             </div>
-                                            <span className="block text-[10px] text-amber-700 font-bold mt-1">
+                                            <span className="block text-[10px] text-secondary font-bold mt-1">
                                                 {formatTimeDisplay(editForm.open_time)}
                                             </span>
                                         </div>
 
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-500 mb-1.5">
+                                            <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1.5">
                                                 Closing Time
                                             </label>
                                             <div className="relative">
@@ -755,10 +731,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     value={editForm.close_time}
                                                     onChange={(e) => setEditForm({ ...editForm, close_time: e.target.value })}
                                                     required
-                                                    className="w-full px-3 py-2.5 bg-white border border-neutral-250 rounded-xl text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500"
+                                                    className="w-full px-3 py-2.5 bg-white border border-stone-300 rounded-xl text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                 />
                                             </div>
-                                            <span className="block text-[10px] text-amber-700 font-bold mt-1">
+                                            <span className="block text-[10px] text-secondary font-bold mt-1">
                                                 {formatTimeDisplay(editForm.close_time)}
                                             </span>
                                         </div>
@@ -766,13 +742,13 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
                                     {/* Slot Interval Select */}
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-500 mb-1.5">
+                                        <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1.5">
                                             Slot Booking Interval
                                         </label>
                                         <select
                                             value={editForm.slot_interval}
                                             onChange={(e) => setEditForm({ ...editForm, slot_interval: parseInt(e.target.value, 10) })}
-                                            className="w-full px-3 py-2.5 bg-white border border-neutral-250 rounded-xl text-xs font-bold text-neutral-900 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-500 cursor-pointer"
+                                            className="w-full px-3 py-2.5 bg-white border border-stone-300 rounded-xl text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                                         >
                                             <option value={10}>10 Minutes</option>
                                             <option value={15}>15 Minutes (Standard & Recommended)</option>
@@ -785,8 +761,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     </div>
 
                                     {/* Slot Output Preview Hint */}
-                                    <div className="p-3 bg-amber-50/70 border border-amber-200/80 rounded-xl flex items-center gap-2.5 text-xs text-amber-900">
-                                        <Sparkles size={16} className="text-amber-600 shrink-0" />
+                                    <div className="p-3 bg-canvas border border-primary/15 rounded-xl flex items-center gap-2.5 text-xs text-primary">
+                                        <Sparkles size={16} className="text-secondary shrink-0" />
                                         <span>
                                             Generates approximately <strong>{calculateSlotEstimate(editForm.open_time, editForm.close_time, editForm.slot_interval, false)} collection slots</strong> between {editForm.open_time} and {editForm.close_time}.
                                         </span>
@@ -795,8 +771,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             )}
 
                             {/* Bulk Apply Scope Options */}
-                            <div className="space-y-2 pt-2 border-t border-neutral-100">
-                                <label className="block text-[10px] font-black uppercase tracking-wider text-neutral-400">
+                            <div className="space-y-2 pt-2 border-t border-stone-100">
+                                <label className="block text-[10px] font-black uppercase tracking-wider text-stone-400">
                                     Apply Schedule To:
                                 </label>
                                 <div className="grid grid-cols-3 gap-2">
@@ -805,8 +781,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                         onClick={() => setEditForm({ ...editForm, applyScope: 'single' })}
                                         className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                                             editForm.applyScope === 'single'
-                                                ? 'bg-neutral-900 text-white border-neutral-900'
-                                                : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                                                ? 'bg-primary text-white border-primary'
+                                                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
                                         }`}
                                     >
                                         {editingDay.day_of_week} Only
@@ -816,8 +792,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                         onClick={() => setEditForm({ ...editForm, applyScope: 'weekdays' })}
                                         className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                                             editForm.applyScope === 'weekdays'
-                                                ? 'bg-neutral-900 text-white border-neutral-900'
-                                                : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                                                ? 'bg-primary text-white border-primary'
+                                                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
                                         }`}
                                     >
                                         All Mon–Fri
@@ -827,8 +803,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                         onClick={() => setEditForm({ ...editForm, applyScope: 'all' })}
                                         className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
                                             editForm.applyScope === 'all'
-                                                ? 'bg-neutral-900 text-white border-neutral-900'
-                                                : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50'
+                                                ? 'bg-primary text-white border-primary'
+                                                : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
                                         }`}
                                     >
                                         All 7 Days
@@ -837,27 +813,27 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             </div>
 
                             {/* Modal Footer Actions */}
-                            <div className="pt-3 border-t border-neutral-100 flex items-center justify-end gap-2.5">
+                            <div className="pt-3 border-t border-stone-100 flex items-center justify-end gap-2.5">
                                 <button
                                     type="button"
                                     onClick={() => setEditingDay(null)}
-                                    className="px-4 py-2.5 rounded-xl border border-neutral-200 text-neutral-600 hover:bg-neutral-50 text-xs font-bold transition-colors"
+                                    className="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 text-xs font-bold transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSaving}
-                                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-black transition-colors shadow-sm disabled:opacity-50"
+                                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black transition-colors shadow-sm disabled:opacity-50"
                                 >
                                     {isSaving ? (
                                         <>
-                                            <RefreshCw size={13} className="animate-spin" />
+                                            <RefreshCw size={13} className="animate-spin text-accent" />
                                             <span>Saving...</span>
                                         </>
                                     ) : (
                                         <>
-                                            <Check size={14} />
+                                            <Check size={14} className="text-accent" />
                                             <span>Save Schedule</span>
                                         </>
                                     )}
