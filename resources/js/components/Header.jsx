@@ -20,33 +20,40 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
         <div className="bg-primary">
             <div className="w-full h-[72px] md:h-[80px] bg-primary relative overflow-hidden">
                 <header className="w-full h-full px-4 md:px-12 flex justify-between items-center z-30 bg-transparent relative transform translate-y-[2px]">
-                    <button 
-                        onClick={() => setIsMenuOpen(true)} 
-                        className="text-white hover:text-white/80 transition-colors p-1.5 pl-0 cursor-pointer focus:outline-none flex items-center justify-center"
-                        aria-label="Open menu"
-                    >
-                        <MenuIcon className="w-6 h-6" strokeWidth={2} />
-                    </button>
-
-                    <div 
-                        className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 cursor-pointer flex items-center justify-center select-none" 
-                        onClick={() => navigate('/')}
-                    >
-                        <img 
-                            src="/logo-white-sweetspot.png" 
-                            alt="Sweet Spot" 
-                            className="h-9 sm:h-11 w-auto object-contain transition-transform hover:scale-105" 
-                        />
+                    {/* Left Actions Group (Width matches Right group for visual optical balance) */}
+                    <div className="flex items-center min-w-[120px] md:min-w-[160px] justify-start">
+                        <button 
+                            onClick={() => setIsMenuOpen(true)} 
+                            className="text-white hover:text-white/80 transition-colors p-1.5 pl-0 cursor-pointer focus:outline-none flex items-center justify-center"
+                            aria-label="Open menu"
+                        >
+                            <MenuIcon className="w-6 h-6" strokeWidth={2} />
+                        </button>
                     </div>
 
-                    <div className="flex items-center space-x-0 md:space-x-4">
-                        <HeaderSearchButton className="px-1 py-1.5 md:p-2" />
+                    {/* Visually & Optically Centered Logo */}
+                    <div className="flex-1 flex items-center justify-center">
+                        <div 
+                            className="cursor-pointer flex items-center justify-center select-none" 
+                            onClick={() => navigate('/')}
+                        >
+                            <img 
+                                src="/logo-white-sweetspot.png" 
+                                alt="Sweet Spot" 
+                                className="h-9 sm:h-11 w-auto object-contain transition-transform hover:scale-105" 
+                            />
+                        </div>
+                    </div>
+
+                    {/* Right Actions Group */}
+                    <div className="flex items-center min-w-[120px] md:min-w-[160px] justify-end space-x-1 md:space-x-4">
+                        <HeaderSearchButton className="p-1 md:p-2" />
                         {!isCartRoute && (
                             <HeaderCartButton />
                         )}
                         <button 
                             onClick={() => navigate(user ? '/account' : '/login')} 
-                            className="text-white hover:text-white/80 transition-colors pl-1 pr-0 py-1.5 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
+                            className="text-white hover:text-white/80 transition-colors p-1 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
                             aria-label="User"
                         >
                             <UserIcon className="w-[21px] h-[21px]" strokeWidth={1.75} />

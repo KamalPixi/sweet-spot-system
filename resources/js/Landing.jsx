@@ -45,30 +45,34 @@ export default function Landing() {
     return (
         <div className="min-h-screen flex flex-col bg-[#24161b] text-neutral-900 font-sans selection:bg-rose-500 selection:text-white">
             {/* Dark Plum Fixed / Absolute Header over Hero */}
-            <header className="w-full absolute top-0 left-0 z-40 py-2 sm:py-2.5 md:py-3 px-5 md:px-10 lg:px-16 flex justify-between items-center bg-transparent">
+            <header className="w-full absolute top-0 left-0 z-40 py-2 sm:py-2.5 md:py-3 px-5 md:px-10 lg:px-16 grid grid-cols-3 items-center bg-transparent">
                 {/* Left: Hamburger menu */}
-                <button 
-                    onClick={() => setIsMenuOpen(true)} 
-                    className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none"
-                    aria-label="Open navigation menu"
-                >
-                    <MenuIcon className="w-5 h-5" strokeWidth={2} />
-                </button>
+                <div className="flex items-center justify-start">
+                    <button 
+                        onClick={() => setIsMenuOpen(true)} 
+                        className="text-white/90 hover:text-white transition-colors p-1.5 -ml-1.5 cursor-pointer focus:outline-none"
+                        aria-label="Open navigation menu"
+                    >
+                        <MenuIcon className="w-5 h-5" strokeWidth={2} />
+                    </button>
+                </div>
 
-                {/* Center: Brand Logo */}
-                <div 
-                    onClick={() => navigate('/')} 
-                    className="cursor-pointer flex items-center justify-center select-none"
-                >
-                    <img 
-                        src="/logo-white-sweetspot.png" 
-                        alt="Sweet Spot" 
-                        className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
-                    />
+                {/* Center: Brand Logo (Exactly in the middle 1/3) */}
+                <div className="flex items-center justify-center">
+                    <div 
+                        onClick={() => navigate('/')} 
+                        className="cursor-pointer flex items-center justify-center select-none"
+                    >
+                        <img 
+                            src="/logo-white-sweetspot.png" 
+                            alt="Sweet Spot" 
+                            className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
+                        />
+                    </div>
                 </div>
 
                 {/* Right: Actions (Search, Cart, User) */}
-                <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
+                <div className="flex items-center justify-end space-x-1 sm:space-x-2 md:space-x-3">
                     <HeaderSearchButton className="p-1.5" />
 
                     <HeaderCartButton />
