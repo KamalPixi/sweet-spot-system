@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Bike, Store, ChevronRight, Edit3 } from 'lucide-react';
+import { useApp } from '../AppContext';
 import OrderPopover from './OrderPopover';
 
 export default function HeroSection({ onOrderClick, configs = {} }) {
+    const { orderType, deliveryInfo, collectionSlot } = useApp();
     const [imageError, setImageError] = useState(false);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -12,7 +14,33 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
     const heroTitleLine2Prefix = configs?.hero_title_line_2_prefix || 'SERVE';
     const heroTitleHighlight = configs?.hero_title_highlight || 'Sweetness';
     const heroSubtitle = configs?.hero_subtitle || 'We are the best dessert spot for your cravings. Handcrafted waffles, sundaes, and shakes served fresh daily.';
-    const heroButtonText = configs?.hero_button_text || 'Order Now';
+    
+    // Determine fulfillment state and appropriate button text
+    const hasSelection = Boolean(
+        (orderType === 'delivery' && deliveryInfo?.postcode) ||
+        (orderType === 'collection' && collectionSlot?.time)
+    );
+
+    let buttonLabel = 'Set Delivery or Collection';
+    let selectionSummary = null;
+
+    if (orderType === 'delivery' && deliveryInfo?.postcode) {
+        buttonLabel = 'Delivering to';
+        selectionSummary = deliveryInfo.postcode;
+    } else if (orderType === 'collection' && collectionSlot?.time) {
+        buttonLabel = 'Collection';
+        // Check slot date safely, extract from datetime or fallback to 'Today'
+        const datePart = collectionSlot.date || (collectionSlot.datetime ? collectionSlot.datetime.split(' ')[0] : null);
+        let dayLabel = 'Today';
+        if (datePart) {
+            const todayStr = new Date().toISOString().split('T')[0];
+            dayLabel = datePart === todayStr ? 'Today' : datePart;
+        }
+        selectionSummary = `${dayLabel} @ ${collectionSlot.time}`;
+    } else if (configs?.hero_button_text && configs.hero_button_text !== 'Order Now') {
+        buttonLabel = configs.hero_button_text;
+    }
+
     const hasBgImage = !imageError && Boolean(heroBgImage);
     const buttonRef = React.useRef(null);
 
@@ -61,18 +89,49 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
                         {heroSubtitle}
                     </p>
 
-                    <div className="mt-5 sm:mt-6 relative flex items-center">
+                    <div className="mt-5 sm:mt-6 relative flex flex-col sm:flex-row items-start sm:items-center gap-3">
                         <button
                             ref={buttonRef}
                             type="button"
                             onClick={() => setIsPopoverOpen(prev => !prev)}
-                            className="bg-[#3a2327]/90 hover:bg-[#4d2e34] text-white/95 hover:text-white border border-white/20 hover:border-white/40 px-5 sm:px-6 py-2 sm:py-2.5 rounded-full text-xs sm:text-[13px] font-medium tracking-wide transition-all duration-300 shadow-md shadow-black/20 hover:shadow-black/40 hover:-translate-y-0.5 active:translate-y-0 cursor-pointer flex items-center gap-2 z-20"
+                            className={`px-4 sm:px-5 py-2.5 sm:py-3 rounded-2xl sm:rounded-full text-xs sm:text-[13px] font-medium tracking-wide transition-all duration-300 shadow-lg cursor-pointer flex items-center gap-2.5 z-20 group border ${
+                                hasSelection
+                                    ? 'bg-[#2a171d]/90 hover:bg-[#381f27] border-amber-500/40 hover:border-amber-400 text-white shadow-amber-950/20'
+                                    : 'bg-[#3a2327]/90 hover:bg-[#4d2e34] border-white/20 hover:border-white/40 text-white shadow-black/25'
+                            } hover:-translate-y-0.5 active:translate-y-0`}
                         >
-                            <span>{heroButtonText}</span>
-                            <ArrowRight size={13} className="opacity-70 group-hover:translate-x-0.5 transition-transform" />
+                            {/* Icon based on selection */}
+                            <span className={`p-1 rounded-full ${hasSelection ? 'bg-amber-500/20 text-amber-300' : 'bg-white/10 text-white/80'}`}>
+                                {orderType === 'delivery' && deliveryInfo?.postcode ? (
+                                    <Bike size={14} />
+                                ) : orderType === 'collection' && collectionSlot?.time ? (
+                                    <Store size={14} />
+                                ) : (
+                                    <Bike size={14} />
+                                )}
+                            </span>
+
+                            {/* Text content */}
+                            <div className="flex flex-col text-left">
+                                <span className="text-[10px] sm:text-[11px] uppercase tracking-wider text-white/70 font-semibold leading-none">
+                                    {buttonLabel}
+                                </span>
+                                {selectionSummary ? (
+                                    <span className="text-xs sm:text-sm font-black text-amber-300 tracking-wide mt-0.5 leading-tight flex items-center gap-1">
+                                        <span>{selectionSummary}</span>
+                                        <Edit3 size={11} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                                    </span>
+                                ) : (
+                                    <span className="text-xs sm:text-[13px] font-bold text-white tracking-normal mt-0.5 leading-tight">
+                                        Choose Delivery or Collection
+                                    </span>
+                                )}
+                            </div>
+
+                            <ChevronRight size={14} className="opacity-60 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all ml-1 shrink-0 text-white" />
                         </button>
 
-                        {/* Connected Popover (Right / Under on Desktop with connected arrow pin) */}
+                        {/* Connected Popover (Right / Screen-aware via Portal) */}
                         <OrderPopover
                             isOpen={isPopoverOpen}
                             onClose={() => setIsPopoverOpen(false)}

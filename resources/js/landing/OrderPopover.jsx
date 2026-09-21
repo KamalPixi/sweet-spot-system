@@ -45,7 +45,14 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
         configs 
     } = useApp();
 
-    const [activeTab, setActiveTab] = useState('delivery'); // 'delivery' | 'collection'
+    const [activeTab, setActiveTab] = useState(() => orderType === 'collection' ? 'collection' : 'delivery');
+
+    // Sync tab when opened or orderType updates
+    useEffect(() => {
+        if (isOpen && orderType) {
+            setActiveTab(orderType);
+        }
+    }, [isOpen, orderType]);
 
     // Popover placement coordinates for desktop portal rendering
     const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0, arrowTop: 0, isReady: false });
@@ -227,10 +234,14 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
         e.preventDefault();
         if (!selectedSlot) return;
 
+        // Parse date from slot datetime (format: YYYY-MM-DD HH:MM:SS) or selectedDate
+        const slotDate = selectedSlot.date || (selectedSlot.datetime ? selectedSlot.datetime.split(' ')[0] : selectedDate);
+
         const slotData = {
-            date: selectedSlot.date,
+            date: slotDate,
             time: selectedSlot.time,
             datetime: selectedSlot.datetime,
+            formatted_label: selectedSlot.formatted_label,
         };
         setOrderType('collection');
         setCollectionSlot(slotData);
