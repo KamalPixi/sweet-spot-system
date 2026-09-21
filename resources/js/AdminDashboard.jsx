@@ -9,6 +9,7 @@ import { AdminStatCard, AdminStatGrid } from './admin/components/AdminStatCard';
 import AdminTablesTab from './admin/components/AdminTablesTab';
 import AdminPrintersTab from './admin/components/AdminPrintersTab';
 import AdminCollectionSlotsTab from './admin/components/AdminCollectionSlotsTab';
+import AdminReviewsPage from './admin/components/AdminReviewsPage';
 import useRealtimeChannel from './hooks/useRealtimeChannel';
 import useNotificationSound from './hooks/useNotificationSound';
 import { getEchoSocketId } from './lib/realtime';
@@ -18,7 +19,7 @@ import {
     Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, User, Bell, RefreshCw, ChevronDown, Upload, Clock,
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, Sparkles, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
-    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore
+    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
 
@@ -225,6 +226,7 @@ export default function AdminDashboard() {
         products: '/admin/products',
         customers: '/admin/customers',
         newsletter: '/admin/newsletter',
+        reviews: '/admin/reviews',
         profile: '/admin/profile',
         settings: '/admin/settings',
         trash: '/admin/trash',
@@ -245,6 +247,7 @@ export default function AdminDashboard() {
         if (section === 'products') return 'products';
         if (section === 'customers') return 'customers';
         if (section === 'newsletter') return 'newsletter';
+        if (section === 'reviews') return 'reviews';
         if (section === 'profile') return 'profile';
         if (section === 'settings') return 'settings';
         if (section === 'trash') return 'trash';
@@ -1589,6 +1592,7 @@ export default function AdminDashboard() {
         products: 'Products',
         reports: 'Reports',
         newsletter: 'Newsletter',
+        reviews: 'Local Love Reviews',
         profile: 'Admin Profile',
         settings: 'Store Configs',
         trash: 'Trash Bin',
@@ -1625,6 +1629,12 @@ export default function AdminDashboard() {
             label: 'Customers',
             items: [
                 { id: 'customers', label: 'Customers', icon: <UserCheck size={16} />, badge: customers.length || reports?.total_customers || null },
+            ],
+        },
+        {
+            label: 'Content',
+            items: [
+                { id: 'reviews', label: 'Local Love Reviews', icon: <Heart size={16} /> },
             ],
         },
         {
@@ -4684,6 +4694,11 @@ export default function AdminDashboard() {
                         {/* 12. STAR CLOUDPRNT PRINTERS & QUEUE TAB */}
                         {activeTab === 'printers' && (
                             <AdminPrintersTab token={token} />
+                        )}
+
+                        {/* 13. LOCAL LOVE REVIEWS TAB */}
+                        {activeTab === 'reviews' && (
+                            <AdminReviewsPage token={token} />
                         )}
                     </>
                 )}

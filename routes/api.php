@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\TrashController;
 use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\Api\FaqController;
+use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CloudPrntController;
 use App\Http\Controllers\Api\UberDirectController;
 
@@ -31,8 +32,9 @@ Route::middleware('throttle:global_api')->group(function () {
     Route::get('/collection-slots', [CollectionSlotController::class, 'getSlots']);
     Route::get('/opening-hours', [CollectionSlotController::class, 'getOpeningHours']);
 
-    // --- Newsletter (Throttled specifically) ---
+    // --- Newsletter & FAQs & Reviews ---
     Route::get('/faqs', [FaqController::class, 'index']);
+    Route::get('/reviews', [ReviewController::class, 'index']);
     Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->middleware('throttle:newsletter_limit');
     Route::post('/newsletter/unsubscribe', [NewsletterController::class, 'unsubscribe']);
     Route::get('/newsletter/status', [NewsletterController::class, 'status']);
@@ -138,6 +140,13 @@ Route::middleware('throttle:global_api')->group(function () {
             Route::post('/faqs', [FaqController::class, 'store']);
             Route::put('/faqs/{faq}', [FaqController::class, 'update']);
             Route::delete('/faqs/{faq}', [FaqController::class, 'destroy']);
+            
+            // Admin Reviews (Local Love) Management
+            Route::get('/reviews', [ReviewController::class, 'adminIndex']);
+            Route::post('/reviews', [ReviewController::class, 'store']);
+            Route::put('/reviews/{review}', [ReviewController::class, 'update']);
+            Route::patch('/reviews/{review}/toggle-active', [ReviewController::class, 'toggleActive']);
+            Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);
             
             // Admin Trash / Soft Deletes
             Route::get('/trash', [TrashController::class, 'index']);
