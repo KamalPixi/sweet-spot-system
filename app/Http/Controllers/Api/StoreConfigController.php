@@ -119,32 +119,6 @@ class StoreConfigController extends Controller
             }
         }
 
-        // Handle brand logos
-        $brandLogos = [];
-        if (isset($configs['brand_logos'])) {
-            $decoded = json_decode($configs['brand_logos'], true);
-            if (is_array($decoded)) {
-                $brandLogos = $decoded;
-            } else if (is_array($configs['brand_logos'])) {
-                $brandLogos = $configs['brand_logos'];
-            }
-            unset($configs['brand_logos']);
-        } else {
-            $existingLogosJson = $this->storeConfigService->get('brand_logos', '[]');
-            $brandLogos = json_decode($existingLogosJson, true) ?: [];
-        }
-
-        if ($request->hasFile('brand_logos')) {
-            foreach ($request->file('brand_logos') as $file) {
-                if ($file->isValid()) {
-                    $path = $file->store('brands', 'public');
-                    $brandLogos[] = '/storage/' . $path;
-                }
-            }
-        }
-
-        $this->storeConfigService->set('brand_logos', json_encode(array_values($brandLogos)));
-
         // Handle other configs
         foreach ($configs as $key => $value) {
             $this->storeConfigService->set($key, $value);
@@ -155,28 +129,5 @@ class StoreConfigController extends Controller
             'message' => 'Store configurations updated successfully.',
             'data' => $this->storeConfigService->getAll(),
         ]);
-    }
-
-    /**
-     * Upload a single brand logo file (Admin).
-     */
-    public function uploadBrandLogo(Request $request): JsonResponse
-    {
-        $request->validate([
-            'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
-        ]);
-
-        if ($request->hasFile('logo') && $request->file('logo')->isValid()) {
-            $path = $request->file('logo')->store('brands', 'public');
-            return response()->json([
-                'success' => true,
-                'url' => '/storage/' . $path,
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'Failed to upload brand logo.',
-        ], 400);
     }
 }

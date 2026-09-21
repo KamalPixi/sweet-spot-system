@@ -197,8 +197,6 @@ export default function AdminDashboard() {
     const [settingsForm, setSettingsForm] = useState({});
     const [storeLogoFile, setStoreLogoFile] = useState(null);
     const [storeLogoWhiteFile, setStoreLogoWhiteFile] = useState(null);
-    const [brandLogos, setBrandLogos] = useState([]);
-    const [uploadingBrandLogo, setUploadingBrandLogo] = useState(false);
     const [settingsSubTab, setSettingsSubTab] = useState('configs'); // 'configs' or 'faqs'
     const [faqs, setFaqs] = useState([]);
     const [faqFormOpen, setFaqFormOpen] = useState(false);
@@ -388,15 +386,6 @@ export default function AdminDashboard() {
                 if (d.success) {
                     setSettings(d.data);
                     setSettingsForm(d.data);
-                    if (d.data.brand_logos) {
-                        try {
-                            setBrandLogos(JSON.parse(d.data.brand_logos));
-                        } catch (e) {
-                            setBrandLogos([]);
-                        }
-                    } else {
-                        setBrandLogos([]);
-                    }
                 }
                 const faqRes = await fetch('/api/admin/faqs', { headers });
                 const faqD = await faqRes.json();
@@ -1190,11 +1179,10 @@ export default function AdminDashboard() {
 
         const payload = new FormData();
         Object.entries(settingsForm).forEach(([key, val]) => {
-            if (key !== 'brand_logos' && key !== 'store_logo' && key !== 'store_logo_white') {
+            if (key !== 'store_logo' && key !== 'store_logo_white') {
                 payload.append(`configs[${key}]`, val || '');
             }
         });
-        payload.append('configs[brand_logos]', JSON.stringify(brandLogos));
         if (storeLogoFile) {
             payload.append('store_logo', storeLogoFile);
         }
@@ -1217,15 +1205,6 @@ export default function AdminDashboard() {
                 setSettingsForm(d.data);
                 setStoreLogoFile(null);
                 setStoreLogoWhiteFile(null);
-                if (d.data.brand_logos) {
-                    try {
-                        setBrandLogos(JSON.parse(d.data.brand_logos));
-                    } catch (e) {
-                        setBrandLogos([]);
-                    }
-                } else {
-                    setBrandLogos([]);
-                }
             }
         } catch (err) {
             console.error(err);
@@ -4217,77 +4196,7 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
 
-                                            {/* Group 5: Brand / Partner Logos */}
-                                            <div className="space-y-4 pt-4 border-t border-neutral-100 text-left">
-                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
-                                                    <span className="text-neutral-500">★</span> Brand & Partner Logos
-                                                </h2>
-                                                
-                                                {/* Existing Logos Grid */}
-                                                <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                                                    {brandLogos.map((logo, index) => (
-                                                        <div key={`exist-${index}`} className="relative border border-neutral-200 rounded-xl p-2 bg-neutral-50 aspect-square flex items-center justify-center group hover:border-neutral-300 transition-colors">
-                                                            <img src={logo} alt={`Logo ${index + 1}`} className="max-h-full max-w-full object-contain" />
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setBrandLogos(brandLogos.filter((_, idx) => idx !== index))}
-                                                                className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-600 text-white rounded-full flex items-center justify-center hover:bg-red-700 transition-colors shadow-sm cursor-pointer"
-                                                            >
-                                                                <span className="text-[8px] font-bold px-1.5">✕</span>
-                                                            </button>
-                                                        </div>
-                                                    ))}
-                                                    
-                                                    {uploadingBrandLogo ? (
-                                                        <div className="border border-neutral-250 border-dashed rounded-xl p-2 bg-neutral-50/50 aspect-square flex flex-col items-center justify-center">
-                                                            <div className="animate-spin border-2 border-neutral-800 border-t-transparent h-4 w-4 rounded-full mb-1"></div>
-                                                            <span className="text-[8px] text-neutral-400 font-bold uppercase tracking-wider">Uploading</span>
-                                                        </div>
-                                                    ) : (
-                                                        <label className="aspect-square border border-neutral-300 border-dashed rounded-xl flex flex-col items-center justify-center bg-white text-neutral-400 hover:bg-neutral-50 hover:border-neutral-950 hover:text-neutral-850 cursor-pointer transition-all">
-                                                            <span className="text-lg font-light leading-none">+</span>
-                                                            <span className="text-[8px] font-bold uppercase tracking-wider mt-1">Add Logo</span>
-                                                            <input
-                                                                type="file"
-                                                                accept="image/*"
-                                                                className="hidden"
-                                                                onChange={async (e) => {
-                                                                    if (e.target.files && e.target.files[0]) {
-                                                                        const file = e.target.files[0];
-                                                                        setUploadingBrandLogo(true);
-                                                                        const upData = new FormData();
-                                                                        upData.append('logo', file);
-                                                                        try {
-                                                                            const upRes = await fetch('/api/admin/configs/upload-brand-logo', {
-                                                                                method: 'POST',
-                                                                                headers: {
-                                                                                    'Authorization': `Bearer ${token}`
-                                                                                },
-                                                                                body: upData
-                                                                            });
-                                                                            const upD = await upRes.json();
-                                                                            if (upD.success) {
-                                                                                setBrandLogos(prev => [...prev, upD.url]);
-                                                                                toast.success('Logo uploaded! Click Save Settings to persist.');
-                                                                            } else {
-                                                                                toast.error(upD.message || 'Upload failed.');
-                                                                            }
-                                                                        } catch (err) {
-                                                                            console.error(err);
-                                                                            toast.error('Upload failed.');
-                                                                        } finally {
-                                                                            setUploadingBrandLogo(false);
-                                                                        }
-                                                                    }
-                                                                }}
-                                                            />
-                                                        </label>
-                                                    )}
-                                                </div>
-                                                <p className="text-[10px] text-neutral-400">PNG format with transparent background is highly recommended.</p>
-                                            </div>
-
-                                            {/* Group 6: SEO & Metadata */}
+                                            {/* Group 5: SEO & Metadata */}
                                             <div className="space-y-4 pt-4 border-t border-neutral-100 text-left">
                                                 <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
                                                     <Globe size={16} className="text-neutral-500" /> SEO & Metadata Settings

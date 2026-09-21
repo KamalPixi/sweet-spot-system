@@ -98,7 +98,6 @@ Route::middleware('throttle:global_api')->group(function () {
             Route::put('/profile', [AdminAuthController::class, 'updateProfile']);
             Route::put('/profile/password', [AdminAuthController::class, 'updatePassword']);
             Route::post('/configs', [StoreConfigController::class, 'update']);
-            Route::post('/configs/upload-brand-logo', [StoreConfigController::class, 'uploadBrandLogo']);
             Route::get('/newsletter', [NewsletterController::class, 'index']);
             Route::get('/customers', [AdminCustomerController::class, 'index']);
             Route::get('/customers/{customer}', [AdminCustomerController::class, 'show']);
