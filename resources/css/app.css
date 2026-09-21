@@ -10,9 +10,9 @@
     --font-script: 'Dancing Script', cursive;
 
     /* Single source of truth color tokens for Sweet Spot */
-    --color-primary: #24161b;
-    --color-primary-hover: #321d25;
-    --color-primary-light: #3f222d;
+    --color-primary: #271C1D;
+    --color-primary-hover: #362829;
+    --color-primary-light: #443234;
     --color-secondary: #f43f5e;
     --color-secondary-hover: #e11d48;
     --color-secondary-light: #fcf3f5;
@@ -24,7 +24,7 @@
 }
 
 :root {
-    --brand-primary: #24161b;
+    --brand-primary: #271C1D;
     --brand-secondary: #f43f5e;
     --brand-bg: #fdfaf5;
 }

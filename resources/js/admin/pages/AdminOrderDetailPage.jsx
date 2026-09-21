@@ -562,7 +562,7 @@ export default function AdminOrderDetailPage() {
                                     type="button"
                                     onClick={handlePrintTicket}
                                     disabled={printing}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer"
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-all shadow-sm disabled:opacity-50 cursor-pointer"
                                 >
                                     <Printer size={14} className="text-amber-400" />
                                     <span>{printing ? 'Enqueuing Print...' : order.print_count > 0 ? `Reprint Receipt (x${order.print_count})` : 'Print Kitchen Receipt'}</span>
@@ -579,7 +579,7 @@ export default function AdminOrderDetailPage() {
 
                     {loading ? (
                         <div className="flex items-center justify-center py-24">
-                            <Loader2 className="animate-spin text-neutral-950" size={40} />
+                            <Loader2 className="animate-spin text-primary" size={40} />
                         </div>
                     ) : !order ? (
                         <div className="bg-white border border-neutral-200 rounded-xl p-8 text-center shadow-sm">
@@ -587,7 +587,7 @@ export default function AdminOrderDetailPage() {
                             <button
                                 type="button"
                                 onClick={fetchOrder}
-                                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-neutral-950 text-white text-xs font-bold"
+                                className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-hover text-white text-xs font-bold cursor-pointer"
                             >
                                 <Bell size={14} />
                                 Retry
@@ -780,7 +780,7 @@ export default function AdminOrderDetailPage() {
                                                         type="button"
                                                         onClick={handleDispatchCourier}
                                                         disabled={dispatchingCourier}
-                                                        className="w-full py-2.5 px-4 bg-neutral-950 hover:bg-neutral-800 text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
+                                                        className="w-full py-2.5 px-4 bg-primary hover:bg-primary-hover text-white rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2 disabled:opacity-50 cursor-pointer shadow-sm"
                                                     >
                                                         <Truck size={14} className="text-amber-400" />
                                                         <span>{dispatchingCourier ? 'Dispatching Courier...' : 'Dispatch Courier'}</span>

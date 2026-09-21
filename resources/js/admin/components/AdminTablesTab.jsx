@@ -416,7 +416,7 @@ export default function AdminTablesTab({ orders = [], configs: configsProp }) {
                                     <button
                                         type="button"
                                         onClick={handlePrintSticker}
-                                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-xs font-bold text-white transition-colors"
+                                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-xs font-bold text-white transition-colors cursor-pointer shadow-xs"
                                     >
                                         <Printer size={13} className="text-amber-400" />
                                         <span>Print Card</span>

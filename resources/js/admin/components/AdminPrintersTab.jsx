@@ -180,7 +180,7 @@ export default function AdminPrintersTab({ token }) {
                         type="button"
                         onClick={() => setShowTestModal(true)}
                         disabled={testingPrint}
-                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
                         title="Send diagnostic test print ticket to Star CloudPRNT printer"
                     >
                         <Printer size={14} className="text-amber-400" />
@@ -428,7 +428,7 @@ export default function AdminPrintersTab({ token }) {
                                 type="button"
                                 onClick={() => handleRunTestPrint()}
                                 disabled={testingPrint}
-                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-bold transition-colors shadow-sm cursor-pointer disabled:opacity-50"
                             >
                                 <Printer size={14} className="text-amber-400" />
                                 <span>{testingPrint ? 'Enqueuing...' : 'Dispatch Test Ticket'}</span>

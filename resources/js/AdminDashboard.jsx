@@ -1707,7 +1707,7 @@ export default function AdminDashboard() {
                 <div className="pt-2 px-2.5 sm:pl-0 sm:pr-2.5 lg:pr-3 pb-8">
                 {loading && !catFormOpen && !prodFormOpen ? (
                     <div className="flex items-center justify-center py-24">
-                        <Loader2 className="animate-spin text-neutral-950" size={40} />
+                        <Loader2 className="animate-spin text-primary" size={40} />
                     </div>
                 ) : (
                     <>
@@ -2079,7 +2079,7 @@ export default function AdminDashboard() {
                                                         onClick={() => setReportRange(option.id)}
                                                         className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-wider transition-colors ${
                                                             reportRange === option.id
-                                                                ? 'bg-neutral-950 text-white'
+                                                                ? 'bg-primary text-white'
                                                                 : 'text-neutral-500 hover:bg-neutral-50'
                                                         }`}
                                                     >
@@ -2090,7 +2090,7 @@ export default function AdminDashboard() {
                                             <button
                                                 type="button"
                                                 onClick={exportReportsCsv}
-                                                className="px-3.5 py-1.5 bg-neutral-950 hover:bg-neutral-800 text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
+                                                className="px-3.5 py-1.5 bg-primary hover:bg-primary-hover text-white text-xs font-bold rounded-xl transition-colors cursor-pointer"
                                             >
                                                 Export CSV
                                             </button>
@@ -2408,7 +2408,7 @@ export default function AdminDashboard() {
                                             <select
                                                 value={orderGroupMode}
                                                 onChange={(e) => setOrderGroupMode(e.target.value)}
-                                                className="bg-neutral-950 border border-neutral-950 px-2.5 py-2 focus:outline-none text-[10px] font-bold uppercase text-white rounded-lg"
+                                                className="bg-primary border border-primary px-2.5 py-2 focus:outline-none text-[10px] font-bold uppercase text-white rounded-lg cursor-pointer"
                                             >
                                                 <option value="status">Group by Status</option>
                                                 <option value="type">Group by Type</option>
@@ -2740,7 +2740,7 @@ export default function AdminDashboard() {
                                                                              onClick={() => setCatIcon(isSelected ? '' : name)}
                                                                              className={`flex flex-col items-center justify-center p-1.5 rounded-lg border transition-all text-center gap-1 cursor-pointer ${
                                                                                  isSelected 
-                                                                                     ? 'border-neutral-950 bg-neutral-950/5 text-neutral-950 font-bold scale-[1.02]' 
+                                                                                     ? 'border-primary bg-primary/5 text-primary font-bold scale-[1.02]' 
                                                                                      : 'border-neutral-200 hover:border-neutral-400 text-neutral-400 hover:text-neutral-700 bg-white'
                                                                              }`}
                                                                          >
@@ -2760,7 +2760,7 @@ export default function AdminDashboard() {
                                                                          onClick={() => setCatIcon(isSelected ? '' : opt.name)}
                                                                          className={`flex flex-col items-center justify-center p-1.5 rounded-lg border transition-all text-center gap-1 cursor-pointer ${
                                                                              isSelected 
-                                                                                 ? 'border-neutral-950 bg-neutral-950/5 text-neutral-950 font-bold scale-[1.02]' 
+                                                                                 ? 'border-primary bg-primary/5 text-primary font-bold scale-[1.02]' 
                                                                                  : 'border-neutral-200 hover:border-neutral-400 text-neutral-400 hover:text-neutral-700 bg-white'
                                                                          }`}
                                                                      >
@@ -2834,14 +2834,14 @@ export default function AdminDashboard() {
                                                                 type="checkbox" 
                                                                 checked={catStatus}
                                                                 onChange={(e) => setCatStatus(e.target.checked)}
-                                                                className="bg-white border-neutral-300 text-neutral-950 w-4 h-4 focus:ring-neutral-950 focus:outline-none rounded cursor-pointer"
+                                                                className="bg-white border-neutral-300 text-primary w-4 h-4 focus:ring-primary focus:outline-none rounded cursor-pointer"
                                                             />
                                                             <span className="text-xs font-semibold text-neutral-700">Category is visible to customers</span>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center space-x-3 pt-5 border-t border-neutral-200 mt-6">
-                                                    <button type="submit" className="bg-neutral-950 text-white font-bold px-6 py-2.5 text-xs transition-colors hover:bg-neutral-800 rounded-lg shadow-sm">
+                                                    <button type="submit" className="bg-primary hover:bg-primary-hover text-white font-bold px-6 py-2.5 text-xs transition-colors rounded-lg shadow-sm cursor-pointer">
                                                         {catEditId ? 'Update Category' : 'Save Category'}
                                                     </button>
                                                     <button type="button" onClick={() => setCatFormOpen(false)} className="bg-neutral-100 text-neutral-600 font-bold px-6 py-2.5 text-xs hover:bg-neutral-200 transition-colors rounded-lg">
@@ -3482,9 +3482,9 @@ export default function AdminDashboard() {
                                                             key={p.id}
                                                             type="button"
                                                             onClick={() => handleRelatedProductToggle(p.id)}
-                                                            className={`px-3 py-1.5 border text-xs font-semibold transition-all ${
+                                                            className={`px-3 py-1.5 border text-xs font-semibold transition-all cursor-pointer ${
                                                                 prodRelatedIds.includes(p.id)
-                                                                    ? 'bg-neutral-950 border-neutral-950 text-white rounded-full'
+                                                                    ? 'bg-primary border-primary text-white rounded-full'
                                                                     : 'bg-neutral-50 border-neutral-200 hover:border-neutral-400 text-neutral-600 rounded-full'
                                                             }`}
                                                         >
@@ -3495,7 +3495,7 @@ export default function AdminDashboard() {
                                             </div>
 
                                             <div className="flex items-center space-x-3 pt-4 border-t border-neutral-200">
-                                                <button type="submit" className="bg-neutral-950 text-white font-bold px-6 py-2.5 text-xs transition-colors hover:bg-neutral-800 rounded-lg">
+                                                <button type="submit" className="bg-primary hover:bg-primary-hover text-white font-bold px-6 py-2.5 text-xs transition-colors rounded-lg cursor-pointer shadow-xs">
                                                     Save Product
                                                 </button>
                                                 <button type="button" onClick={() => setProdFormOpen(false)} className="bg-neutral-100 text-neutral-600 font-bold px-6 py-2.5 text-xs hover:bg-neutral-200 transition-colors rounded-lg">
@@ -3909,7 +3909,7 @@ export default function AdminDashboard() {
                                 <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
                                     <div className="xl:col-span-1 bg-white border border-neutral-200 rounded-xl shadow-sm p-6">
                                         <div className="flex items-center gap-4">
-                                            <div className="w-16 h-16 rounded-full bg-neutral-950 text-[#C5A880] flex items-center justify-center text-xl font-black shrink-0">
+                                            <div className="w-16 h-16 rounded-full bg-primary text-accent flex items-center justify-center text-xl font-black shrink-0 shadow-sm">
                                                 {adminDisplayName[0].toUpperCase()}
                                             </div>
                                             <div className="min-w-0">
@@ -3923,21 +3923,17 @@ export default function AdminDashboard() {
                                                 <span className="text-neutral-400 font-bold">Account Type</span>
                                                 <span className="text-neutral-800 font-black">{adminRole}</span>
                                             </div>
-                                            <div className="flex justify-between gap-4">
-                                                <span className="text-neutral-400 font-bold">Session</span>
-                                                <span className="text-emerald-600 font-black">Active</span>
-                                            </div>
                                         </div>
                                     </div>
 
-                                    <div className="xl:col-span-2 space-y-6">
+                                    <div className="xl:col-span-2 space-y-6 text-left">
                                         <div className="bg-white border border-neutral-200 rounded-xl shadow-sm p-6">
                                             <h2 className="text-sm font-black text-neutral-900 mb-1">Profile Details</h2>
-                                            <p className="text-xs text-neutral-400 mb-5">This name and email are shown in the admin portal.</p>
+                                            <p className="text-xs text-neutral-400 mb-5">Update your display name and administrative contact email.</p>
                                             <form onSubmit={handleSaveProfile} className="space-y-4">
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div>
-                                                        <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2">Full Name</label>
+                                                        <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2">Display Name</label>
                                                         <input
                                                             type="text"
                                                             required
@@ -3958,7 +3954,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-end pt-2">
-                                                    <button type="submit" className="bg-neutral-950 text-white font-bold px-5 py-2.5 hover:bg-neutral-800 transition-colors text-xs rounded-lg">
+                                                    <button type="submit" className="bg-primary text-white font-bold px-5 py-2.5 hover:bg-primary-hover transition-colors text-xs rounded-lg cursor-pointer shadow-xs">
                                                         Save Profile
                                                     </button>
                                                 </div>
@@ -3979,7 +3975,7 @@ export default function AdminDashboard() {
                                                         className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
                                                     />
                                                 </div>
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                                     <div>
                                                         <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2">New Password</label>
                                                         <input
@@ -4004,7 +4000,7 @@ export default function AdminDashboard() {
                                                     </div>
                                                 </div>
                                                 <div className="flex justify-end pt-2">
-                                                    <button type="submit" className="bg-neutral-950 text-white font-bold px-5 py-2.5 hover:bg-neutral-800 transition-colors text-xs rounded-lg">
+                                                    <button type="submit" className="bg-primary text-white font-bold px-5 py-2.5 hover:bg-primary-hover transition-colors text-xs rounded-lg cursor-pointer shadow-xs">
                                                         Change Password
                                                     </button>
                                                 </div>
@@ -4029,9 +4025,9 @@ export default function AdminDashboard() {
                                                 setSettingsSubTab('configs');
                                                 setFaqFormOpen(false);
                                             }}
-                                            className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all ${
+                                            className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                                                 settingsSubTab === 'configs'
-                                                    ? 'bg-neutral-950 text-white'
+                                                    ? 'bg-primary text-white shadow-xs'
                                                     : 'text-neutral-600 hover:text-neutral-900'
                                             }`}
                                         >
@@ -4039,9 +4035,9 @@ export default function AdminDashboard() {
                                         </button>
                                         <button
                                             onClick={() => setSettingsSubTab('faqs')}
-                                            className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all ${
+                                            className={`px-4 py-2 text-[10px] font-bold rounded-lg transition-all cursor-pointer ${
                                                 settingsSubTab === 'faqs'
-                                                    ? 'bg-neutral-950 text-white'
+                                                    ? 'bg-primary text-white shadow-xs'
                                                     : 'text-neutral-600 hover:text-neutral-900'
                                             }`}
                                         >
@@ -4381,7 +4377,7 @@ export default function AdminDashboard() {
                                                             value={settingsForm.seo_description || ''}
                                                             onChange={(e) => setSettingsForm({ ...settingsForm, seo_description: e.target.value })}
                                                             placeholder="Enter a brief summary of your shop for search engines..."
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
                                                         />
                                                         <p className="text-[10px] text-neutral-400 mt-1">Brief summary shown in search results. Highly recommended to keep between 120 and 160 characters.</p>
                                                     </div>
@@ -4392,14 +4388,14 @@ export default function AdminDashboard() {
                                                             value={settingsForm.seo_keywords || ''}
                                                             onChange={(e) => setSettingsForm({ ...settingsForm, seo_keywords: e.target.value })}
                                                             placeholder="e.g. cakes, coffee, london, bakery, artisanal, pastries"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
                                                         />
                                                         <p className="text-[10px] text-neutral-400 mt-1">Comma-separated list of search terms representing your business.</p>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <button type="submit" className="w-full mt-6 bg-neutral-950 text-white font-bold py-3 hover:bg-neutral-850 transition-colors text-xs rounded-lg uppercase tracking-wider cursor-pointer">
+                                            <button type="submit" className="w-full mt-6 bg-primary text-white font-bold py-3 hover:bg-primary-hover transition-colors text-xs rounded-lg uppercase tracking-wider cursor-pointer shadow-xs">
                                                 Save Settings Configurations
                                             </button>
                                         </form>
@@ -4419,7 +4415,7 @@ export default function AdminDashboard() {
                                                         setFaqIsActive(true);
                                                         setFaqFormOpen(true);
                                                     }}
-                                                    className="bg-neutral-950 text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-colors hover:bg-neutral-800 rounded-lg"
+                                                    className="bg-primary text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-colors hover:bg-primary-hover rounded-lg shadow-xs"
                                                 >
                                                     <Plus size={14} />
                                                     <span>Add FAQ</span>
@@ -4440,7 +4436,7 @@ export default function AdminDashboard() {
                                                             value={faqQuestion}
                                                             onChange={(e) => setFaqQuestion(e.target.value)}
                                                             placeholder="e.g., What are your opening hours?"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
                                                         />
                                                     </div>
 
@@ -4452,7 +4448,7 @@ export default function AdminDashboard() {
                                                             value={faqAnswer}
                                                             onChange={(e) => setFaqAnswer(e.target.value)}
                                                             placeholder="Enter the detailed answer here..."
-                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
                                                         />
                                                     </div>
 
@@ -4472,7 +4468,7 @@ export default function AdminDashboard() {
                                                                 type="button"
                                                                 onClick={() => setFaqIsActive(prev => !prev)}
                                                                 className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-                                                                    faqIsActive ? 'bg-neutral-950' : 'bg-neutral-200'
+                                                                    faqIsActive ? 'bg-primary' : 'bg-neutral-200'
                                                                 }`}
                                                             >
                                                                 <span
@@ -4485,7 +4481,7 @@ export default function AdminDashboard() {
                                                     </div>
 
                                                     <div className="flex items-center space-x-3 pt-4 border-t border-neutral-100">
-                                                        <button type="submit" className="bg-neutral-950 text-white font-bold px-6 py-2.5 text-xs transition-colors hover:bg-neutral-800 rounded-lg">
+                                                        <button type="submit" className="bg-primary hover:bg-primary-hover text-white font-bold px-6 py-2.5 text-xs transition-colors rounded-lg cursor-pointer shadow-xs">
                                                             Save FAQ
                                                         </button>
                                                         <button type="button" onClick={() => setFaqFormOpen(false)} className="bg-neutral-100 text-neutral-600 font-bold px-6 py-2.5 text-xs hover:bg-neutral-200 transition-colors rounded-lg">
@@ -4578,9 +4574,9 @@ export default function AdminDashboard() {
                                         <button
                                             key={t.key}
                                             onClick={() => setTrashSubTab(t.key)}
-                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all ${
+                                            className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                                                 trashSubTab === t.key
-                                                    ? 'bg-neutral-950 text-white shadow-sm'
+                                                    ? 'bg-primary text-white shadow-sm'
                                                     : 'text-neutral-500 hover:text-neutral-900 hover:bg-neutral-50'
                                             }`}
                                         >
