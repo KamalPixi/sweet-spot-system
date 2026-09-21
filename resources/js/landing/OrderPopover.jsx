@@ -107,11 +107,16 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
     const [collectionSuccess, setCollectionSuccess] = useState(false);
 
     // Calculate initial coordinates immediately upon render if open
-    const [popoverPos, setPopoverPos] = useState(() => calculatePopoverPosition(anchorRef?.current));
+    const [popoverPos, setPopoverPos] = useState(() => {
+        if (anchorRef?.current) {
+            return calculatePopoverPosition(anchorRef.current);
+        }
+        return { top: 0, left: 0, arrowTop: 0, isReady: false, isModal: !anchorRef };
+    });
     const [isMounted, setIsMounted] = useState(false);
 
-    // Keep position updated on open/resize/scroll
-    useEffect(() => {
+    // Keep position updated synchronously on open/resize/scroll
+    React.useLayoutEffect(() => {
         if (!isOpen) {
             setIsMounted(false);
             return;
@@ -120,10 +125,12 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
         const updatePosition = () => {
             if (anchorRef?.current) {
                 setPopoverPos(calculatePopoverPosition(anchorRef.current));
+            } else {
+                setPopoverPos({ top: 0, left: 0, arrowTop: 0, isReady: true, isModal: true });
             }
         };
 
-        // Initial sync
+        // Synchronous initial sync before browser paints
         updatePosition();
 
         // Animate in once coordinates are set
@@ -272,16 +279,24 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
         }, 700);
     };
 
-    if (!isOpen || typeof document === 'undefined' || !popoverPos.isReady) return null;
+    // Compute current position synchronously if anchor is provided
+    const currentPos = (anchorRef?.current && isOpen)
+        ? calculatePopoverPosition(anchorRef.current)
+        : popoverPos;
+
+    if (!isOpen || typeof document === 'undefined') return null;
+    if (anchorRef && !currentPos.isReady) return null;
 
     const storeAddress = configs?.store_address || '10 Soho Street, London';
     const storePostcode = configs?.store_postcode || 'W1D 1AN';
+
+    const isDesktopAnchored = window.innerWidth >= 768 && currentPos.isReady && !currentPos.isModal;
 
     const popoverContent = (
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Backdrop for click outside */}
             <div 
-                className={`fixed inset-0 ${popoverPos.isModal ? 'bg-black/60 backdrop-blur-xs' : 'bg-black/40 md:bg-black/10 backdrop-blur-[2px] md:backdrop-blur-none'} pointer-events-auto transition-opacity duration-300 ease-out ${
+                className={`fixed inset-0 ${currentPos.isModal ? 'bg-black/60 backdrop-blur-xs' : 'bg-black/40 md:bg-black/10 backdrop-blur-[2px] md:backdrop-blur-none'} pointer-events-auto transition-opacity duration-300 ease-out ${
                     isMounted ? 'opacity-100' : 'opacity-0'
                 }`} 
                 onClick={onClose}
@@ -289,32 +304,34 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
 
             {/* Popover Card Wrapper with Connected Arrow */}
             <div 
-                className={`fixed pointer-events-auto w-[calc(100%-2rem)] max-w-[420px] max-h-[min(540px,calc(100vh-2rem))] flex flex-col rounded-2xl transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) ${
+                className={`fixed pointer-events-auto w-[calc(100%-2rem)] max-w-[420px] max-h-[min(540px,calc(100vh-2rem))] flex flex-col rounded-2xl transition-[opacity,transform] duration-300 ease-out ${
                     isMounted 
                         ? 'opacity-100 scale-100 translate-y-0' 
                         : 'opacity-0 scale-95 translate-y-2'
                 }`}
                 style={{ 
                     filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.3))',
-                    ...(popoverPos.isReady && !popoverPos.isModal && window.innerWidth >= 768
+                    ...(isDesktopAnchored
                         ? {
-                            top: `${popoverPos.top}px`,
-                            left: `${popoverPos.left}px`,
+                            top: `${currentPos.top}px`,
+                            left: `${currentPos.left}px`,
                         }
                         : {
                             top: '50%',
                             left: '50%',
-                            transform: isMounted ? 'translateX(-50%) translateY(-50%)' : 'translateX(-50%) translateY(-48%)',
+                            transform: isMounted 
+                                ? 'translateX(-50%) translateY(-50%)' 
+                                : 'translateX(-50%) translateY(-48%) scale(0.95)',
                         }
                     )
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Connected Arrow pointing left directly to the Order Now button (Desktop with Anchor) */}
-                {window.innerWidth >= 768 && popoverPos.isReady && !popoverPos.isModal && (
+                {isDesktopAnchored && (
                     <div 
                         className="hidden md:block absolute -left-2 w-4 h-4 bg-white border-b border-l border-neutral-200 transform rotate-45 z-30"
-                        style={{ top: `${popoverPos.arrowTop || 32}px` }}
+                        style={{ top: `${currentPos.arrowTop || 32}px` }}
                     />
                 )}
 
