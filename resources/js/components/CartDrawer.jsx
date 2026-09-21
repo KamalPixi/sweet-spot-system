@@ -70,7 +70,7 @@ export default function CartDrawer() {
             <div 
                 ref={drawerRef}
                 onClick={(e) => e.stopPropagation()}
-                className={`fixed z-50 top-2 bottom-2 right-2 sm:top-4 sm:bottom-4 sm:right-4 w-[calc(100%-16px)] sm:w-[450px] max-w-lg bg-white rounded-[26px] sm:rounded-[34px] shadow-2xl border border-neutral-100/90 flex flex-col justify-between overflow-hidden transition-all duration-300 ease-out transform ${
+                className={`fixed z-50 top-2 bottom-2 right-2 sm:top-4 sm:bottom-4 sm:right-4 w-[calc(100%-16px)] sm:w-[500px] md:w-[520px] max-w-xl bg-white rounded-2xl shadow-2xl border border-neutral-100/90 flex flex-col justify-between overflow-hidden transition-all duration-300 ease-out transform ${
                     isCartOpen 
                         ? 'translate-x-0 opacity-100 scale-100' 
                         : 'translate-x-12 opacity-0 scale-95 pointer-events-none'
@@ -136,10 +136,10 @@ export default function CartDrawer() {
                         cart.map((item) => (
                             <div 
                                 key={item.key} 
-                                className="bg-[#faf7f2] rounded-[20px] p-3 border border-neutral-200/60 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 text-left"
+                                className="bg-[#faf7f2] rounded-xl p-3 border border-neutral-200/60 shadow-2xs hover:shadow-xs transition-all flex items-center gap-3 text-left"
                             >
                                 {/* Thumbnail */}
-                                <div className="w-16 h-16 rounded-[14px] bg-white overflow-hidden shrink-0 border border-neutral-200/70">
+                                <div className="w-16 h-16 rounded-lg bg-white overflow-hidden shrink-0 border border-neutral-200/70">
                                     <img 
                                         src={getImageUrl(item.image)} 
                                         alt={item.name} 
@@ -211,7 +211,7 @@ export default function CartDrawer() {
 
                 {/* Floating Summary & Checkout Bar */}
                 {cart.length > 0 && (
-                    <div className="p-4 sm:p-5 m-3 sm:m-4 rounded-[22px] sm:rounded-[26px] bg-[#24161b] text-white shadow-xl space-y-3 border border-white/10 shrink-0 text-left">
+                    <div className="p-4 sm:p-5 m-3 sm:m-4 rounded-xl bg-[#24161b] text-white shadow-xl space-y-3 border border-white/10 shrink-0 text-left">
                         <div className="flex justify-between items-baseline">
                             <span className="text-[11px] font-semibold uppercase tracking-wider text-white/70">
                                 Subtotal
