@@ -195,7 +195,7 @@ export default function Auth({ defaultMode = 'login' }) {
             <div className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-3 sm:px-6 pt-6 sm:pt-8 pb-12 md:px-10 md:pt-10 md:pb-16 flex-grow flex flex-col items-center justify-center bg-white shadow-lg border border-stone-200/50">
                 <div className="w-full max-w-6xl mx-auto">
                     {/* Integrated Editorial Split Card with strictly locked dimensions on desktop */}
-                    <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-2xl shadow-[#24161b]/10 overflow-hidden grid grid-cols-1 lg:grid-cols-12 lg:h-[640px] min-h-[600px]">
+                    <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-xs overflow-hidden grid grid-cols-1 lg:grid-cols-12 lg:h-[640px] min-h-[600px]">
                         {/* ════════ LEFT SHOWCASE (Pure Image with Overlay Back Button) ════════ */}
                         <aside className="lg:col-span-5 relative hidden lg:block overflow-hidden bg-[#24161b] h-full w-full">
                             <img 
