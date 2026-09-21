@@ -6,6 +6,7 @@ import { AppProvider, useApp } from './AppContext';
 import { Search, X } from 'lucide-react';
 import CartDrawer from './components/CartDrawer';
 import ProductDetailModal from './components/ProductDetailModal';
+import SearchModal from './components/SearchModal';
 
 // Lazy-loaded Pages & Components
 const Landing = lazy(() => import('./Landing'));
@@ -130,126 +131,12 @@ function RequireAdmin({ children }) {
 }
 
 function GlobalSearchOverlay() {
-    const navigate = useNavigate();
-    const { isSearchOpen, setIsSearchOpen, searchTerm, setSearchTerm, catalog, openProductModal } = useApp();
-
-    if (!isSearchOpen) return null;
-
-    // Filter products globally
-    const filteredProducts = [];
-    if (searchTerm.trim() && catalog) {
-        catalog.forEach(category => {
-            if (category.products) {
-                category.products.forEach(product => {
-                    const match = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                                  (product.description && product.description.toLowerCase().includes(searchTerm.toLowerCase()));
-                    if (match && !filteredProducts.some(p => p.id === product.id)) {
-                        filteredProducts.push(product);
-                    }
-                });
-            }
-        });
-    }
-
+    const { isSearchOpen, setIsSearchOpen } = useApp();
     return (
-        <>
-            {/* Overlay background blur/dimmer for content below */}
-            <div 
-                className="fixed inset-0 bg-black/60 backdrop-blur-xs z-49 transition-opacity duration-300"
-                onClick={() => { setIsSearchOpen(false); setSearchTerm(''); }}
-            />
-            
-            {/* Search Input Bar */}
-            <div className="fixed top-0 inset-x-0 h-[88px] md:h-[96px] bg-primary/95 backdrop-blur-md z-50 px-6 md:px-12 flex items-center justify-between animate-fadeIn shadow-2xl border-b border-white/10">
-                <form 
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        if (searchTerm.trim()) {
-                            navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
-                            setIsSearchOpen(false);
-                        }
-                    }}
-                    className="flex-grow max-w-lg mx-auto relative flex items-center bg-white/10 rounded-full border border-white/20 px-5 py-3 focus-within:border-rose-400 focus-within:bg-white/15 transition-all"
-                >
-                    <Search size={18} className="text-white/60 mr-3 shrink-0" />
-                    <input 
-                        type="text" 
-                        placeholder="Search artisanal cakes, coffee, treats..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="bg-transparent text-sm w-full text-white placeholder-white/40 focus:outline-none font-light"
-                        autoFocus
-                    />
-                    {searchTerm && (
-                        <button type="button" onClick={() => setSearchTerm('')} className="text-white/60 hover:text-white cursor-pointer ml-2">
-                            <X size={14} />
-                        </button>
-                    )}
-                </form>
-                <button 
-                    onClick={() => { setIsSearchOpen(false); setSearchTerm(''); }}
-                    className="ml-4 w-9 h-9 rounded-full bg-white/10 hover:bg-white/20 text-white/80 hover:text-white flex items-center justify-center transition-colors cursor-pointer flex-shrink-0"
-                >
-                    <X size={18} />
-                </button>
-            </div>
-
-            {/* Global Search Results Dropdown Panel */}
-            {searchTerm.trim() && (
-                <div className="fixed top-[88px] md:top-[96px] left-1/2 transform -translate-x-1/2 w-full max-w-lg bg-[#24161b] border border-white/15 rounded-b-3xl shadow-2xl z-50 overflow-hidden flex flex-col max-h-[420px] animate-fadeIn">
-                    {filteredProducts.length > 0 ? (
-                        <>
-                            <div className="overflow-y-auto divide-y divide-white/5 flex-1 custom-scrollbar">
-                                {filteredProducts.slice(0, 5).map(product => (
-                                    <div 
-                                        key={product.id}
-                                        onClick={() => {
-                                            openProductModal(product);
-                                            setIsSearchOpen(false);
-                                            setSearchTerm('');
-                                        }}
-                                        className="flex items-center p-4 hover:bg-white/5 cursor-pointer transition-colors group"
-                                    >
-                                        <img 
-                                            src={getImageUrl(product)} 
-                                            alt={product.name}
-                                            className="w-13 h-13 object-cover rounded-xl border border-white/10 shrink-0"
-                                            onError={(e) => {
-                                                e.target.src = "/images/placeholder.svg";
-                                            }}
-                                        />
-                                        <div className="ml-4 flex-grow text-left">
-                                            <h4 className="text-sm font-semibold text-white group-hover:text-rose-300 transition-colors leading-tight">{product.name}</h4>
-                                            <p className="text-xs text-white/45 mt-1 line-clamp-1 font-light">{product.description}</p>
-                                        </div>
-                                        <div className="text-right ml-4 text-nowrap">
-                                            <span className="text-sm font-bold text-rose-400">
-                                                £{(parseFloat(product.base_price) === 0 && product.variations?.length 
-                                                    ? parseFloat(product.variations[0].price) 
-                                                    : parseFloat(product.base_price || 0)).toFixed(2)}
-                                            </span>
-                                        </div>
-                                    </div>
-                                ))}
-                            </div>
-                            <button
-                                onClick={() => {
-                                    navigate(`/products?search=${encodeURIComponent(searchTerm)}`);
-                                    setIsSearchOpen(false);
-                                }}
-                                className="w-full bg-white/[0.04] hover:bg-rose-500 hover:text-white text-rose-300 text-xs font-semibold py-3.5 text-center transition-all border-t border-white/10 cursor-pointer focus:outline-none shrink-0 uppercase tracking-wider"
-                            >
-                                View all results ({filteredProducts.length})
-                            </button>
-                        </>
-                    ) : (
-                        <div className="p-8 text-center text-white/60 text-xs font-light">
-                            {getNoResultsMessage(searchTerm)}
-                        </div>
-                    )}
-                </div>
-            )}
-        </>
+        <SearchModal 
+            isOpen={isSearchOpen} 
+            onClose={() => setIsSearchOpen(false)} 
+        />
     );
 }
 
