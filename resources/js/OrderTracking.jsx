@@ -213,7 +213,7 @@ export default function OrderTracking() {
                     </p>
 
                     {/* Main High-Craft Lookup Box */}
-                    <div className="bg-[#fdfaf5] border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-xl shadow-[#24161b]/5 text-left mb-8">
+                    <div className="bg-[#fdfaf5] border border-neutral-200/90 rounded-[28px] p-6 sm:p-8 shadow-xs text-left mb-8">
                         <form onSubmit={handleLookupSubmit} className="space-y-4">
                             <div>
                                 <label className="block text-[#24161b] text-xs font-bold uppercase tracking-wider mb-2 pl-1">
@@ -825,7 +825,7 @@ export default function OrderTracking() {
             <div className="w-full h-2 sm:h-3 bg-transparent" />
 
             {/* Main Overlapping Storefront Container with curved top and bottom edges */}
-            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-4 pt-6 pb-14 sm:px-8 md:px-12 md:pt-8 md:pb-20 bg-white shadow-2xl flex-grow flex flex-col items-center">
+            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-4 pt-6 pb-14 sm:px-8 md:px-12 md:pt-8 md:pb-20 bg-white shadow-lg border border-stone-200/50 flex-grow flex flex-col items-center">
                 {renderContent()}
             </main>
 

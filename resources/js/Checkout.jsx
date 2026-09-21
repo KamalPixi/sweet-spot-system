@@ -708,7 +708,7 @@ export default function Checkout() {
             <div className="w-full h-2 sm:h-3 bg-transparent" />
 
             {/* Main Overlapping Storefront Container with signature top & bottom curves */}
-            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-3 sm:px-6 pt-5 pb-16 md:px-10 md:pt-8 md:pb-24 bg-[#fdfaf5] shadow-2xl flex-grow flex flex-col items-center">
+            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-3 sm:px-6 pt-5 pb-16 md:px-10 md:pt-8 md:pb-24 bg-white shadow-lg border border-stone-200/50 flex-grow flex flex-col items-center">
                 <div className="w-full max-w-6xl">
 
                     {/* Stepper Navigation Header & Back Button */}
@@ -777,7 +777,7 @@ export default function Checkout() {
                                 STEP 2: PAYMENT (Stripe Gateway or Simulated)
                             ═══════════════════════════════════════ */}
                             {(stripeClientSecret || checkoutStep === 'payment') ? (
-                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xl shadow-[#24161b]/5 p-5 sm:p-7 space-y-6 animate-fadeIn">
+                                <div className="bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-xs p-5 sm:p-7 space-y-6 animate-fadeIn">
                                     <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
@@ -987,7 +987,7 @@ export default function Checkout() {
                                     )}
 
                                     {/* ── CARD 1 · Customer & Contact ── */}
-                                    <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                    <div className="bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
                                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
                                             <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
                                                 1
@@ -1350,8 +1350,8 @@ export default function Checkout() {
                                         </div>
                                     </div>
 
-                                    {/* ── CARD 2 · Fulfillment & Details ── */}
-                                    <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                    {/* ── CARD 2 · Collection / Delivery Slot Selector ── */}
+                                    <div className="bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
                                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
                                             <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
                                                 2
@@ -1488,7 +1488,7 @@ export default function Checkout() {
                             RIGHT — Order Summary Card (Desktop)
                         ══════════════════════════════════════════ */}
                         <div className="hidden lg:block w-full lg:w-[380px] shrink-0">
-                            <div className="sticky top-6 bg-white rounded-[24px] border border-neutral-200/80 shadow-xl shadow-[#24161b]/5 overflow-hidden">
+                            <div className="sticky top-6 bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-xs overflow-hidden">
                                 <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/40">
                                     <div>
                                         <h3 className="font-serif font-bold text-base text-[#24161b]">Your Order</h3>
