@@ -69,12 +69,12 @@ const addDaysToDateParts = (parts, days) => {
 const stripeAppearance = {
     theme: 'flat',
     variables: {
-        fontFamily: 'Inter, sans-serif',
+        fontFamily: "'Plus Jakarta Sans', sans-serif",
         fontLineHeight: '1.5',
-        borderRadius: '14px',
-        colorBackground: '#fdfaf5',
-        colorPrimary: '#8e5233',
-        colorText: '#262626',
+        borderRadius: '16px',
+        colorBackground: '#ffffff',
+        colorPrimary: '#24161b',
+        colorText: '#24161b',
         colorDanger: '#df1b41',
         spacingUnit: '4px',
     },
@@ -82,17 +82,17 @@ const stripeAppearance = {
         '.Input': {
             border: '1px solid #e5e5e5',
             boxShadow: 'none',
-            padding: '12px 16px',
-            fontSize: '12px',
+            padding: '13px 16px',
+            fontSize: '13px',
         },
         '.Input:focus': {
-            border: '1px solid #8e5233',
-            boxShadow: 'none',
+            border: '1px solid #24161b',
+            boxShadow: '0 0 0 2px rgba(229, 181, 130, 0.3)',
         },
         '.Label': {
             fontSize: '11px',
-            fontWeight: '600',
-            color: '#a3a3a3',
+            fontWeight: '700',
+            color: '#737373',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
             marginBottom: '6px',
@@ -137,8 +137,8 @@ function StripePaymentForm({ orderNumber, phone, email, onClose }) {
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {!stripeReady && (
-                <div className="flex flex-col items-center justify-center py-10 space-y-3 bg-neutral-55/40 rounded-[20px] border border-neutral-100">
-                    <Loader2 className="animate-spin text-[#8e5233]" size={28} />
+                <div className="flex flex-col items-center justify-center py-10 space-y-3 bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80">
+                    <Loader2 className="animate-spin text-[#24161b]" size={28} />
                     <span className="text-xs font-semibold text-neutral-500">Loading secure checkout...</span>
                 </div>
             )}
@@ -261,7 +261,7 @@ export default function Checkout() {
     const [showPassword, setShowPassword] = useState(false);
     const [authLoading, setAuthLoading] = useState(false);
     const [authError, setAuthError] = useState(null);
-    const [registerMethod, setRegisterMethod] = useState('phone'); // 'phone' | 'email'
+    const [contactMethod, setContactMethod] = useState('phone'); // 'phone' | 'email' - exactly matches Auth.jsx
     const [mobileBasketOpen, setMobileBasketOpen] = useState(false);
 
     const fillCheckoutContactFromUser = (profile) => {
@@ -323,9 +323,9 @@ export default function Checkout() {
         setAuthError(null);
         setAuthLoading(true);
 
-        const selectedContact = registerMethod === 'email' ? email : phone;
+        const selectedContact = contactMethod === 'email' ? email : phone;
         if (!firstName || !lastName || !selectedContact || !authPassword) {
-            setAuthError(`Please enter your first name, last name, ${registerMethod === 'email' ? 'email address' : 'phone number'}, and password.`);
+            setAuthError(`Please enter your first name, last name, ${contactMethod === 'email' ? 'email address' : 'phone number'}, and password.`);
             setAuthLoading(false);
             return;
         }
@@ -631,7 +631,7 @@ export default function Checkout() {
     };
 
     return (
-        <div className="min-h-screen bg-[#fdfaf5] text-neutral-800 font-sans select-none relative flex flex-col justify-between">
+        <div className="min-h-screen bg-[#24161b] text-neutral-800 font-sans select-none relative flex flex-col justify-between">
             <Header 
                 setIsMenuOpen={setIsMenuOpen}
                 setIsSearchOpen={setIsSearchOpen}
@@ -641,618 +641,948 @@ export default function Checkout() {
                 user={user}
             />
 
-            {/* Curved overlap container matching /track page style */}
-            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-b-[24px] md:rounded-b-[36px] rounded-t-none relative z-30 px-4 pt-6 pb-2 md:px-8 md:py-10 flex-grow flex flex-col items-center" style={{ background: 'linear-gradient(to bottom, #f4edd9 0%, #ffffff 15%, #ffffff 85%, #f7f2e4 100%)' }}>
+            {/* Standard Gap below Header & Logo */}
+            <div className="w-full h-2 sm:h-3 bg-transparent" />
+
+            {/* Main Overlapping Storefront Container with signature top & bottom curves */}
+            <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-3 sm:px-6 pt-5 pb-16 md:px-10 md:pt-8 md:pb-24 bg-[#fdfaf5] shadow-2xl flex-grow flex flex-col items-center">
                 <div className="w-full max-w-6xl">
 
-                {/* Back Button */}
-                {!stripeClientSecret && (
-                    <div className="mb-3">
-                        <button 
-                            type="button"
-                            onClick={() => {
-                                if (window.history.state && window.history.state.idx > 0) {
-                                    navigate(-1);
-                                } else {
-                                    navigate('/');
-                                }
-                            }}
-                            className="flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-neutral-450 hover:text-neutral-800 transition-colors cursor-pointer"
-                        >
-                            <ChevronLeft size={14} /> Back
-                        </button>
-                    </div>
-                )}
+                    {/* Back Button */}
+                    {!stripeClientSecret && (
+                        <div className="mb-4 sm:mb-6">
+                            <button 
+                                type="button"
+                                onClick={() => {
+                                    if (window.history.state && window.history.state.idx > 0) {
+                                        navigate(-1);
+                                    } else {
+                                        navigate('/');
+                                    }
+                                }}
+                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-neutral-200 shadow-xs text-xs font-bold uppercase tracking-wider text-neutral-600 hover:text-[#24161b] hover:border-neutral-300 transition-all cursor-pointer"
+                            >
+                                <ChevronLeft size={14} /> <span>Back</span>
+                            </button>
+                        </div>
+                    )}
 
-                {/* Two-column grid */}
-                <div className="flex flex-col lg:flex-row gap-6 lg:gap-10 items-start">
+                    {/* Two-column responsive layout */}
+                    <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
 
-                    {/* ══════════════════════════════════════════
-                        LEFT — Form column
-                    ══════════════════════════════════════════ */}
-                    <div className="w-full lg:flex-1 space-y-4 pb-4 lg:pb-10">
+                        {/* ══════════════════════════════════════════
+                            LEFT — Form column
+                        ══════════════════════════════════════════ */}
+                        <div className="w-full lg:flex-1 space-y-4 pb-4 lg:pb-10">
 
-                        {/* ── Stripe Payment Step ── */}
-                        {stripeClientSecret ? (
-                            <div className="bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 p-4 sm:p-6 space-y-5">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 bg-emerald-50 text-emerald-600 rounded-full flex items-center justify-center shrink-0">
-                                        <Lock size={16} strokeWidth={2.5} />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-[#8F5336] font-serif text-lg font-bold">Secure Payment</h2>
-                                        <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
-                                            <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                            SSL Encrypted
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="bg-neutral-50 rounded-xl p-4 text-xs space-y-2 border border-neutral-100">
-                                    <div className="flex justify-between">
-                                        <span className="text-neutral-500">Order Reference</span>
-                                        <span className="font-bold text-neutral-800">{activeOrderNumber}</span>
-                                    </div>
-                                    <div className="flex justify-between items-baseline">
-                                        <span className="text-neutral-500">Total Payable</span>
-                                        <span className="font-extrabold text-[#8e5233] text-sm">£{cartTotal.toFixed(2)}</span>
-                                    </div>
-                                </div>
-
-                                <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret, appearance: stripeAppearance }}>
-                                    <StripePaymentForm
-                                        orderNumber={activeOrderNumber}
-                                        phone={phone}
-                                        email={email}
-                                        onClose={() => { setStripeClientSecret(null); setActiveOrderNumber(''); }}
-                                    />
-                                </Elements>
-
-                                <div className="pt-3 border-t border-neutral-100 flex items-center justify-between text-[9px] text-neutral-400 font-medium">
-                                    <span>🔒 256-bit SSL</span>
-                                    <span className="uppercase tracking-wide">Powered by <span className="font-extrabold text-neutral-500">stripe</span></span>
-                                </div>
-                            </div>
-                        ) : (
-                            <>
-                                {/* Mobile-only collapsible basket */}
-                                {cart.length > 0 && (
-                                    <div className="lg:hidden rounded-2xl border border-[#8e5233]/15 overflow-hidden bg-white shadow-sm">
-                                        <button
-                                            type="button"
-                                            onClick={() => setMobileBasketOpen(o => !o)}
-                                            className="w-full flex items-center justify-between px-4 py-3.5 bg-[#8e5233]/5"
-                                        >
-                                            <div className="flex items-center gap-2.5">
-                                                <span className="text-xs font-semibold text-neutral-800">Your Order</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="font-serif font-bold text-[#8e5233] text-sm">£{cartTotal.toFixed(2)}</span>
-                                                <ChevronRight size={14} className={`text-neutral-400 transition-transform duration-200 ${mobileBasketOpen ? 'rotate-90' : ''}`} />
-                                            </div>
-                                        </button>
-                                        {mobileBasketOpen && (
-                                            <div className="px-4 pb-4 pt-2 space-y-3 animate-fadeIn">
-                                                <div className="divide-y divide-neutral-100">
-                                                    {cart.map(item => (
-                                                        <div key={item.key} className="py-2.5 flex items-center gap-3 text-xs">
-                                                            <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 bg-[#eae2d5]">
-                                                                <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" onError={e => { e.target.src = '/images/placeholder.svg'; }} />
-                                                            </div>
-                                                            <div className="flex-grow min-w-0">
-                                                                <p className="font-semibold text-neutral-900 truncate">{item.name}</p>
-                                                                {item.variation_name && <p className="text-[10px] text-neutral-400">{item.variation_name}</p>}
-                                                                {/* Quantity controls */}
-                                                                <div className="flex items-center border border-[#8e5233] bg-white rounded-full w-fit px-1 mt-1">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={(e) => { e.stopPropagation(); updateCartQty(item.key, item.quantity - 1); }}
-                                                                        className="w-5 h-5 rounded-full text-[#8e5233] hover:bg-[#8e5233] hover:text-white flex items-center justify-center transition-colors cursor-pointer active:scale-90"
-                                                                    >
-                                                                        <Minus size={9} />
-                                                                    </button>
-                                                                    <span className="px-1.5 text-[10px] font-bold text-neutral-800">{item.quantity}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={(e) => { e.stopPropagation(); updateCartQty(item.key, item.quantity + 1); }}
-                                                                        className="w-5 h-5 rounded-full text-[#8e5233] hover:bg-[#8e5233] hover:text-white flex items-center justify-center transition-colors cursor-pointer active:scale-90"
-                                                                    >
-                                                                        <Plus size={9} />
-                                                                    </button>
-                                                                </div>
-                                                            </div>
-                                                            <div className="shrink-0 flex flex-col items-end gap-2">
-                                                                <button type="button" onClick={() => removeFromCart(item.key)} className="text-neutral-300 hover:text-red-400 transition-colors cursor-pointer"><Trash2 size={13} /></button>
-                                                                <span className="font-serif font-semibold text-neutral-800">£{(item.price * item.quantity).toFixed(2)}</span>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                                <div className="border-t border-neutral-100 pt-3 space-y-1.5">
-                                                    <div className="flex justify-between text-xs text-neutral-500">
-                                                        <span>Subtotal</span>
-                                                        <span className="font-medium text-neutral-800">£{cartSubtotal.toFixed(2)}</span>
-                                                    </div>
-                                                    {orderType === 'delivery' && (
-                                                        <div className="flex justify-between text-xs text-neutral-500">
-                                                            <span>Delivery charge {freeDeliveryThreshold !== null && `(Free over £${freeDeliveryThreshold})`}</span>
-                                                            {isFreeDelivery
-                                                                ? <span className="font-semibold text-green-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>FREE</span>
-                                                                : <span className="font-medium text-neutral-800">£{cartDeliveryFee.toFixed(2)}</span>}
-                                                        </div>
-                                                    )}
-                                                    {orderType === 'delivery' && freeDeliveryThreshold !== null && !isFreeDelivery && (
-                                                        <div className="space-y-1 pt-1">
-                                                            <p className="text-[10px] text-neutral-500">Add <span className="font-bold text-[#8F5336]">£{(freeDeliveryThreshold - cartSubtotal).toFixed(2)}</span> more to get <span className="font-bold text-green-600">FREE Delivery</span> (Save £{cartDeliveryFee.toFixed(2)})</p>
-                                                            <div className="w-full bg-neutral-100 rounded-full h-1 overflow-hidden">
-                                                                <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min((cartSubtotal / freeDeliveryThreshold) * 100, 100)}%`, background: 'linear-gradient(90deg,#d4a574,#8F5336)' }} />
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                    {orderType === 'delivery' && isFreeDelivery && <p className="text-[10px] text-green-600 font-bold">🎉 Free delivery unlocked! (Saved £{flatDeliveryFee.toFixed(2)})</p>}
-                                                    <div className="flex justify-between items-baseline pt-2 border-t border-neutral-100 mt-1">
-                                                        <span className="text-sm font-serif text-[#8F5336] font-bold">Total</span>
-                                                        <span className="text-base font-serif text-[#8F5336] font-semibold">£{cartTotal.toFixed(2)}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {/* ── STEP 1 · Who are you? ── */}
-                                <div className="bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 overflow-hidden">
-                                    <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3">
-                                        <span className="w-4 h-4 rounded-full bg-neutral-800 text-white text-[8px] font-bold flex items-center justify-center shrink-0">1</span>
-                                        <h2 className="text-sm font-bold text-neutral-800 tracking-wide">Account</h2>
-                                        {user && <span className="ml-auto text-[10px] font-bold text-green-600 bg-green-50 border border-green-200 px-2 py-0.5 rounded-full">Signed in</span>}
-                                    </div>
-                                    <div className="p-5">
-                                        {!user ? (
-                                            <div className="space-y-4">
-                                                {/* Tab switcher */}
-                                                <div className="flex bg-neutral-50 border border-neutral-200 p-1 rounded-xl w-full">
-                                                    <button type="button" onClick={() => { setAuthTab('guest'); setAuthError(null); }}
-                                                        className={`flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${authTab === 'guest' ? 'bg-white text-[#8e5233] shadow-sm border border-neutral-200' : 'text-neutral-500 hover:text-neutral-800'}`}>
-                                                        Guest Checkout
-                                                    </button>
-                                                    <button type="button" onClick={() => { setAuthTab('auth'); setAuthSubMode('login'); setAuthError(null); }}
-                                                        className={`flex-1 text-center py-2 text-xs font-semibold rounded-lg transition-all cursor-pointer ${authTab === 'auth' ? 'bg-white text-[#8e5233] shadow-sm border border-neutral-200' : 'text-neutral-500 hover:text-neutral-800'}`}>
-                                                        Sign In / Sign Up
-                                                    </button>
-                                                </div>
-
-                                                {/* Auth forms */}
-                                                {authTab === 'auth' && (
-                                                    <div className="space-y-4 animate-fadeIn">
-                                                        {authSubMode === 'login' ? (
-                                                            <div className="space-y-3">
-                                                                <div className="relative">
-                                                                    <User className="absolute left-3.5 top-3.5 text-neutral-350" size={14} />
-                                                                    <input type="text" value={email || phone}
-                                                                        onChange={e => { const v = e.target.value; if (v.includes('@')) { setEmail(v); setPhone(''); } else { setPhone(v); setEmail(''); } }}
-                                                                        placeholder="Email or phone number"
-                                                                        className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl pl-10 pr-4 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                </div>
-                                                                <div className="relative">
-                                                                    <Lock className="absolute left-3.5 top-3.5 text-neutral-350" size={14} />
-                                                                    <input type={showPassword ? 'text' : 'password'} value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="••••••••"
-                                                                        className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl pl-10 pr-10 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-3 text-neutral-400 hover:text-[#8e5233] cursor-pointer focus:outline-none">
-                                                                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                                                                    </button>
-                                                                </div>
-                                                                {authError && <div className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded-xl p-3 text-xs"><AlertCircle size={14} /><span>{authError}</span></div>}
-                                                                <button type="button" onClick={handleInlineLogin} disabled={authLoading}
-                                                                    className="w-full bg-[#8e5233] hover:bg-[#723e25] text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors">
-                                                                    {authLoading ? <Loader2 className="animate-spin" size={14} /> : 'Sign In & Continue'}
-                                                                </button>
-                                                                <p className="text-center text-xs text-neutral-500">Don't have an account? <button type="button" onClick={() => { setAuthSubMode('register'); setAuthError(null); }} className="text-[#8e5233] font-semibold hover:underline cursor-pointer">Sign Up</button></p>
-                                                            </div>
-                                                        ) : (
-                                                            <div className="space-y-3">
-                                                                <div className="grid grid-cols-2 gap-3">
-                                                                    <input type="text" value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First name"
-                                                                        className="bg-white border border-neutral-200/80 focus:border-[#8e5233] focus:ring-1 focus:ring-[#8e5233]/20 rounded-xl px-4 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                    <input type="text" value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last name"
-                                                                        className="bg-white border border-neutral-200/80 focus:border-[#8e5233] focus:ring-1 focus:ring-[#8e5233]/20 rounded-xl px-4 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                </div>
-                                                                {/* Contact field with phone/email toggle — matches Auth.jsx */}
-                                                                <div>
-                                                                    <div className="relative flex items-center">
-                                                                        {registerMethod === 'email' ? (
-                                                                            <>
-                                                                                <Mail className="absolute left-4 text-neutral-400" size={14} />
-                                                                                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="john.doe@example.com"
-                                                                                    className="w-full bg-white border border-neutral-200/80 focus:border-[#8e5233] focus:ring-1 focus:ring-[#8e5233]/20 rounded-xl pl-11 pr-20 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                            </>
-                                                                        ) : (
-                                                                            <>
-                                                                                <div className="absolute left-4 flex items-center space-x-1 text-neutral-400 pr-2 border-r border-neutral-200 shrink-0 select-none">
-                                                                                    <span className="text-sm">🇬🇧</span>
-                                                                                </div>
-                                                                                <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="e.g. 07123456789"
-                                                                                    className="w-full bg-white border border-neutral-200/80 focus:border-[#8e5233] focus:ring-1 focus:ring-[#8e5233]/20 rounded-xl pl-16 pr-20 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                            </>
-                                                                        )}
-                                                                        {/* Toggle phone / email */}
-                                                                        <div className="absolute right-2 flex items-center gap-0.5 bg-neutral-100 p-0.5 rounded-lg border border-neutral-200">
-                                                                            <button type="button" onClick={() => { setRegisterMethod('phone'); setEmail(''); }} title="Use Phone Number"
-                                                                                className={`p-1.5 rounded-md transition-all cursor-pointer ${registerMethod === 'phone' ? 'bg-[#8e5233] text-white' : 'text-neutral-400 hover:text-neutral-700'}`}>
-                                                                                <Phone size={11} />
-                                                                            </button>
-                                                                            <button type="button" onClick={() => { setRegisterMethod('email'); setPhone(''); }} title="Use Email Address"
-                                                                                className={`p-1.5 rounded-md transition-all cursor-pointer ${registerMethod === 'email' ? 'bg-[#8e5233] text-white' : 'text-neutral-400 hover:text-neutral-700'}`}>
-                                                                                <Mail size={11} />
-                                                                            </button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="relative">
-                                                                    <Lock className="absolute left-3.5 top-3.5 text-neutral-350" size={14} />
-                                                                    <input type={showPassword ? 'text' : 'password'} value={authPassword} onChange={e => setAuthPassword(e.target.value)} placeholder="Password"
-                                                                        className="w-full bg-white border border-neutral-200/80 focus:border-[#8e5233] focus:ring-1 focus:ring-[#8e5233]/20 rounded-xl pl-10 pr-10 py-3 text-xs text-neutral-900 focus:outline-none transition-all" />
-                                                                    <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3.5 top-3 text-neutral-400 hover:text-[#8e5233] cursor-pointer focus:outline-none">
-                                                                        {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
-                                                                    </button>
-                                                                </div>
-                                                                {authError && <div className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded-xl p-3 text-xs"><AlertCircle size={14} /><span>{authError}</span></div>}
-                                                                <button type="button" onClick={handleInlineRegister} disabled={authLoading}
-                                                                    className="w-full bg-[#8e5233] hover:bg-[#723e25] text-white font-semibold py-3 rounded-xl text-xs flex items-center justify-center gap-2 cursor-pointer transition-colors">
-                                                                    {authLoading ? <Loader2 className="animate-spin" size={14} /> : 'Create Account & Continue'}
-                                                                </button>
-                                                                <p className="text-center text-xs text-neutral-500">Already have an account? <button type="button" onClick={() => { setAuthSubMode('login'); setAuthError(null); }} className="text-[#8e5233] font-semibold hover:underline cursor-pointer">Sign In</button></p>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            /* Logged-in card */
-                                            <div className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3">
-                                                <div className="w-9 h-9 rounded-full bg-[#8e5233]/10 text-[#8e5233] flex items-center justify-center shrink-0">
-                                                    <CheckCircle size={17} />
-                                                </div>
-                                                <div className="min-w-0 flex-1">
-                                                    <p className="text-xs font-bold text-neutral-800 truncate">
-                                                        {(firstName || user.first_name || user.name || 'Customer')} {(lastName || user.last_name || '')}
-                                                    </p>
-                                                    <p className="text-[11px] text-neutral-500 truncate">{email || user.email || phone || user.phone || 'Signed in account'}</p>
-                                                </div>
-                                                <button type="button" onClick={() => { logout(); }} className="shrink-0 text-[10px] font-bold text-neutral-500 hover:text-red-500 transition-colors cursor-pointer flex items-center gap-1 uppercase tracking-wider">
-                                                    <LogOut size={11} /> Sign out
-                                                </button>
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-
-                                {/* ── STEP 2 · Contact / Delivery details ── */}
-                                {(!!user || authTab === 'guest') && (
-                                    <form onSubmit={handlePlaceOrder} id="checkout-form">
-
-                                        {/* Order method card */}
-                                        <div className="bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 overflow-hidden mb-4">
-                                            <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3">
-                                                <span className="w-4 h-4 rounded-full bg-neutral-800 text-white text-[8px] font-bold flex items-center justify-center shrink-0">2</span>
-                                                <h2 className="text-sm font-bold text-neutral-800 tracking-wide">
-                                                    {!orderType ? 'Order Method' : orderType === 'delivery' ? 'Delivery Address' : 'Collection Slot'}
-                                                </h2>
-                                                {orderType && (
-                                                    <button type="button" onClick={handleSwitchOrderBanner}
-                                                        className="ml-auto text-[10px] font-bold text-[#8e5233] bg-[#8e5233]/8 hover:bg-[#8e5233]/15 px-3 py-1.5 rounded-full transition-all cursor-pointer uppercase tracking-wider">
-                                                        Change
-                                                    </button>
-                                                )}
-                                            </div>
-                                            <div className="px-5 py-4 text-xs">
-                                                {!orderType ? (
-                                                    <div className="space-y-4">
-                                                        <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
-                                                            <AlertCircle size={16} className="shrink-0 mt-0.5" />
-                                                            <div>
-                                                                <p className="font-bold">Choose delivery or collection first.</p>
-                                                                <p className="text-[11px] text-amber-700 mt-1">We need this before we can calculate the final order details.</p>
-                                                            </div>
-                                                        </div>
-                                                        <div className="grid sm:grid-cols-2 gap-3">
-                                                            <button type="button" onClick={() => navigate('/delivery-setup?redirect=/cart')}
-                                                                className="flex items-center justify-center gap-2 rounded-xl border border-[#8e5233]/20 bg-[#8e5233]/8 px-4 py-3 text-[#8e5233] font-bold hover:bg-[#8e5233]/15 transition-colors cursor-pointer">
-                                                                <MapPin size={14} />
-                                                                <span>Set Delivery</span>
-                                                            </button>
-                                                            <button type="button" onClick={() => navigate('/collection-setup?redirect=/cart')}
-                                                                className="flex items-center justify-center gap-2 rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-neutral-700 font-bold hover:bg-neutral-100 transition-colors cursor-pointer">
-                                                                <Clock size={14} />
-                                                                <span>Set Collection</span>
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    <div className="flex items-center gap-3">
-                                                        <div className="w-8 h-8 rounded-full bg-[#8e5233]/10 text-[#8e5233] flex items-center justify-center shrink-0">
-                                                            {orderType === 'delivery' ? <MapPin size={14} /> : <Clock size={14} />}
-                                                        </div>
-                                                        <div className="flex-1 min-w-0 self-center">
-                                                            {selectedMethodIsComplete ? (
-                                                                <p className="text-neutral-700 font-medium">
-                                                                    {orderType === 'delivery'
-                                                                        ? renderDeliveryAddress()
-                                                                        : <>{formatCollectionSlot(collectionSlot)}</>}
-                                                                </p>
-                                                            ) : (
-                                                                <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
-                                                                    <div className="flex items-start gap-2 flex-1">
-                                                                        <AlertCircle size={15} className="shrink-0 mt-0.5" />
-                                                                        <div>
-                                                                            <p className="font-bold">
-                                                                                {orderType === 'delivery' ? 'Delivery address is missing.' : 'Collection slot is missing.'}
-                                                                            </p>
-                                                                            <p className="text-[11px] text-amber-700 mt-1">
-                                                                                {orderType === 'delivery'
-                                                                                    ? 'Add your address so we can deliver the order correctly.'
-                                                                                    : 'Pick a date and time so the shop knows when to prepare your order.'}
-                                                                            </p>
-                                                                        </div>
-                                                                    </div>
-                                                                    <button type="button" onClick={handleSwitchOrderBanner}
-                                                                        className="shrink-0 rounded-full bg-white border border-amber-300 px-3 py-2 text-[10px] font-bold uppercase tracking-wider text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer">
-                                                                        {orderType === 'delivery' ? 'Add Address' : 'Pick Slot'}
-                                                                    </button>
-                                                                </div>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                )}
-                                            </div>
+                            {/* ── Stripe Payment Step (When active) ── */}
+                            {stripeClientSecret ? (
+                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xl shadow-[#24161b]/5 p-5 sm:p-7 space-y-6">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
+                                            <Lock size={18} strokeWidth={2.2} />
                                         </div>
-
-                                        {/* Contact card */}
-                                        <div className="bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 overflow-hidden mb-4">
-                                            <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3">
-                                                <span className="w-4 h-4 rounded-full bg-neutral-800 text-white text-[8px] font-bold flex items-center justify-center shrink-0">3</span>
-                                                <h2 className="text-sm font-bold text-neutral-800 tracking-wide">Contact Details</h2>
-                                            </div>
-                                            <div className="p-5 space-y-3">
-                                                {user ? (
-                                                    <div className="space-y-3">
-                                                        <div className="grid grid-cols-2 gap-3">
-                                                            <input type="text" required value={firstName} onChange={e => setFirstName(e.target.value)} placeholder="First name"
-                                                                className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all w-full" />
-                                                            <input type="text" required value={lastName} onChange={e => setLastName(e.target.value)} placeholder="Last name"
-                                                                className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all w-full" />
-                                                        </div>
-                                                        <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="Email address"
-                                                            className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all" />
-                                                        <div className="flex bg-neutral-50 border border-neutral-200 focus-within:border-[#8e5233] focus-within:bg-white rounded-xl px-4 py-1 transition-all items-center gap-2">
-                                                            <span className="text-sm leading-none shrink-0">🇬🇧</span>
-                                                            <input type="tel" value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone number"
-                                                                className="flex-1 bg-transparent border-0 py-2.5 text-xs focus:outline-none" />
-                                                        </div>
-                                                    </div>
-                                                ) : (
-                                                    /* Guest contact */
-                                                    <div className="space-y-3 animate-fadeIn">
-                                                        <label className="block text-[10px] font-bold uppercase tracking-wider text-neutral-500 mb-1">
-                                                            {guestContactMethod === 'email' ? 'Email Address' : 'Phone Number'}
-                                                        </label>
-                                                        <div className="relative flex items-center">
-                                                            {guestContactMethod === 'email' ? (
-                                                                <><Mail className="absolute left-3.5 text-neutral-350" size={14} />
-                                                                <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="Enter your email"
-                                                                    className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl pl-10 pr-24 py-3 text-xs focus:outline-none transition-all" /></>
-                                                            ) : (
-                                                                <><div className="absolute left-3.5 flex items-center gap-1 text-neutral-400 border-r border-neutral-200 pr-2 shrink-0">
-                                                                    <span className="text-sm">🇬🇧</span>
-                                                                </div>
-                                                                <input type="tel" required value={phone} onChange={e => setPhone(e.target.value)} placeholder="Phone number"
-                                                                    className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl pl-16 pr-24 py-3 text-xs focus:outline-none transition-all" /></>
-                                                            )}
-                                                            {/* Switch buttons */}
-                                                            <div className="absolute right-2 flex items-center gap-0.5 bg-neutral-100 p-0.5 rounded-lg border border-neutral-200">
-                                                                <button type="button" onClick={() => setGuestContactMethod('phone')} title="Phone"
-                                                                    className={`p-1.5 rounded-md transition-all cursor-pointer ${guestContactMethod === 'phone' ? 'bg-[#8e5233] text-white' : 'text-neutral-400 hover:text-neutral-700'}`}>
-                                                                    <Phone size={11} />
-                                                                </button>
-                                                                <button type="button" onClick={() => setGuestContactMethod('email')} title="Email"
-                                                                    className={`p-1.5 rounded-md transition-all cursor-pointer ${guestContactMethod === 'email' ? 'bg-[#8e5233] text-white' : 'text-neutral-400 hover:text-neutral-700'}`}>
-                                                                    <Mail size={11} />
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                        {!hasGuestContact && (
-                                                            <div className="flex items-center gap-2 rounded-xl bg-amber-50 border border-amber-200 px-3 py-2 text-[11px] text-amber-800">
-                                                                <AlertCircle size={13} className="shrink-0" />
-                                                                <span>{guestContactMethod === 'email' ? 'Email is selected. You can enter an email address or switch to phone.' : 'Phone is selected. You can enter a phone number or switch to email.'}</span>
-                                                            </div>
-                                                        )}
-                                                    </div>
-                                                )}
-                                                {(!!user || createAccount || (!createAccount && guestContactMethod === 'email')) && (
-                                                    <label className="flex items-start gap-2.5 cursor-pointer pt-2 select-none">
-                                                        <input type="checkbox" className="w-4 h-4 accent-[#8e5233] mt-0.5 shrink-0" defaultChecked />
-                                                        <span className="text-[11px] text-neutral-500 font-medium">Subscribe to updates & promotions</span>
-                                                    </label>
-                                                )}
-                                            </div>
+                                        <div>
+                                            <h2 className="text-[#24161b] font-serif text-xl font-bold">Secure Payment</h2>
+                                            <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                                Bank-Grade 256-Bit SSL Encrypted
+                                            </p>
                                         </div>
+                                    </div>
 
-                                        {/* Notes + extras card */}
-                                        <div className="bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 overflow-hidden mb-4">
-                                            <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3">
-                                                <span className="w-4 h-4 rounded-full bg-neutral-200 text-neutral-500 text-[8px] font-bold flex items-center justify-center shrink-0">4</span>
-                                                <h2 className="text-sm font-bold text-neutral-800 tracking-wide">Notes <span className="text-neutral-400 font-normal text-[11px]">(optional)</span></h2>
-                                            </div>
-                                            <div className="p-5 space-y-4">
-                                                <textarea rows="2" value={notes} onChange={e => setNotes(e.target.value)}
-                                                    placeholder="Delivery instructions, allergies, special requests…"
-                                                    className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none transition-all resize-none" />
-                                            </div>
+                                    <div className="bg-[#fdfaf5] rounded-2xl p-4 text-xs space-y-2.5 border border-neutral-200/80">
+                                        <div className="flex justify-between items-center">
+                                            <span className="text-neutral-500">Order Reference</span>
+                                            <span className="font-mono font-bold text-[#24161b] bg-white px-2.5 py-1 rounded-lg border border-neutral-200 text-xs">
+                                                {activeOrderNumber}
+                                            </span>
                                         </div>
+                                        <div className="flex justify-between items-baseline pt-1 border-t border-neutral-200/60">
+                                            <span className="text-neutral-500 font-medium">Total Payable</span>
+                                            <span className="font-serif font-black text-[#24161b] text-base">£{cartTotal.toFixed(2)}</span>
+                                        </div>
+                                    </div>
 
-                                        {/* Payment section (mock only) */}
-                                        {!isRealStripeConfigured && (
-                                            <div className="bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 overflow-hidden mb-4">
-                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3">
-                                                    <span className="w-4 h-4 rounded-full bg-neutral-200 text-neutral-500 text-[8px] font-bold flex items-center justify-center shrink-0">5</span>
-                                                    <h2 className="text-sm font-bold text-neutral-800 tracking-wide">Payment <span className="text-[10px] font-normal text-amber-600 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-full ml-1">Simulated</span></h2>
-                                                </div>
-                                                <div className="p-5 space-y-3">
-                                                    <input type="text" value={cardNumber} onChange={e => setCardNumber(e.target.value)} placeholder="Card number"
-                                                        className="w-full bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all" />
-                                                    <div className="grid grid-cols-3 gap-3">
-                                                        <input type="text" value={expDate} onChange={e => setExpDate(e.target.value)} placeholder="MM / YY"
-                                                            className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all" />
-                                                        <input type="text" value={cvc} onChange={e => setCvc(e.target.value)} placeholder="CVC"
-                                                            className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all" />
-                                                        <input type="text" value={cardName} onChange={e => setCardName(e.target.value)} placeholder="Name on card"
-                                                            className="bg-neutral-50 border border-neutral-200 focus:border-[#8e5233] focus:bg-white rounded-xl px-4 py-3 text-xs focus:outline-none transition-all" />
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        )}
+                                    <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret, appearance: stripeAppearance }}>
+                                        <StripePaymentForm
+                                            orderNumber={activeOrderNumber}
+                                            phone={phone}
+                                            email={email}
+                                            onClose={() => { setStripeClientSecret(null); setActiveOrderNumber(''); }}
+                                        />
+                                    </Elements>
 
-                                        {isRealStripeConfigured && (
-                                            <div className="bg-emerald-50/60 border border-emerald-200/60 rounded-2xl px-5 py-4 mb-4 hidden lg:flex items-center gap-3 text-xs text-emerald-700">
-                                                <Lock size={14} className="shrink-0" strokeWidth={2.5} />
-                                                <span>Your payment details are entered securely in the next step — powered by <strong>Stripe</strong>.</span>
-                                            </div>
-                                        )}
-
-                                        {/* Error */}
-                                        {error && (
-                                            <div className="flex items-center gap-2 text-red-700 bg-red-50 border border-red-200 rounded-xl p-4 text-xs mb-4 animate-fadeIn">
-                                                <AlertCircle size={15} className="shrink-0" />
-                                                <span>{error}</span>
-                                            </div>
-                                        )}
-
-                                        {/* Desktop CTA */}
-                                        <button type="submit" disabled={loading}
-                                            className="hidden lg:flex w-full bg-[#8e5233] hover:bg-[#723e25] disabled:bg-[#8e5233]/60 text-white font-semibold rounded-2xl py-4 items-center justify-center gap-2 shadow-lg shadow-[#8e5233]/15 transition-all cursor-pointer font-serif text-sm tracking-wide">
-                                            {loading
-                                                ? <><Loader2 size={16} className="animate-spin" /><span>Placing Order…</span></>
-                                                : <><Lock size={14} className="shrink-0" strokeWidth={2.5} /><span>{isRealStripeConfigured ? 'Continue to Payment' : 'Place Order'}</span></>}
-                                        </button>
-
-                                    </form>
-                                )}
-                            </>
-                        )}
-                    </div>
-
-                    {/* ══════════════════════════════════════════
-                        RIGHT — Order summary (desktop only)
-                    ══════════════════════════════════════════ */}
-                    <div className="hidden lg:block w-full lg:w-[360px] shrink-0">
-                        <div className="sticky top-6 bg-white rounded-[20px] border border-neutral-200/60 shadow-lg shadow-[#8e5233]/5 overflow-hidden">
-                            <div className="px-5 py-4 border-b border-neutral-100">
-                                <h3 className="text-sm font-bold text-neutral-800">Your Order</h3>
-                                <p className="text-[10px] text-neutral-400 mt-0.5">{cart.reduce((s,i)=>s+i.quantity,0)} item{cart.reduce((s,i)=>s+i.quantity,0)!==1?'s':''}</p>
-                            </div>
-
-                            {cart.length === 0 ? (
-                                <div className="py-12 text-center text-neutral-400 text-xs px-5">Your basket is empty.</div>
+                                    <div className="pt-4 border-t border-neutral-100 flex items-center justify-between text-[10px] text-neutral-400 font-medium">
+                                        <span className="flex items-center gap-1"><Lock size={11} /> 256-bit SSL</span>
+                                        <span className="uppercase tracking-wider">Powered by <span className="font-bold text-neutral-700">stripe</span></span>
+                                    </div>
+                                </div>
                             ) : (
                                 <>
-                                    {/* Items */}
-                                    <div className="px-5 py-4 divide-y divide-neutral-100 max-h-[320px] overflow-y-auto custom-scrollbar">
-                                        {cart.map(item => (
-                                            <div key={item.key} className="py-3 flex items-center gap-3 text-xs">
-                                                <div className="w-11 h-11 bg-[#eae2d5] rounded-xl overflow-hidden shrink-0 border border-neutral-100">
-                                                    <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover"
-                                                        onError={e => { e.target.src = '/images/placeholder.svg'; }} />
+                                    {/* Mobile-only collapsible basket */}
+                                    {cart.length > 0 && (
+                                        <div className="lg:hidden rounded-2xl border border-neutral-200/80 overflow-hidden bg-white shadow-xs">
+                                            <button
+                                                type="button"
+                                                onClick={() => setMobileBasketOpen(o => !o)}
+                                                className="w-full flex items-center justify-between px-4 py-3.5 bg-neutral-50 hover:bg-neutral-100/70 transition-colors"
+                                            >
+                                                <div className="flex items-center gap-2.5">
+                                                    <span className="text-xs font-bold text-[#24161b]">Your Order</span>
+                                                    <span className="text-[10px] font-bold text-neutral-500 bg-neutral-200 px-2 py-0.5 rounded-full">
+                                                        {cart.reduce((s, i) => s + i.quantity, 0)} items
+                                                    </span>
                                                 </div>
-                                                <div className="flex-grow min-w-0">
-                                                    <p className="font-semibold text-neutral-900 leading-tight">{item.name}</p>
-                                                    {item.variation_name && <p className="text-[10px] text-neutral-400 mt-0.5">{item.variation_name}</p>}
-                                                    <div className="flex items-center mt-1.5 gap-1 border border-[#8e5233]/30 rounded-full w-fit px-1.5 py-0.5">
-                                                        <button type="button" onClick={() => updateCartQty(item.key, item.quantity-1)} className="w-3.5 h-3.5 flex items-center justify-center text-[#8e5233] cursor-pointer"><Minus size={7} /></button>
-                                                        <span className="text-[10px] font-bold px-1">{item.quantity}</span>
-                                                        <button type="button" onClick={() => updateCartQty(item.key, item.quantity+1)} className="w-3.5 h-3.5 flex items-center justify-center text-[#8e5233] cursor-pointer"><Plus size={7} /></button>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-serif font-bold text-[#24161b] text-sm">£{cartTotal.toFixed(2)}</span>
+                                                    <ChevronRight size={14} className={`text-neutral-400 transition-transform duration-200 ${mobileBasketOpen ? 'rotate-90' : ''}`} />
+                                                </div>
+                                            </button>
+                                            {mobileBasketOpen && (
+                                                <div className="px-4 pb-4 pt-2 space-y-3 animate-fadeIn border-t border-neutral-100">
+                                                    <div className="divide-y divide-neutral-100">
+                                                        {cart.map(item => (
+                                                            <div key={item.key} className="py-2.5 flex items-center gap-3 text-xs">
+                                                                <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 bg-[#24161b]/5 border border-neutral-200/80">
+                                                                    <img src={getImageUrl(item.image)} alt={item.name} className="w-full h-full object-cover" onError={e => { e.target.src = '/images/placeholder.svg'; }} />
+                                                                </div>
+                                                                <div className="flex-grow min-w-0">
+                                                                    <p className="font-bold text-[#24161b] truncate">{item.name}</p>
+                                                                    {item.variation_name && <p className="text-[10px] text-neutral-400">{item.variation_name}</p>}
+                                                                    <div className="flex items-center border border-neutral-200 bg-white rounded-full w-fit px-1 mt-1">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => { e.stopPropagation(); updateCartQty(item.key, item.quantity - 1); }}
+                                                                            className="w-5 h-5 rounded-full text-neutral-600 hover:text-[#24161b] hover:bg-neutral-100 flex items-center justify-center transition-colors cursor-pointer active:scale-90"
+                                                                        >
+                                                                            <Minus size={9} />
+                                                                        </button>
+                                                                        <span className="px-2 text-[10px] font-bold text-[#24161b]">{item.quantity}</span>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={(e) => { e.stopPropagation(); updateCartQty(item.key, item.quantity + 1); }}
+                                                                            className="w-5 h-5 rounded-full text-neutral-600 hover:text-[#24161b] hover:bg-neutral-100 flex items-center justify-center transition-colors cursor-pointer active:scale-90"
+                                                                        >
+                                                                            <Plus size={9} />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="shrink-0 flex flex-col items-end gap-2">
+                                                                    <button type="button" onClick={() => removeFromCart(item.key)} className="text-neutral-300 hover:text-rose-500 transition-colors cursor-pointer"><Trash2 size={13} /></button>
+                                                                    <span className="font-serif font-bold text-[#24161b]">£{(item.price * item.quantity).toFixed(2)}</span>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                    <div className="border-t border-neutral-100 pt-3 space-y-1.5">
+                                                        <div className="flex justify-between text-xs text-neutral-500">
+                                                            <span>Subtotal</span>
+                                                            <span className="font-semibold text-neutral-900">£{cartSubtotal.toFixed(2)}</span>
+                                                        </div>
+                                                        {orderType === 'delivery' && (
+                                                            <div className="flex justify-between text-xs text-neutral-500">
+                                                                <span>Delivery charge {freeDeliveryThreshold !== null && `(Free over £${freeDeliveryThreshold})`}</span>
+                                                                {isFreeDelivery
+                                                                    ? <span className="font-bold text-emerald-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>FREE</span>
+                                                                    : <span className="font-semibold text-neutral-900">£{cartDeliveryFee.toFixed(2)}</span>}
+                                                            </div>
+                                                        )}
+                                                        <div className="flex justify-between items-baseline pt-2 border-t border-neutral-100 mt-1">
+                                                            <span className="text-sm font-serif font-bold text-[#24161b]">Total</span>
+                                                            <span className="text-base font-serif font-black text-[#24161b]">£{cartTotal.toFixed(2)}</span>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                                <div className="shrink-0 flex flex-col items-end gap-2">
-                                                    <button type="button" onClick={() => removeFromCart(item.key)} className="text-neutral-300 hover:text-red-400 transition-colors cursor-pointer"><Trash2 size={13} /></button>
-                                                    <span className="font-serif font-semibold text-neutral-800">£{(item.price * item.quantity).toFixed(2)}</span>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-
-                                    {/* Totals */}
-                                    <div className="px-5 py-4 border-t border-neutral-100 bg-neutral-50/60 space-y-2.5">
-                                        <div className="flex justify-between text-xs text-neutral-500">
-                                            <span>Subtotal</span>
-                                            <span className="font-medium text-neutral-800">£{cartSubtotal.toFixed(2)}</span>
+                                            )}
                                         </div>
-                                        {orderType === 'delivery' && (
-                                            <div className="flex justify-between text-xs text-neutral-500">
-                                                <span>Delivery charge {freeDeliveryThreshold !== null && `(Free over £${freeDeliveryThreshold})`}</span>
-                                                {isFreeDelivery
-                                                    ? <span className="font-semibold text-green-600 flex items-center gap-1"><span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>FREE</span>
-                                                    : <span className="font-medium text-neutral-800">£{cartDeliveryFee.toFixed(2)}</span>}
-                                            </div>
-                                        )}
+                                    )}
 
-                                        {/* Free delivery nudge */}
-                                        {orderType === 'delivery' && freeDeliveryThreshold !== null && (
-                                            isFreeDelivery ? (
-                                                <div className="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-3 py-2 text-xs text-green-700">
-                                                    <CheckCircle size={13} className="shrink-0 text-green-500" />
-                                                    <span className="font-semibold">Free delivery unlocked! 🎉 (Saved £{flatDeliveryFee.toFixed(2)})</span>
+                                    {/* ── STEP 1 · Account ── */}
+                                    <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                        <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
+                                            <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
+                                                1
+                                            </span>
+                                            <h2 className="text-sm font-bold text-[#24161b] tracking-wide">Account</h2>
+                                            {user && (
+                                                <span className="ml-auto text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
+                                                    <CheckCircle size={10} /> Signed in
+                                                </span>
+                                            )}
+                                        </div>
+                                        <div className="p-5 sm:p-6">
+                                            {!user ? (
+                                                <div className="space-y-4">
+                                                    {/* Clean Modern Pill Switcher */}
+                                                    <div className="flex bg-neutral-100/80 p-1 rounded-2xl w-full border border-neutral-200/60">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => { setAuthTab('guest'); setAuthError(null); }}
+                                                            className={`flex-1 text-center py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                                                                authTab === 'guest' 
+                                                                    ? 'bg-white text-[#24161b] shadow-xs' 
+                                                                    : 'text-neutral-500 hover:text-neutral-900'
+                                                            }`}
+                                                        >
+                                                            Guest Checkout
+                                                        </button>
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => { setAuthTab('auth'); setAuthSubMode('login'); setAuthError(null); }}
+                                                            className={`flex-1 text-center py-2.5 text-xs font-bold rounded-xl transition-all cursor-pointer ${
+                                                                authTab === 'auth' 
+                                                                    ? 'bg-white text-[#24161b] shadow-xs' 
+                                                                    : 'text-neutral-500 hover:text-neutral-900'
+                                                            }`}
+                                                        >
+                                                            Sign In / Sign Up
+                                                        </button>
+                                                    </div>
+
+                                                    {/* Inline Auth Form */}
+                                                    {authTab === 'auth' && (
+                                                        <div className="space-y-4 pt-1 animate-fadeIn">
+                                                            {authSubMode === 'login' ? (
+                                                                <div className="space-y-3.5">
+                                                                    {/* Contact field with Phone vs Email toggle header */}
+                                                                    <div>
+                                                                        <div className="flex items-center justify-between mb-1.5">
+                                                                            <label className="text-xs font-medium text-neutral-700">
+                                                                                {contactMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
+                                                                            </label>
+                                                                            <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => { setContactMethod('phone'); setEmail(''); }}
+                                                                                    className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                        contactMethod === 'phone'
+                                                                                            ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                            : 'text-neutral-500 hover:text-neutral-900'
+                                                                                    }`}
+                                                                                >
+                                                                                    Phone
+                                                                                </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => { setContactMethod('email'); setPhone(''); }}
+                                                                                    className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                        contactMethod === 'email'
+                                                                                            ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                            : 'text-neutral-500 hover:text-neutral-900'
+                                                                                    }`}
+                                                                                >
+                                                                                    Email
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {contactMethod === 'phone' ? (
+                                                                            <div className="relative flex items-center">
+                                                                                <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                                                    <span className="text-sm">🇬🇧</span>
+                                                                                    <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                                </div>
+                                                                                <input 
+                                                                                    type="tel" 
+                                                                                    value={phone}
+                                                                                    onChange={(e) => setPhone(e.target.value)}
+                                                                                    placeholder="07123 456789"
+                                                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                                />
+                                                                            </div>
+                                                                        ) : (
+                                                                            <input 
+                                                                                type="email" 
+                                                                                value={email}
+                                                                                onChange={(e) => setEmail(e.target.value)}
+                                                                                placeholder="jane.doe@example.com"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* Password with label & show/hide toggle */}
+                                                                    <div>
+                                                                        <div className="flex justify-between items-center mb-1.5">
+                                                                            <label className="block text-xs font-medium text-neutral-700">Password</label>
+                                                                        </div>
+                                                                        <div className="relative flex items-center">
+                                                                            <input 
+                                                                                type={showPassword ? 'text' : 'password'}
+                                                                                value={authPassword}
+                                                                                onChange={(e) => setAuthPassword(e.target.value)}
+                                                                                placeholder="••••••••"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-3.5 pr-10 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setShowPassword(!showPassword)}
+                                                                                className="absolute right-3 text-neutral-400 hover:text-[#24161b] cursor-pointer"
+                                                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                                                            >
+                                                                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {authError && (
+                                                                        <div className="flex items-center gap-2 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs">
+                                                                            <AlertCircle size={14} className="shrink-0" />
+                                                                            <span>{authError}</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    <button 
+                                                                        type="button" 
+                                                                        onClick={handleInlineLogin} 
+                                                                        disabled={authLoading}
+                                                                        className="w-full h-11 bg-[#24161b] hover:bg-black text-[#e5b582] hover:text-white font-bold rounded-xl text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md shadow-[#24161b]/10 active:scale-98"
+                                                                    >
+                                                                        {authLoading ? <Loader2 className="animate-spin" size={15} /> : 'SIGN IN'}
+                                                                    </button>
+
+                                                                    <p className="text-center text-xs text-neutral-500">
+                                                                        Don't have an account? <button type="button" onClick={() => { setAuthSubMode('register'); setAuthError(null); }} className="text-[#24161b] font-bold hover:underline cursor-pointer">Create an account</button>
+                                                                    </p>
+                                                                </div>
+                                                            ) : (
+                                                                <div className="space-y-3.5">
+                                                                    {/* First Name & Last Name */}
+                                                                    <div className="grid grid-cols-2 gap-3">
+                                                                        <div>
+                                                                            <label className="block text-xs font-medium text-neutral-700 mb-1.5">First Name</label>
+                                                                            <input 
+                                                                                type="text" 
+                                                                                value={firstName} 
+                                                                                onChange={(e) => setFirstName(e.target.value)} 
+                                                                                placeholder="Jane"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
+                                                                        </div>
+                                                                        <div>
+                                                                            <label className="block text-xs font-medium text-neutral-700 mb-1.5">Last Name</label>
+                                                                            <input 
+                                                                                type="text" 
+                                                                                value={lastName} 
+                                                                                onChange={(e) => setLastName(e.target.value)} 
+                                                                                placeholder="Doe"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Contact with Phone / Email Switcher */}
+                                                                    <div>
+                                                                        <div className="flex items-center justify-between mb-1.5">
+                                                                            <label className="text-xs font-medium text-neutral-700">
+                                                                                {contactMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
+                                                                            </label>
+                                                                            <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => { setContactMethod('phone'); setEmail(''); }}
+                                                                                    className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                        contactMethod === 'phone'
+                                                                                            ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                            : 'text-neutral-500 hover:text-neutral-900'
+                                                                                    }`}
+                                                                                >
+                                                                                    Phone
+                                                                                </button>
+                                                                                <button
+                                                                                    type="button"
+                                                                                    onClick={() => { setContactMethod('email'); setPhone(''); }}
+                                                                                    className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                        contactMethod === 'email'
+                                                                                            ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                            : 'text-neutral-500 hover:text-neutral-900'
+                                                                                    }`}
+                                                                                >
+                                                                                    Email
+                                                                                </button>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        {contactMethod === 'phone' ? (
+                                                                            <div className="relative flex items-center">
+                                                                                <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                                                    <span className="text-sm">🇬🇧</span>
+                                                                                    <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                                </div>
+                                                                                <input 
+                                                                                    type="tel" 
+                                                                                    value={phone}
+                                                                                    onChange={(e) => setPhone(e.target.value)}
+                                                                                    placeholder="07123 456789"
+                                                                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                                />
+                                                                            </div>
+                                                                        ) : (
+                                                                            <input 
+                                                                                type="email" 
+                                                                                value={email}
+                                                                                onChange={(e) => setEmail(e.target.value)}
+                                                                                placeholder="jane.doe@example.com"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
+                                                                        )}
+                                                                    </div>
+
+                                                                    {/* Password with label & show/hide toggle */}
+                                                                    <div>
+                                                                        <label className="block text-xs font-medium text-neutral-700 mb-1.5">Password</label>
+                                                                        <div className="relative flex items-center">
+                                                                            <input 
+                                                                                type={showPassword ? 'text' : 'password'}
+                                                                                value={authPassword}
+                                                                                onChange={(e) => setAuthPassword(e.target.value)}
+                                                                                placeholder="••••••••"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-3.5 pr-10 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setShowPassword(!showPassword)}
+                                                                                className="absolute right-3 text-neutral-400 hover:text-[#24161b] cursor-pointer"
+                                                                                aria-label={showPassword ? "Hide password" : "Show password"}
+                                                                            >
+                                                                                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {authError && (
+                                                                        <div className="flex items-center gap-2 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3 text-xs">
+                                                                            <AlertCircle size={14} className="shrink-0" />
+                                                                            <span>{authError}</span>
+                                                                        </div>
+                                                                    )}
+
+                                                                    <button 
+                                                                        type="button" 
+                                                                        onClick={handleInlineRegister} 
+                                                                        disabled={authLoading}
+                                                                        className="w-full h-11 bg-[#24161b] hover:bg-black text-[#e5b582] hover:text-white font-bold rounded-xl text-xs sm:text-sm tracking-wider uppercase flex items-center justify-center gap-2 cursor-pointer transition-all shadow-md shadow-[#24161b]/10 active:scale-98"
+                                                                    >
+                                                                        {authLoading ? <Loader2 className="animate-spin" size={15} /> : 'CREATE ACCOUNT'}
+                                                                    </button>
+
+                                                                    <p className="text-center text-xs text-neutral-500">
+                                                                        Already have an account? <button type="button" onClick={() => { setAuthSubMode('login'); setAuthError(null); }} className="text-[#24161b] font-bold hover:underline cursor-pointer">Sign In</button>
+                                                                    </p>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    )}
                                                 </div>
                                             ) : (
-                                                <div className="space-y-1.5">
-                                                    <div className="flex justify-between text-[10px] text-neutral-500">
-                                                        <span>Add <span className="font-bold text-[#8F5336]">£{(freeDeliveryThreshold - cartSubtotal).toFixed(2)}</span> more to get <span className="font-bold text-green-600">FREE Delivery</span></span>
-                                                        <span className="font-semibold text-[#8F5336]">Save £{flatDeliveryFee.toFixed(2)}</span>
+                                                /* Signed-in user card */
+                                                <div className="flex items-center gap-3.5 rounded-2xl border border-neutral-200 bg-[#fdfaf5] p-4">
+                                                    <div className="w-10 h-10 rounded-full bg-[#24161b] text-[#e5b582] flex items-center justify-center shrink-0 font-serif font-bold text-sm">
+                                                        {(firstName || user.first_name || user.name || 'C').charAt(0).toUpperCase()}
                                                     </div>
-                                                    <div className="w-full bg-neutral-200 rounded-full h-1.5 overflow-hidden">
-                                                        <div className="h-full rounded-full transition-all duration-500" style={{ width: `${Math.min((cartSubtotal/freeDeliveryThreshold)*100,100)}%`, background: 'linear-gradient(90deg,#d4a574,#8F5336)' }} />
+                                                    <div className="min-w-0 flex-1">
+                                                        <p className="text-xs font-bold text-[#24161b] truncate">
+                                                            {(firstName || user.first_name || user.name || 'Customer')} {(lastName || user.last_name || '')}
+                                                        </p>
+                                                        <p className="text-[11px] text-neutral-500 truncate mt-0.5">
+                                                            {email || user.email || phone || user.phone || 'Verified Account'}
+                                                        </p>
                                                     </div>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => { logout(); }} 
+                                                        className="shrink-0 text-[10px] font-bold text-neutral-500 hover:text-rose-600 bg-white border border-neutral-200 px-3 py-1.5 rounded-full transition-all cursor-pointer flex items-center gap-1 uppercase tracking-wider"
+                                                    >
+                                                        <LogOut size={11} /> Sign out
+                                                    </button>
                                                 </div>
-                                            )
-                                        )}
-
-                                        <div className="flex justify-between items-baseline pt-2 border-t border-neutral-200/60 mt-1">
-                                            <span className="font-serif text-base text-[#8F5336] font-bold">Total</span>
-                                            <span className="font-serif text-xl text-[#8F5336] font-semibold">£{cartTotal.toFixed(2)}</span>
+                                            )}
                                         </div>
                                     </div>
+
+                                    {/* ── Checkout Steps Form ── */}
+                                    {(!!user || authTab === 'guest') && (
+                                        <form onSubmit={handlePlaceOrder} id="checkout-form" className="space-y-4">
+
+                                            {/* ── STEP 2 · Fulfillment Method (Delivery / Collection) ── */}
+                                            <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
+                                                    <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
+                                                        2
+                                                    </span>
+                                                    <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
+                                                        {!orderType ? 'Order Method' : orderType === 'delivery' ? 'Delivery Address' : 'Collection Slot'}
+                                                    </h2>
+                                                    {orderType && (
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={handleSwitchOrderBanner}
+                                                            className="ml-auto text-[10px] font-bold text-[#24161b] bg-neutral-100 hover:bg-neutral-200 px-3 py-1 rounded-full transition-all cursor-pointer uppercase tracking-wider border border-neutral-200"
+                                                        >
+                                                            Change
+                                                        </button>
+                                                    )}
+                                                </div>
+                                                <div className="p-5 sm:p-6 text-xs">
+                                                    {!orderType ? (
+                                                        <div className="space-y-4">
+                                                            <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
+                                                                <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
+                                                                <div>
+                                                                    <p className="font-bold">Choose delivery or collection first.</p>
+                                                                    <p className="text-[11px] text-amber-700 mt-1">We need this before we can calculate the final order details.</p>
+                                                                </div>
+                                                            </div>
+                                                            <div className="grid sm:grid-cols-2 gap-3">
+                                                                <button 
+                                                                    type="button" 
+                                                                    onClick={() => navigate('/delivery-setup?redirect=/cart')}
+                                                                    className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
+                                                                >
+                                                                    <MapPin size={15} className="text-[#e5b582]" />
+                                                                    <span>Set Delivery Address</span>
+                                                                </button>
+                                                                <button 
+                                                                    type="button" 
+                                                                    onClick={() => navigate('/collection-setup?redirect=/cart')}
+                                                                    className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
+                                                                >
+                                                                    <Clock size={15} className="text-[#e5b582]" />
+                                                                    <span>Set Collection Slot</span>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="flex items-center gap-3.5">
+                                                            <div className="w-10 h-10 rounded-2xl bg-[#24161b]/5 text-[#24161b] border border-[#24161b]/10 flex items-center justify-center shrink-0">
+                                                                {orderType === 'delivery' ? <MapPin size={17} className="text-[#e5b582]" /> : <Clock size={17} className="text-[#e5b582]" />}
+                                                            </div>
+                                                            <div className="flex-1 min-w-0">
+                                                                {selectedMethodIsComplete ? (
+                                                                    <div>
+                                                                        <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-0.5">
+                                                                            {orderType === 'delivery' ? 'Delivering To' : 'Confirmed Slot'}
+                                                                        </span>
+                                                                        <p className="text-neutral-900 font-bold text-xs sm:text-sm">
+                                                                            {orderType === 'delivery'
+                                                                                ? renderDeliveryAddress()
+                                                                                : <>{formatCollectionSlot(collectionSlot)}</>}
+                                                                        </p>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
+                                                                        <div className="flex items-start gap-2 flex-1">
+                                                                            <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
+                                                                            <div>
+                                                                                <p className="font-bold">
+                                                                                    {orderType === 'delivery' ? 'Delivery address is missing.' : 'Collection slot is missing.'}
+                                                                                </p>
+                                                                                <p className="text-[11px] text-amber-700 mt-0.5">
+                                                                                    {orderType === 'delivery'
+                                                                                        ? 'Add your address so we can dispatch your sweets promptly.'
+                                                                                        : 'Pick a date and time so our bakery counter prepares your items fresh.'}
+                                                                                </p>
+                                                                            </div>
+                                                                        </div>
+                                                                        <button 
+                                                                            type="button" 
+                                                                            onClick={handleSwitchOrderBanner}
+                                                                            className="shrink-0 rounded-full bg-white border border-amber-300 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+                                                                        >
+                                                                            {orderType === 'delivery' ? 'Add Address' : 'Pick Slot'}
+                                                                        </button>
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* ── STEP 3 · Contact Details ── */}
+                                            <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
+                                                    <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
+                                                        3
+                                                    </span>
+                                                    <h2 className="text-sm font-bold text-[#24161b] tracking-wide">Contact Details</h2>
+                                                </div>
+                                                <div className="p-5 sm:p-6 space-y-3.5">
+                                                    {user ? (
+                                                        <div className="space-y-3">
+                                                            <div className="grid grid-cols-2 gap-3">
+                                                                <input 
+                                                                    type="text" 
+                                                                    required 
+                                                                    value={firstName} 
+                                                                    onChange={e => setFirstName(e.target.value)} 
+                                                                    placeholder="First name"
+                                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all w-full font-medium" 
+                                                                />
+                                                                <input 
+                                                                    type="text" 
+                                                                    required 
+                                                                    value={lastName} 
+                                                                    onChange={e => setLastName(e.target.value)} 
+                                                                    placeholder="Last name"
+                                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all w-full font-medium" 
+                                                                />
+                                                            </div>
+                                                            <input 
+                                                                type="email" 
+                                                                value={email} 
+                                                                onChange={e => setEmail(e.target.value)} 
+                                                                placeholder="Email address"
+                                                                className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-medium" 
+                                                            />
+                                                            <div className="flex bg-[#fdfaf5] border border-neutral-200 focus-within:border-[#24161b] focus-within:ring-2 focus-within:ring-[#e5b582]/30 focus-within:bg-white rounded-2xl px-4 py-1 transition-all items-center gap-2">
+                                                                <span className="text-sm leading-none shrink-0">🇬🇧</span>
+                                                                <input 
+                                                                    type="tel" 
+                                                                    value={phone} 
+                                                                    onChange={e => setPhone(e.target.value)} 
+                                                                    placeholder="Phone number"
+                                                                    className="flex-1 bg-transparent border-0 py-2.5 text-xs focus:outline-none font-medium" 
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        /* Guest contact */
+                                                        <div className="space-y-3.5 animate-fadeIn">
+                                                            {/* Contact field with Phone vs Email toggle header */}
+                                                            <div>
+                                                                <div className="flex items-center justify-between mb-1.5">
+                                                                    <label className="text-xs font-medium text-neutral-700">
+                                                                        {guestContactMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
+                                                                    </label>
+                                                                    <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => { setGuestContactMethod('phone'); setEmail(''); }}
+                                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                guestContactMethod === 'phone'
+                                                                                    ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                    : 'text-neutral-500 hover:text-neutral-900'
+                                                                            }`}
+                                                                        >
+                                                                            Phone
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => { setGuestContactMethod('email'); setPhone(''); }}
+                                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                guestContactMethod === 'email'
+                                                                                    ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                    : 'text-neutral-500 hover:text-neutral-900'
+                                                                            }`}
+                                                                        >
+                                                                            Email
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                                {guestContactMethod === 'phone' ? (
+                                                                    <div className="relative flex items-center">
+                                                                        <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                                            <span className="text-sm">🇬🇧</span>
+                                                                            <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                        </div>
+                                                                        <input 
+                                                                            type="tel" 
+                                                                            required 
+                                                                            value={phone} 
+                                                                            onChange={e => setPhone(e.target.value)} 
+                                                                            placeholder="07123 456789"
+                                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="email" 
+                                                                        required 
+                                                                        value={email} 
+                                                                        onChange={e => setEmail(e.target.value)} 
+                                                                        placeholder="jane.doe@example.com"
+                                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                    {(!!user || createAccount || (!createAccount && guestContactMethod === 'email')) && (
+                                                        <label className="flex items-center gap-2.5 cursor-pointer pt-1 select-none">
+                                                            <input type="checkbox" className="w-4 h-4 accent-[#24161b] rounded" defaultChecked />
+                                                            <span className="text-[11px] text-neutral-500 font-medium">Subscribe to artisanal drops, freshly baked offers & updates</span>
+                                                        </label>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* ── STEP 4 · Notes (optional) ── */}
+                                            <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
+                                                    <span className="w-6 h-6 rounded-full bg-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center shrink-0">
+                                                        4
+                                                    </span>
+                                                    <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
+                                                        Notes <span className="text-neutral-400 font-normal text-[11px]">(optional)</span>
+                                                    </h2>
+                                                </div>
+                                                <div className="p-5 sm:p-6">
+                                                    <textarea 
+                                                        rows="2" 
+                                                        value={notes} 
+                                                        onChange={e => setNotes(e.target.value)}
+                                                        placeholder="Delivery instructions, allergies, dietary requests, gift messages…"
+                                                        className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all resize-none font-medium" 
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* ── STEP 5 · Payment (Simulated Mode fallback) ── */}
+                                            {!isRealStripeConfigured && (
+                                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                                    <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
+                                                        <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
+                                                            5
+                                                        </span>
+                                                        <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
+                                                            Payment <span className="text-[10px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full ml-1">Simulated</span>
+                                                        </h2>
+                                                    </div>
+                                                    <div className="p-5 sm:p-6 space-y-3">
+                                                        <input 
+                                                            type="text" 
+                                                            value={cardNumber} 
+                                                            onChange={e => setCardNumber(e.target.value)} 
+                                                            placeholder="Card number"
+                                                            className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
+                                                        />
+                                                        <div className="grid grid-cols-3 gap-3">
+                                                            <input 
+                                                                type="text" 
+                                                                value={expDate} 
+                                                                onChange={e => setExpDate(e.target.value)} 
+                                                                placeholder="MM / YY"
+                                                                className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
+                                                            />
+                                                            <input 
+                                                                type="text" 
+                                                                value={cvc} 
+                                                                onChange={e => setCvc(e.target.value)} 
+                                                                placeholder="CVC"
+                                                                className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
+                                                            />
+                                                            <input 
+                                                                type="text" 
+                                                                value={cardName} 
+                                                                onChange={e => setCardName(e.target.value)} 
+                                                                placeholder="Name on card"
+                                                                className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-medium" 
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {isRealStripeConfigured && (
+                                                <div className="bg-white border border-neutral-200/80 rounded-2xl px-5 py-4 hidden lg:flex items-center gap-3 text-xs text-neutral-600 shadow-xs">
+                                                    <Lock size={15} className="shrink-0 text-emerald-600" strokeWidth={2.2} />
+                                                    <span>Your card details will be entered securely on the next step via <strong>Stripe 256-bit encryption</strong>.</span>
+                                                </div>
+                                            )}
+
+                                            {/* Error Message Display */}
+                                            {error && (
+                                                <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs animate-fadeIn">
+                                                    <AlertCircle size={16} className="shrink-0" />
+                                                    <span>{error}</span>
+                                                </div>
+                                            )}
+
+                                            {/* Primary Desktop Order CTA */}
+                                            <button 
+                                                type="submit" 
+                                                disabled={loading}
+                                                className="hidden lg:flex w-full bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] hover:text-white font-bold rounded-2xl py-4 items-center justify-center gap-2 shadow-xl shadow-[#24161b]/15 transition-all cursor-pointer text-sm tracking-wide active:scale-98"
+                                            >
+                                                {loading ? (
+                                                    <><Loader2 size={16} className="animate-spin" /><span>Placing Your Order…</span></>
+                                                ) : (
+                                                    <><Lock size={15} className="shrink-0" strokeWidth={2.2} /><span>{isRealStripeConfigured ? 'Continue to Secure Payment' : 'Place Order & Bake Fresh'}</span></>
+                                                )}
+                                            </button>
+
+                                        </form>
+                                    )}
                                 </>
                             )}
                         </div>
-                    </div>
 
+                        {/* ══════════════════════════════════════════
+                            RIGHT — Order Summary Card (Desktop)
+                        ══════════════════════════════════════════ */}
+                        <div className="hidden lg:block w-full lg:w-[380px] shrink-0">
+                            <div className="sticky top-6 bg-white rounded-[24px] border border-neutral-200/80 shadow-xl shadow-[#24161b]/5 overflow-hidden">
+                                <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/40">
+                                    <div>
+                                        <h3 className="font-serif font-bold text-base text-[#24161b]">Your Order</h3>
+                                        <p className="text-[11px] text-neutral-400 mt-0.5">
+                                            {cart.reduce((s, i) => s + i.quantity, 0)} item{cart.reduce((s, i) => s + i.quantity, 0) !== 1 ? 's' : ''} in basket
+                                        </p>
+                                    </div>
+                                    <ShoppingBag size={18} className="text-[#e5b582]" />
+                                </div>
+
+                                {cart.length === 0 ? (
+                                    <div className="py-14 text-center text-neutral-400 text-xs px-6">
+                                        Your sweet basket is empty.
+                                    </div>
+                                ) : (
+                                    <>
+                                        {/* Cart Items List */}
+                                        <div className="px-6 py-4 divide-y divide-neutral-100 max-h-[340px] overflow-y-auto custom-scrollbar">
+                                            {cart.map(item => (
+                                                <div key={item.key} className="py-3.5 flex items-center gap-3.5 text-xs">
+                                                    <div className="w-12 h-12 bg-[#24161b]/5 rounded-2xl overflow-hidden shrink-0 border border-neutral-200/80">
+                                                        <img 
+                                                            src={getImageUrl(item.image)} 
+                                                            alt={item.name} 
+                                                            className="w-full h-full object-cover"
+                                                            onError={e => { e.target.src = '/images/placeholder.svg'; }} 
+                                                        />
+                                                    </div>
+                                                    <div className="flex-grow min-w-0">
+                                                        <p className="font-bold text-[#24161b] leading-tight truncate">{item.name}</p>
+                                                        {item.variation_name && (
+                                                            <p className="text-[11px] text-neutral-400 mt-0.5">{item.variation_name}</p>
+                                                        )}
+                                                        <div className="flex items-center mt-2 gap-1 border border-neutral-200 bg-[#fdfaf5] rounded-full w-fit px-1.5 py-0.5">
+                                                            <button 
+                                                                type="button" 
+                                                                onClick={() => updateCartQty(item.key, item.quantity - 1)} 
+                                                                className="w-4 h-4 flex items-center justify-center text-neutral-600 hover:text-[#24161b] cursor-pointer active:scale-90"
+                                                            >
+                                                                <Minus size={8} />
+                                                            </button>
+                                                            <span className="text-[10px] font-bold px-1 text-[#24161b]">{item.quantity}</span>
+                                                            <button 
+                                                                type="button" 
+                                                                onClick={() => updateCartQty(item.key, item.quantity + 1)} 
+                                                                className="w-4 h-4 flex items-center justify-center text-neutral-600 hover:text-[#24161b] cursor-pointer active:scale-90"
+                                                            >
+                                                                <Plus size={8} />
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="shrink-0 flex flex-col items-end gap-2">
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => removeFromCart(item.key)} 
+                                                            className="text-neutral-300 hover:text-rose-500 transition-colors cursor-pointer"
+                                                        >
+                                                            <Trash2 size={13} />
+                                                        </button>
+                                                        <span className="font-serif font-bold text-[#24161b]">
+                                                            £{(item.price * item.quantity).toFixed(2)}
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+
+                                        {/* Financial Breakdown */}
+                                        <div className="px-6 py-5 border-t border-neutral-100 bg-[#fdfaf5]/70 space-y-3">
+                                            <div className="flex justify-between text-xs text-neutral-600">
+                                                <span>Subtotal</span>
+                                                <span className="font-semibold text-neutral-900">£{cartSubtotal.toFixed(2)}</span>
+                                            </div>
+                                            {orderType === 'delivery' && (
+                                                <div className="flex justify-between text-xs text-neutral-600">
+                                                    <span>Delivery Fee {freeDeliveryThreshold !== null && `(Free over £${freeDeliveryThreshold})`}</span>
+                                                    {isFreeDelivery ? (
+                                                        <span className="font-bold text-emerald-600 flex items-center gap-1">
+                                                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block"></span>FREE
+                                                        </span>
+                                                    ) : (
+                                                        <span className="font-semibold text-neutral-900">£{cartDeliveryFee.toFixed(2)}</span>
+                                                    )}
+                                                </div>
+                                            )}
+
+                                            {/* Free delivery threshold progress */}
+                                            {orderType === 'delivery' && freeDeliveryThreshold !== null && (
+                                                isFreeDelivery ? (
+                                                    <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-200 rounded-xl px-3 py-2 text-xs text-emerald-800">
+                                                        <CheckCircle size={14} className="shrink-0 text-emerald-600" />
+                                                        <span className="font-bold text-[11px]">Free delivery unlocked! 🎉 (Saved £{flatDeliveryFee.toFixed(2)})</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className="space-y-1.5 pt-1">
+                                                        <div className="flex justify-between text-[11px] text-neutral-600">
+                                                            <span>Add <strong className="text-[#24161b]">£{(freeDeliveryThreshold - cartSubtotal).toFixed(2)}</strong> for free delivery</span>
+                                                            <span className="font-semibold text-neutral-500">Save £{flatDeliveryFee.toFixed(2)}</span>
+                                                        </div>
+                                                        <div className="w-full bg-neutral-200 rounded-full h-1.5 overflow-hidden">
+                                                            <div 
+                                                                className="h-full rounded-full transition-all duration-500 bg-gradient-to-r from-[#e5b582] to-[#24161b]" 
+                                                                style={{ width: `${Math.min((cartSubtotal / freeDeliveryThreshold) * 100, 100)}%` }} 
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                )
+                                            )}
+
+                                            <div className="flex justify-between items-baseline pt-3 border-t border-neutral-200/80">
+                                                <span className="font-serif text-base text-[#24161b] font-bold">Total</span>
+                                                <span className="font-serif text-2xl text-[#24161b] font-black">£{cartTotal.toFixed(2)}</span>
+                                            </div>
+                                        </div>
+                                    </>
+                                )}
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
-        </main>
+            </main>
 
             {/* Sidebar Navigation Drawer */}
-            <Sidebar isMenuOpen={isMenuOpen} setIsMenuOpen={setIsMenuOpen} navigate={navigate}
-                cartItemCount={cart.reduce((sum, i) => sum + i.quantity, 0)} user={user} logout={logout} />
+            <Sidebar 
+                isMenuOpen={isMenuOpen} 
+                setIsMenuOpen={setIsMenuOpen} 
+                navigate={navigate}
+                cartItemCount={cart.reduce((sum, i) => sum + i.quantity, 0)} 
+                user={user} 
+                logout={logout} 
+            />
 
-            {/* Mobile sticky bottom bar */}
+            {/* Mobile Sticky Bottom CTA Bar */}
             {!stripeClientSecret && cart.length > 0 && (
-                <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-sm border-t border-neutral-200 px-4 py-3 flex flex-col gap-2.5 shadow-[0_-4px_24px_rgba(0,0,0,0.07)]">
+                <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200 px-4 py-3 flex flex-col gap-2 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
                     <div className="flex items-center justify-between w-full gap-3">
                         <div className="flex-1 min-w-0">
                             <p className="text-[10px] text-neutral-400 uppercase tracking-wider font-bold leading-none mb-0.5">Total</p>
-                            <p className="font-serif font-bold text-[#8e5233] text-lg leading-none">£{cartTotal.toFixed(2)}</p>
+                            <p className="font-serif font-black text-[#24161b] text-xl leading-none">£{cartTotal.toFixed(2)}</p>
                         </div>
-                        <button type="button" disabled={loading}
+                        <button 
+                            type="button" 
+                            disabled={loading}
                             onClick={() => document.getElementById('checkout-form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))}
-                            className="flex-shrink-0 bg-[#8e5233] hover:bg-[#723e25] disabled:bg-[#8e5233]/60 text-white font-semibold rounded-xl px-6 py-3 flex items-center gap-2 shadow-lg shadow-[#8e5233]/20 transition-all cursor-pointer text-sm font-serif">
-                            {loading
-                                ? <><Loader2 size={14} className="animate-spin" /><span>Placing…</span></>
-                                : <><Lock size={13} strokeWidth={2.5} /><span>{isRealStripeConfigured ? 'Continue to Payment' : 'Place Order'}</span></>}
+                            className="flex-shrink-0 bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] font-bold rounded-2xl px-6 py-3.5 flex items-center gap-2 shadow-lg shadow-[#24161b]/15 transition-all cursor-pointer text-xs uppercase tracking-wider active:scale-98"
+                        >
+                            {loading ? (
+                                <><Loader2 size={14} className="animate-spin" /><span>Placing…</span></>
+                            ) : (
+                                <><Lock size={13} strokeWidth={2.2} /><span>{isRealStripeConfigured ? 'Continue to Payment' : 'Place Order'}</span></>
+                            )}
                         </button>
                     </div>
                     {isRealStripeConfigured && (
-                        <div className="flex items-center justify-center gap-1.5 text-[10px] text-neutral-400 border-t border-neutral-100 pt-2 w-full text-center">
+                        <div className="flex items-center justify-center gap-1.5 text-[10px] text-neutral-400 border-t border-neutral-100 pt-1.5 w-full text-center">
                             <Lock size={10} className="text-emerald-600 shrink-0" />
-                            <span>Secure payment powered by <strong>Stripe</strong></span>
+                            <span>Secure checkout powered by <strong>Stripe</strong></span>
                         </div>
                     )}
                 </div>
@@ -1260,6 +1590,5 @@ export default function Checkout() {
 
             <Footer navigate={navigate} />
         </div>
-
     );
 }
