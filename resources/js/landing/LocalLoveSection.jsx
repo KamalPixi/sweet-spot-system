@@ -27,7 +27,7 @@ const REVIEWS = [
 
 export default function LocalLoveSection() {
     return (
-        <section className="w-full bg-white py-10 md:py-14 px-6 md:px-12 lg:px-16 text-neutral-900 border-t border-neutral-100">
+        <section className="w-full bg-transparent py-10 md:py-14 px-6 md:px-12 lg:px-16 text-neutral-900">
             <div className="max-w-6xl mx-auto">
                 {/* Header with Title and Rating */}
                 <div className="flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-4 mb-6 text-left">
@@ -52,7 +52,7 @@ export default function LocalLoveSection() {
                     {REVIEWS.map((review) => (
                         <div
                             key={review.id}
-                            className="bg-[#FCF3F5] rounded-xl p-4 sm:p-5 flex flex-col justify-between text-left border border-rose-100/80 shadow-xs hover:shadow-sm transition-all duration-300"
+                            className="bg-[#FDEEF2]/90 rounded-2xl p-5 flex flex-col justify-between text-left border border-rose-200/50 shadow-xs hover:shadow-sm transition-all duration-300"
                         >
                             <div>
                                 {/* Quote Icon */}
@@ -89,10 +89,10 @@ export default function LocalLoveSection() {
                 <div className="flex justify-center mt-6">
                     <button 
                         onClick={() => window.open('https://maps.google.com', '_blank')}
-                        className="border border-rose-200 hover:border-rose-300 bg-white hover:bg-rose-50 text-neutral-700 text-xs font-medium px-5 py-1.5 rounded-full transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
+                        className="border border-rose-300 hover:border-rose-400 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold px-6 py-2 rounded-full transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
                     >
                         <span>See all</span>
-                        <ChevronRight size={12} className="text-rose-500" />
+                        <ChevronRight size={13} className="text-rose-500" />
                     </button>
                 </div>
             </div>

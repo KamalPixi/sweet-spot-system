@@ -91,7 +91,7 @@ export default function HomeMadeTreatsSection() {
     }, []);
 
     return (
-        <section className="w-full bg-[#FCF3F5] py-10 md:py-14 px-6 md:px-12 lg:px-16 overflow-hidden">
+        <section className="w-full bg-transparent py-10 md:py-14 px-6 md:px-12 lg:px-16 overflow-hidden">
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 {/* Left: Text & Pitch */}
                 <div className="lg:col-span-5 flex flex-col items-start text-left">

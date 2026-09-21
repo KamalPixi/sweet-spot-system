@@ -24,7 +24,7 @@ export default function DifferenceSection() {
     };
 
     return (
-        <section className="w-full bg-white py-10 md:py-14 px-6 md:px-12 lg:px-16 text-neutral-900">
+        <section className="w-full bg-transparent py-10 md:py-14 px-6 md:px-12 lg:px-16 text-neutral-900">
             <div className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Left: Heading and Subtitle */}
                 <div className="lg:col-span-5 flex flex-col items-start text-left">

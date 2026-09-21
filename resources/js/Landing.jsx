@@ -97,14 +97,12 @@ export default function Landing() {
                     {/* Category Carousel Section */}
                     <CategorySection categories={catalog} />
 
-                    {/* Fine Home Made Treats Section */}
-                    <HomeMadeTreatsSection />
-
-                    {/* The Sweet Spot Difference Accordion */}
-                    <DifferenceSection />
-
-                    {/* Local Love Testimonials */}
-                    <LocalLoveSection />
+                    {/* Continuous Soft Pink Gradient Section: Treats -> Difference -> Local Love */}
+                    <div className="w-full bg-gradient-to-b from-[#FAF0F3] via-[#FFF8FA] to-[#FAF0F3]">
+                        <HomeMadeTreatsSection />
+                        <DifferenceSection />
+                        <LocalLoveSection />
+                    </div>
 
                     {/* Where Dreams Meet Cream Storefront Location */}
                     <StoreLocationSection configs={configs} />
