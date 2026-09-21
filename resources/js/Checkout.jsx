@@ -13,6 +13,7 @@ import {
     LogOut, MapPin, Clock, ArrowRight, ShoppingBag 
 } from 'lucide-react';
 import OrderPopover from './landing/OrderPopover';
+import { CartBagIcon } from './components/HeaderIcons';
 
 const getImageUrl = (url) => {
     if (!url) return '/images/placeholder.svg';
@@ -777,7 +778,7 @@ export default function Checkout() {
                                 STEP 2: PAYMENT (Stripe Gateway or Simulated)
                             ═══════════════════════════════════════ */}
                             {(stripeClientSecret || checkoutStep === 'payment') ? (
-                                <div className="bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-xs p-5 sm:p-7 space-y-6 animate-fadeIn">
+                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xs p-5 sm:p-7 space-y-6 animate-fadeIn">
                                     <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
                                         <div className="flex items-center gap-3">
                                             <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
@@ -987,7 +988,7 @@ export default function Checkout() {
                                     )}
 
                                     {/* ── CARD 1 · Customer & Contact ── */}
-                                    <div className="bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                    <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xs overflow-hidden transition-all">
                                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
                                             <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
                                                 1
@@ -1024,7 +1025,7 @@ export default function Checkout() {
                                                                     : 'text-neutral-500 hover:text-neutral-900'
                                                             }`}
                                                         >
-                                                            Sign In / Sign Up
+                                                            Account
                                                         </button>
                                                     </div>
 
@@ -1326,7 +1327,7 @@ export default function Checkout() {
                                                 </div>
                                             ) : (
                                                 /* Signed-in user card */
-                                                <div className="flex items-center gap-3.5 rounded-2xl border border-neutral-200 bg-[#fdfaf5] p-4">
+                                                <div className="flex items-center gap-3.5 rounded-2xl border border-neutral-200 bg-neutral-50/70 p-4">
                                                     <div className="w-10 h-10 rounded-full bg-[#24161b] text-[#e5b582] flex items-center justify-center shrink-0 font-serif font-bold text-sm">
                                                         {(firstName || user.first_name || user.name || 'C').charAt(0).toUpperCase()}
                                                     </div>
@@ -1351,7 +1352,7 @@ export default function Checkout() {
                                     </div>
 
                                     {/* ── CARD 2 · Collection / Delivery Slot Selector ── */}
-                                    <div className="bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                    <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xs overflow-hidden transition-all">
                                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
                                             <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
                                                 2
@@ -1453,7 +1454,7 @@ export default function Checkout() {
                                                     value={notes} 
                                                     onChange={e => setNotes(e.target.value)} 
                                                     placeholder="Delivery instructions, allergies, dietary requests, gift messages…"
-                                                    className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all resize-none font-medium" 
+                                                    className="w-full bg-neutral-50/70 border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all resize-none font-medium" 
                                                 />
                                             </div>
                                         </div>
@@ -1488,7 +1489,7 @@ export default function Checkout() {
                             RIGHT — Order Summary Card (Desktop)
                         ══════════════════════════════════════════ */}
                         <div className="hidden lg:block w-full lg:w-[380px] shrink-0">
-                            <div className="sticky top-6 bg-[#fdfaf5] rounded-[24px] border border-neutral-200/80 shadow-xs overflow-hidden">
+                            <div className="sticky top-6 bg-white rounded-[24px] border border-neutral-200/80 shadow-xs overflow-hidden">
                                 <div className="px-6 py-4 border-b border-neutral-100 flex items-center justify-between bg-neutral-50/40">
                                     <div>
                                         <h3 className="font-serif font-bold text-base text-[#24161b]">Your Order</h3>
@@ -1496,7 +1497,7 @@ export default function Checkout() {
                                             {cart.reduce((s, i) => s + i.quantity, 0)} item{cart.reduce((s, i) => s + i.quantity, 0) !== 1 ? 's' : ''} in basket
                                         </p>
                                     </div>
-                                    <ShoppingBag size={18} className="text-[#e5b582]" />
+                                    <CartBagIcon className="w-5 h-5 text-[#e5b582]" strokeWidth={1.75} />
                                 </div>
 
                                 {cart.length === 0 ? (
@@ -1557,7 +1558,7 @@ export default function Checkout() {
                                         </div>
 
                                         {/* Financial Breakdown */}
-                                        <div className="px-6 py-5 border-t border-neutral-100 bg-[#fdfaf5]/70 space-y-3">
+                                        <div className="px-6 py-5 border-t border-neutral-100 bg-neutral-50/50 space-y-3">
                                             <div className="flex justify-between text-xs text-neutral-600">
                                                 <span>Subtotal</span>
                                                 <span className="font-semibold text-neutral-900">£{cartSubtotal.toFixed(2)}</span>

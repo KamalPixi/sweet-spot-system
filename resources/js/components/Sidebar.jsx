@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X, User, LogOut, Check, Send, ArrowRight, ShoppingBag } from 'lucide-react';
+import { X, User, LogOut, Check, Send, ArrowRight } from 'lucide-react';
+import { CartBagIcon } from './HeaderIcons';
 import { useApp } from '../AppContext';
 
 export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemCount, user, logout }) {
@@ -119,7 +120,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                             className="px-4 py-3 rounded-2xl text-base font-medium text-white/90 hover:text-white hover:bg-white/10 transition-all flex items-center justify-between group"
                         >
                             <span className="flex items-center gap-2">
-                                <ShoppingBag size={16} className="text-rose-400" />
+                                <CartBagIcon className="w-[19px] h-[19px] text-rose-400" strokeWidth={1.75} />
                                 <span>Your Basket</span>
                             </span>
                             {cartItemCount > 0 ? (

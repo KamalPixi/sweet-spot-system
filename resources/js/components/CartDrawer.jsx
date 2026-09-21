@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../AppContext';
-import { X, Minus, Plus, Trash2, Truck, ArrowRight, ShoppingBag } from 'lucide-react';
+import { X, Minus, Plus, Trash2, Truck, ArrowRight } from 'lucide-react';
+import { CartBagIcon } from './HeaderIcons';
 
 const getImageUrl = (url) => {
     if (!url) return '/images/placeholder.svg';
@@ -82,12 +83,7 @@ export default function CartDrawer() {
                     <div className="px-5 py-4 sm:px-6 sm:py-4.5 border-b border-neutral-100 flex justify-between items-center bg-white shrink-0">
                     <div className="flex items-center gap-2.5">
                         <div className="w-8 h-8 rounded-full bg-[#24161b] text-[#e5b582] flex items-center justify-center shadow-xs">
-                            <img 
-                                src="/images/icons/bag.png" 
-                                alt="Cart" 
-                                className="w-3.5 h-3.5 object-contain" 
-                                style={{ filter: 'brightness(0) saturate(100%) invert(80%) sepia(26%) saturate(693%) hue-rotate(345deg) brightness(96%) contrast(89%)' }} 
-                            />
+                            <CartBagIcon className="w-4 h-4 text-[#e5b582]" strokeWidth={1.75} />
                         </div>
                         <div>
                             <h3 className="font-extrabold text-[#24161b] text-base leading-tight">
@@ -239,12 +235,7 @@ export default function CartDrawer() {
                                 onClick={handleCheckoutRedirect}
                                 className="w-full bg-[#e5b582] hover:bg-[#d8a36b] text-[#24161b] font-bold rounded-full py-3 px-4 text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-lg transition-all cursor-pointer active:scale-98"
                             >
-                                <img 
-                                    src="/images/icons/bag.png" 
-                                    alt="Checkout" 
-                                    className="w-3.5 h-3.5 object-contain inline-block" 
-                                    style={{ filter: 'brightness(0) saturate(100%) invert(11%) sepia(21%) saturate(2036%) hue-rotate(296deg) brightness(96%) contrast(97%)' }} 
-                                />
+                                <CartBagIcon className="w-4 h-4 text-[#24161b]" strokeWidth={2} />
                                 <span>Proceed to Checkout</span>
                                 <ArrowRight size={13} strokeWidth={2.5} />
                             </button>

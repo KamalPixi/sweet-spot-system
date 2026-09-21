@@ -8,23 +8,40 @@ import CartDrawer from './components/CartDrawer';
 import ProductDetailModal from './components/ProductDetailModal';
 import SearchModal from './components/SearchModal';
 
+// Safe lazy load helper to prevent MIME type / chunk loading errors after vite builds
+const safeLazy = (importFn) => lazy(async () => {
+    try {
+        return await importFn();
+    } catch (err) {
+        // Fallback or retry on dynamic import failure (e.g. outdated asset hash)
+        const hasReloaded = sessionStorage.getItem('chunk_reload');
+        if (!hasReloaded) {
+            sessionStorage.setItem('chunk_reload', 'true');
+            window.location.reload();
+            return new Promise(() => {});
+        }
+        sessionStorage.removeItem('chunk_reload');
+        throw err;
+    }
+});
+
 // Lazy-loaded Pages & Components
-const Landing = lazy(() => import('./Landing'));
-const Categories = lazy(() => import('./Categories'));
-const CategoryDetail = lazy(() => import('./CategoryDetail'));
-const Cart = lazy(() => import('./Cart'));
-const Checkout = lazy(() => import('./Checkout'));
-const OrderTracking = lazy(() => import('./OrderTracking'));
-const PaymentSuccess = lazy(() => import('./PaymentSuccess'));
-const PaymentFailed = lazy(() => import('./PaymentFailed'));
-const Auth = lazy(() => import('./Auth'));
-const AdminDashboard = lazy(() => import('./AdminDashboard'));
-const AdminOrderDetailPage = lazy(() => import('./admin/pages/AdminOrderDetailPage'));
-const AdminCustomerDetailPage = lazy(() => import('./admin/pages/AdminCustomerDetailPage'));
-const CustomerPortal = lazy(() => import('./customer/pages/CustomerPortal'));
-const Shop = lazy(() => import('./Shop'));
-const ResetPassword = lazy(() => import('./ResetPassword'));
-const PdfMenu = lazy(() => import('./PdfMenu'));
+const Landing = safeLazy(() => import('./Landing'));
+const Categories = safeLazy(() => import('./Categories'));
+const CategoryDetail = safeLazy(() => import('./CategoryDetail'));
+const Cart = safeLazy(() => import('./Cart'));
+const Checkout = safeLazy(() => import('./Checkout'));
+const OrderTracking = safeLazy(() => import('./OrderTracking'));
+const PaymentSuccess = safeLazy(() => import('./PaymentSuccess'));
+const PaymentFailed = safeLazy(() => import('./PaymentFailed'));
+const Auth = safeLazy(() => import('./Auth'));
+const AdminDashboard = safeLazy(() => import('./AdminDashboard'));
+const AdminOrderDetailPage = safeLazy(() => import('./admin/pages/AdminOrderDetailPage'));
+const AdminCustomerDetailPage = safeLazy(() => import('./admin/pages/AdminCustomerDetailPage'));
+const CustomerPortal = safeLazy(() => import('./customer/pages/CustomerPortal'));
+const Shop = safeLazy(() => import('./Shop'));
+const ResetPassword = safeLazy(() => import('./ResetPassword'));
+const PdfMenu = safeLazy(() => import('./PdfMenu'));
 
 const getImageUrl = (item) => {
     if (!item) return '/images/placeholder.svg';
