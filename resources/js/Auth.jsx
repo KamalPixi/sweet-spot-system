@@ -228,9 +228,9 @@ export default function Auth({ defaultMode = 'login' }) {
                         </aside>
 
                         {/* ════════ RIGHT FORM CONTAINER ════════ */}
-                        <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto h-full">
+                        <main className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-y-auto h-full">
                             {/* Mobile Top Header (Clean Brand Bar, Left Image Removed) */}
-                            <div className="lg:hidden mb-6 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 relative bg-[#24161b] text-white p-5 sm:p-6 rounded-b-[24px] shadow-sm">
+                            <div className="lg:hidden -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 mb-6 bg-[#24161b] text-white p-5 sm:p-6 rounded-t-[28px] sm:rounded-t-[32px] rounded-b-[24px] shadow-sm">
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="cursor-pointer" onClick={() => navigate('/')}>
                                         <img src="/logo-white-sweetspot.png" alt="Sweet Spot" className="h-7 w-auto object-contain" />
