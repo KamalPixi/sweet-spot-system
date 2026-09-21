@@ -266,7 +266,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
             {/* Top Page Header */}
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4 pb-2 border-b border-stone-200/70">
                 <div>
-                    <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-full bg-primary/5 border border-primary/15 text-primary text-[10px] font-bold uppercase tracking-wider mb-2">
+                    <div className="inline-flex items-center gap-2 px-2 py-0.5 rounded bg-primary/5 border border-primary/15 text-primary text-[10px] font-bold uppercase tracking-wider mb-2">
                         <Clock size={12} className="text-secondary" />
                         <span>Store Pickup & Ordering</span>
                     </div>
@@ -280,7 +280,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     <button
                         type="button"
                         onClick={() => setShowSimulator(prev => !prev)}
-                        className={`inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs ${
+                        className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-md text-xs font-bold transition-all shadow-2xs ${
                             showSimulator
                                 ? 'bg-primary text-white hover:bg-primary-hover'
                                 : 'bg-white border border-stone-250 hover:border-primary text-stone-800'
@@ -294,7 +294,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                         type="button"
                         onClick={() => fetchHours()}
                         disabled={loading}
-                        className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-stone-200 hover:border-stone-300 text-stone-600 hover:text-stone-900 text-xs font-bold transition-all shadow-2xs disabled:opacity-50"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white border border-stone-200 hover:border-stone-300 text-stone-600 hover:text-stone-900 text-xs font-bold transition-all shadow-2xs disabled:opacity-50"
                         title="Refresh collection hours"
                     >
                         <RefreshCw size={13} className={loading ? 'animate-spin text-secondary' : ''} />
@@ -305,10 +305,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
             {/* Compact KPI Analytics Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-lg p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Pickup Days</span>
-                        <span className="p-1 rounded-md bg-emerald-50 text-emerald-600">
+                        <span className="p-1 rounded bg-emerald-50 text-emerald-600">
                             <Calendar size={12} />
                         </span>
                     </div>
@@ -322,10 +322,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     </div>
                 </div>
 
-                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-lg p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Weekly Coverage</span>
-                        <span className="p-1 rounded-md bg-secondary/10 text-secondary">
+                        <span className="p-1 rounded bg-secondary/10 text-secondary">
                             <Clock size={12} />
                         </span>
                     </div>
@@ -338,10 +338,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     </div>
                 </div>
 
-                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-lg p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Today's Window</span>
-                        <span className="p-1 rounded-md bg-accent/25 text-primary">
+                        <span className="p-1 rounded bg-accent/25 text-primary">
                             <Sun size={12} />
                         </span>
                     </div>
@@ -355,10 +355,10 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     </div>
                 </div>
 
-                <div className="bg-white border border-stone-200/80 rounded-xl p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
+                <div className="bg-white border border-stone-200/80 rounded-lg p-3 shadow-2xs hover:border-primary/40 transition-all flex flex-col justify-between">
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] font-black uppercase tracking-wider text-stone-400">Interval</span>
-                        <span className="p-1 rounded-md bg-primary/5 text-primary">
+                        <span className="p-1 rounded bg-primary/5 text-primary">
                             <Timer size={12} />
                         </span>
                     </div>
@@ -374,16 +374,16 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
             {/* Customer Live Slot Simulator Drawer / Section */}
             {showSimulator && (
-                <div className="bg-gradient-to-br from-primary/[0.04] via-canvas to-surface border border-primary/20 rounded-xl p-4 shadow-sm space-y-3 animate-fade-in">
+                <div className="bg-gradient-to-br from-primary/[0.04] via-canvas to-surface border border-primary/20 rounded-lg p-4 shadow-sm space-y-3 animate-fade-in">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 border-b border-primary/10 pb-3">
                         <div className="flex items-center gap-2">
-                            <div className="h-7 w-7 rounded-lg bg-primary text-accent flex items-center justify-center shadow-xs">
-                                <Eye size={15} />
+                            <div className="h-6 w-6 rounded bg-primary text-accent flex items-center justify-center shadow-xs">
+                                <Eye size={14} />
                             </div>
                             <div>
                                 <h3 className="text-xs font-black text-stone-900 flex items-center gap-2">
                                     <span>Live Customer Slot Simulator</span>
-                                    <span className="px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/20">
+                                    <span className="px-1.5 py-0.5 rounded text-[8px] font-black uppercase tracking-wider bg-secondary/10 text-secondary border border-secondary/20">
                                         Checkout Preview
                                     </span>
                                 </h3>
@@ -400,13 +400,13 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     type="date"
                                     value={simDate}
                                     onChange={(e) => setSimDate(e.target.value)}
-                                    className="px-2 py-1 bg-white border border-stone-300 rounded-lg text-[11px] font-bold text-stone-800 shadow-2xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
+                                    className="px-2 py-1 bg-white border border-stone-300 rounded text-[11px] font-bold text-stone-800 shadow-2xs focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none"
                                 />
                             </label>
                             <button
                                 type="button"
                                 onClick={() => setShowSimulator(false)}
-                                className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                                className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded transition-colors"
                             >
                                 <X size={15} />
                             </button>
@@ -419,7 +419,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             <span>Calculating dynamic collection slots for {simDate}...</span>
                         </div>
                     ) : simSlots.length === 0 ? (
-                        <div className="py-5 text-center bg-white border border-stone-200/80 rounded-lg">
+                        <div className="py-5 text-center bg-white border border-stone-200/80 rounded">
                             <XCircle size={20} className="text-stone-300 mx-auto mb-1.5" />
                             <p className="text-xs font-bold text-stone-700">No collection slots available for this day</p>
                             <p className="text-[10px] text-stone-400 mt-0.5">The store may be closed or operating hours have passed for today.</p>
@@ -438,7 +438,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                 {simSlots.map((slot, idx) => (
                                     <div
                                         key={idx}
-                                        className={`px-2 py-1.5 rounded-lg text-center border text-[11px] font-bold transition-all ${
+                                        className={`px-2 py-1.5 rounded text-center border text-[11px] font-bold transition-all ${
                                             slot.is_available
                                                 ? 'bg-white border-stone-200 text-stone-800 hover:border-primary hover:text-primary hover:shadow-2xs'
                                                 : 'bg-stone-100 border-stone-200 text-stone-400 cursor-not-allowed'
@@ -456,7 +456,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                 </div>
             )}
 
-            {/* 7-Day Collection Slots Grid - Compact Smaller Boxes */}
+            {/* 7-Day Collection Slots Grid - Compact Smaller Boxes with Low Curves */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
                 {sortedHours.map((hour) => {
                     const isToday = hour.day_of_week === todayDayName;
@@ -475,7 +475,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                     return (
                         <div
                             key={hour.id}
-                            className={`bg-white border rounded-xl shadow-2xs transition-all duration-200 flex flex-col justify-between overflow-hidden group ${
+                            className={`bg-white border rounded-lg shadow-2xs transition-all duration-200 flex flex-col justify-between overflow-hidden group ${
                                 hour.is_closed 
                                     ? 'border-stone-200 opacity-75 hover:opacity-100' 
                                     : isToday 
@@ -487,7 +487,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             <div>
                                 <div className="px-3.5 py-2.5 border-b border-stone-100 flex items-center justify-between bg-stone-50/40">
                                     <div className="flex items-center gap-2">
-                                        <div className={`h-6.5 w-6.5 rounded-lg flex items-center justify-center font-black text-[11px] ${
+                                        <div className={`h-6.5 w-6.5 rounded-[4px] flex items-center justify-center font-black text-[11px] ${
                                             hour.is_closed 
                                                 ? 'bg-stone-100 text-stone-400' 
                                                 : isToday
@@ -502,7 +502,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     {hour.day_of_week}
                                                 </h3>
                                                 {isToday && (
-                                                    <span className="px-1 py-0.2 rounded bg-secondary/10 text-secondary text-[8px] font-black uppercase tracking-wider border border-secondary/20">
+                                                    <span className="px-1 py-0.2 rounded-[3px] bg-secondary/10 text-secondary text-[8px] font-black uppercase tracking-wider border border-secondary/20">
                                                         Today
                                                     </span>
                                                 )}
@@ -518,7 +518,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                         type="button"
                                         onClick={() => handleQuickToggleClosed(hour)}
                                         disabled={isSaving}
-                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-extrabold border transition-all cursor-pointer ${
+                                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] text-[9px] font-extrabold border transition-all cursor-pointer ${
                                             hour.is_closed
                                                 ? 'bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100'
                                                 : 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100'
@@ -567,9 +567,9 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     <span className="text-primary font-black">{hoursSpan}h open</span>
                                                     <span>24:00</span>
                                                 </div>
-                                                <div className="h-1.5 w-full bg-stone-100 rounded-full overflow-hidden relative">
+                                                <div className="h-1.5 w-full bg-stone-100 rounded-sm overflow-hidden relative">
                                                     <div 
-                                                        className="h-full bg-gradient-to-r from-primary via-primary-light to-secondary rounded-full"
+                                                        className="h-full bg-gradient-to-r from-primary via-primary-light to-secondary rounded-sm"
                                                         style={{
                                                             marginLeft: `${startPercent}%`,
                                                             width: `${widthPercent}%`
@@ -580,7 +580,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
                                             {/* Slot Interval and Capacity Row */}
                                             <div className="pt-1.5 border-t border-stone-100 grid grid-cols-2 gap-2">
-                                                <div className="bg-canvas p-1.5 rounded-lg border border-stone-200/70">
+                                                <div className="bg-canvas p-1.5 rounded-[4px] border border-stone-200/70">
                                                     <span className="block text-[8px] font-black uppercase tracking-wider text-stone-400 mb-0.5">
                                                         Interval
                                                     </span>
@@ -590,7 +590,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     </div>
                                                 </div>
 
-                                                <div className="bg-canvas p-1.5 rounded-lg border border-stone-200/70">
+                                                <div className="bg-canvas p-1.5 rounded-[4px] border border-stone-200/70">
                                                     <span className="block text-[8px] font-black uppercase tracking-wider text-stone-400 mb-0.5">
                                                         Capacity
                                                     </span>
@@ -614,7 +614,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                 <button
                                     type="button"
                                     onClick={() => handleOpenEdit(hour)}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-stone-200 hover:border-primary hover:text-primary text-[11px] font-bold text-stone-800 shadow-2xs transition-all cursor-pointer"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-[4px] bg-white border border-stone-200 hover:border-primary hover:text-primary text-[11px] font-bold text-stone-800 shadow-2xs transition-all cursor-pointer"
                                 >
                                     <Edit3 size={11} className="text-secondary" />
                                     <span>Configure</span>
@@ -628,18 +628,18 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
             {/* EDIT DAY MODAL */}
             {editingDay && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-primary/60 backdrop-blur-xs animate-fade-in">
-                    <div className="bg-white border border-stone-200 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden animate-scale-in">
+                    <div className="bg-white border border-stone-200 rounded-lg max-w-lg w-full shadow-2xl overflow-hidden animate-scale-in">
                         {/* Modal Header */}
-                        <div className="p-5 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
+                        <div className="p-4 border-b border-stone-100 flex items-center justify-between bg-stone-50/50">
                             <div className="flex items-center gap-2.5">
-                                <div className="h-9 w-9 rounded-xl bg-primary text-accent flex items-center justify-center font-black text-sm">
-                                    <Clock size={16} className="text-accent" />
+                                <div className="h-8 w-8 rounded-[4px] bg-primary text-accent flex items-center justify-center font-black text-sm">
+                                    <Clock size={15} className="text-accent" />
                                 </div>
                                 <div>
-                                    <h3 className="text-base font-black text-stone-900">
+                                    <h3 className="text-sm font-black text-stone-900">
                                         Configure {editingDay.day_of_week}
                                     </h3>
-                                    <p className="text-xs text-stone-400">
+                                    <p className="text-[11px] text-stone-400">
                                         Set collection availability, store hours, and slot intervals.
                                     </p>
                                 </div>
@@ -647,16 +647,16 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             <button
                                 type="button"
                                 onClick={() => setEditingDay(null)}
-                                className="p-1.5 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded-lg transition-colors"
+                                className="p-1 text-stone-400 hover:text-stone-700 hover:bg-stone-100 rounded transition-colors"
                             >
-                                <X size={18} />
+                                <X size={16} />
                             </button>
                         </div>
 
                         {/* Modal Body */}
-                        <form onSubmit={handleSaveDay} className="p-6 space-y-6">
+                        <form onSubmit={handleSaveDay} className="p-5 space-y-5">
                             {/* Open / Closed Switch */}
-                            <div className="p-4 bg-canvas rounded-xl border border-stone-200/80 flex items-center justify-between">
+                            <div className="p-3.5 bg-canvas rounded-md border border-stone-200/80 flex items-center justify-between">
                                 <div>
                                     <span className="text-xs font-black text-stone-900 block">
                                         Store Open for Collection
@@ -668,13 +668,13 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                 <button
                                     type="button"
                                     onClick={() => setEditForm(prev => ({ ...prev, is_closed: !prev.is_closed }))}
-                                    className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
+                                    className={`relative inline-flex h-5.5 w-10 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
                                         !editForm.is_closed ? 'bg-primary' : 'bg-stone-300'
                                     }`}
                                 >
                                     <span
-                                        className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
-                                            !editForm.is_closed ? 'translate-x-5' : 'translate-x-0'
+                                        className={`pointer-events-none inline-block h-4.5 w-4.5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out ${
+                                            !editForm.is_closed ? 'translate-x-4.5' : 'translate-x-0'
                                         }`}
                                     />
                                 </button>
@@ -683,7 +683,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             {!editForm.is_closed && (
                                 <>
                                     {/* Quick Preset Buttons */}
-                                    <div className="space-y-2">
+                                    <div className="space-y-1.5">
                                         <label className="block text-[10px] font-black uppercase tracking-wider text-stone-400">
                                             Quick Presets
                                         </label>
@@ -693,7 +693,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     key={idx}
                                                     type="button"
                                                     onClick={() => applyPreset(p)}
-                                                    className="text-left px-2.5 py-2 rounded-xl border border-stone-200 hover:border-primary hover:bg-canvas text-[11px] font-bold text-stone-700 transition-colors"
+                                                    className="text-left px-2.5 py-1.5 rounded-md border border-stone-200 hover:border-primary hover:bg-canvas text-[11px] font-bold text-stone-700 transition-colors"
                                                 >
                                                     {p.label}
                                                 </button>
@@ -702,9 +702,9 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     </div>
 
                                     {/* Time Inputs */}
-                                    <div className="grid grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-2 gap-3">
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1.5">
+                                            <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1">
                                                 Opening Time
                                             </label>
                                             <div className="relative">
@@ -713,7 +713,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     value={editForm.open_time}
                                                     onChange={(e) => setEditForm({ ...editForm, open_time: e.target.value })}
                                                     required
-                                                    className="w-full px-3 py-2.5 bg-white border border-stone-300 rounded-xl text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                                    className="w-full px-2.5 py-2 bg-white border border-stone-300 rounded-md text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                 />
                                             </div>
                                             <span className="block text-[10px] text-secondary font-bold mt-1">
@@ -722,7 +722,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                         </div>
 
                                         <div>
-                                            <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1.5">
+                                            <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1">
                                                 Closing Time
                                             </label>
                                             <div className="relative">
@@ -731,7 +731,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                                     value={editForm.close_time}
                                                     onChange={(e) => setEditForm({ ...editForm, close_time: e.target.value })}
                                                     required
-                                                    className="w-full px-3 py-2.5 bg-white border border-stone-300 rounded-xl text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
+                                                    className="w-full px-2.5 py-2 bg-white border border-stone-300 rounded-md text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
                                                 />
                                             </div>
                                             <span className="block text-[10px] text-secondary font-bold mt-1">
@@ -742,13 +742,13 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
 
                                     {/* Slot Interval Select */}
                                     <div>
-                                        <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1.5">
+                                        <label className="block text-[10px] font-black uppercase tracking-wider text-stone-500 mb-1">
                                             Slot Booking Interval
                                         </label>
                                         <select
                                             value={editForm.slot_interval}
                                             onChange={(e) => setEditForm({ ...editForm, slot_interval: parseInt(e.target.value, 10) })}
-                                            className="w-full px-3 py-2.5 bg-white border border-stone-300 rounded-xl text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
+                                            className="w-full px-2.5 py-2 bg-white border border-stone-300 rounded-md text-xs font-bold text-stone-900 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary cursor-pointer"
                                         >
                                             <option value={10}>10 Minutes</option>
                                             <option value={15}>15 Minutes (Standard & Recommended)</option>
@@ -761,8 +761,8 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     </div>
 
                                     {/* Slot Output Preview Hint */}
-                                    <div className="p-3 bg-canvas border border-primary/15 rounded-xl flex items-center gap-2.5 text-xs text-primary">
-                                        <Sparkles size={16} className="text-secondary shrink-0" />
+                                    <div className="p-2.5 bg-canvas border border-primary/15 rounded-md flex items-center gap-2 text-xs text-primary">
+                                        <Sparkles size={15} className="text-secondary shrink-0" />
                                         <span>
                                             Generates approximately <strong>{calculateSlotEstimate(editForm.open_time, editForm.close_time, editForm.slot_interval, false)} collection slots</strong> between {editForm.open_time} and {editForm.close_time}.
                                         </span>
@@ -771,7 +771,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             )}
 
                             {/* Bulk Apply Scope Options */}
-                            <div className="space-y-2 pt-2 border-t border-stone-100">
+                            <div className="space-y-1.5 pt-2 border-t border-stone-100">
                                 <label className="block text-[10px] font-black uppercase tracking-wider text-stone-400">
                                     Apply Schedule To:
                                 </label>
@@ -779,7 +779,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     <button
                                         type="button"
                                         onClick={() => setEditForm({ ...editForm, applyScope: 'single' })}
-                                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                                        className={`px-3 py-1.5 rounded-md text-xs font-bold border transition-all ${
                                             editForm.applyScope === 'single'
                                                 ? 'bg-primary text-white border-primary'
                                                 : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
@@ -790,7 +790,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     <button
                                         type="button"
                                         onClick={() => setEditForm({ ...editForm, applyScope: 'weekdays' })}
-                                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                                        className={`px-3 py-1.5 rounded-md text-xs font-bold border transition-all ${
                                             editForm.applyScope === 'weekdays'
                                                 ? 'bg-primary text-white border-primary'
                                                 : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
@@ -801,7 +801,7 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                                     <button
                                         type="button"
                                         onClick={() => setEditForm({ ...editForm, applyScope: 'all' })}
-                                        className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all ${
+                                        className={`px-3 py-1.5 rounded-md text-xs font-bold border transition-all ${
                                             editForm.applyScope === 'all'
                                                 ? 'bg-primary text-white border-primary'
                                                 : 'bg-white text-stone-700 border-stone-200 hover:bg-stone-50'
@@ -813,18 +813,18 @@ export default function AdminCollectionSlotsTab({ token, openingHours = [], onUp
                             </div>
 
                             {/* Modal Footer Actions */}
-                            <div className="pt-3 border-t border-stone-100 flex items-center justify-end gap-2.5">
+                            <div className="pt-3 border-t border-stone-100 flex items-center justify-end gap-2">
                                 <button
                                     type="button"
                                     onClick={() => setEditingDay(null)}
-                                    className="px-4 py-2.5 rounded-xl border border-stone-200 text-stone-600 hover:bg-stone-50 text-xs font-bold transition-colors"
+                                    className="px-3.5 py-2 rounded-md border border-stone-200 text-stone-600 hover:bg-stone-50 text-xs font-bold transition-colors"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={isSaving}
-                                    className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-white text-xs font-black transition-colors shadow-sm disabled:opacity-50"
+                                    className="inline-flex items-center gap-1.5 px-4.5 py-2 rounded-md bg-primary hover:bg-primary-hover text-white text-xs font-black transition-colors shadow-sm disabled:opacity-50"
                                 >
                                     {isSaving ? (
                                         <>
