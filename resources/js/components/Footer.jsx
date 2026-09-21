@@ -40,6 +40,16 @@ export default function Footer({ onCategoryClick, navigate }) {
         ? categoriesList 
         : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
 
+    // Helper to format social links cleanly with http/https fallback
+    const formatExternalUrl = (url, fallback) => {
+        if (!url || !url.trim()) return fallback;
+        const trimmed = url.trim();
+        if (/^https?:\/\//i.test(trimmed)) {
+            return trimmed;
+        }
+        return `https://${trimmed}`;
+    };
+
     return (
         <footer className="w-full bg-primary text-white pt-16 sm:pt-20 md:pt-24 pb-10 sm:pb-12 md:pb-14 px-6 md:px-12 lg:px-16 relative z-20">
             <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-6 text-left">
@@ -117,7 +127,7 @@ export default function Footer({ onCategoryClick, navigate }) {
                     </h4>
                     <div className="space-y-2 text-white/60 text-xs sm:text-[13px] font-light flex flex-col">
                         <a 
-                            href={instagram || 'https://instagram.com'} 
+                            href={formatExternalUrl(instagram, 'https://instagram.com')} 
                             target="_blank" 
                             rel="noreferrer" 
                             className="hover:text-white transition-colors"
@@ -125,7 +135,7 @@ export default function Footer({ onCategoryClick, navigate }) {
                             Instagram
                         </a>
                         <a 
-                            href={tiktok || 'https://tiktok.com'} 
+                            href={formatExternalUrl(tiktok, 'https://tiktok.com')} 
                             target="_blank" 
                             rel="noreferrer" 
                             className="hover:text-white transition-colors"
@@ -133,7 +143,7 @@ export default function Footer({ onCategoryClick, navigate }) {
                             Tiktok
                         </a>
                         <a 
-                            href={facebook || 'https://facebook.com'} 
+                            href={formatExternalUrl(facebook, 'https://facebook.com')} 
                             target="_blank" 
                             rel="noreferrer" 
                             className="hover:text-white transition-colors"
@@ -141,7 +151,7 @@ export default function Footer({ onCategoryClick, navigate }) {
                             Facebook
                         </a>
                         <a 
-                            href={twitter || 'https://twitter.com'} 
+                            href={formatExternalUrl(twitter, 'https://twitter.com')} 
                             target="_blank" 
                             rel="noreferrer" 
                             className="hover:text-white transition-colors"
