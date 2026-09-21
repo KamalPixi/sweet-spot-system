@@ -180,6 +180,7 @@ export default function AdminDashboard() {
     const [prodImages, setProdImages] = useState(['']);
     const [prodImageFiles, setProdImageFiles] = useState([]);
     const [prodStatus, setProdStatus] = useState(true);
+    const [prodIsHomeTreat, setProdIsHomeTreat] = useState(false);
     const [prodHasVariations, setProdHasVariations] = useState(false);
     const [prodBasePrice, setProdBasePrice] = useState(0.00);
     const [prodBaseWeight, setProdBaseWeight] = useState('');
@@ -983,6 +984,7 @@ export default function AdminDashboard() {
         payload.append('ingredients', prodIngredients || '');
         payload.append('status', prodStatus ? '1' : '0');
         payload.append('has_variations', prodHasVariations ? '1' : '0');
+        payload.append('is_home_treat', prodIsHomeTreat ? '1' : '0');
         payload.append('base_price', parseFloat(prodBasePrice || 0));
         if (prodBaseWeight) payload.append('base_weight', prodBaseWeight);
         prodImages.filter(img => img && img.trim() !== '').forEach((img, index) => {
@@ -1035,6 +1037,7 @@ export default function AdminDashboard() {
                 setProdImageFiles([]);
                 setProdStatus(true);
                 setProdHasVariations(false);
+                setProdIsHomeTreat(false);
                 setProdBasePrice(0);
                 setProdBaseWeight('');
                 setProdRelatedIds([]);
@@ -1060,6 +1063,7 @@ export default function AdminDashboard() {
         setProdImageFiles([]);
         setProdStatus(true);
         setProdHasVariations(false);
+        setProdIsHomeTreat(false);
         setProdBasePrice(0.00);
         setProdBaseWeight('');
         setProdRelatedIds([]);
@@ -1082,6 +1086,7 @@ export default function AdminDashboard() {
 
         setProdStatus(prod.status);
         setProdHasVariations(prod.has_variations);
+        setProdIsHomeTreat(!!prod.is_home_treat);
         setProdBasePrice(parseFloat(prod.base_price || 0));
         setProdBaseWeight(prod.base_weight || '');
         setProdRelatedIds(prod.related_products ? prod.related_products.map(rp => rp.id) : []);
@@ -3145,7 +3150,7 @@ export default function AdminDashboard() {
                                                     />
                                                 </div>
 
-                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                                                     <button
                                                         type="button"
                                                         onClick={() => setProdStatus(!prodStatus)}
@@ -3169,6 +3174,18 @@ export default function AdminDashboard() {
                                                     >
                                                         <span className="text-xs font-black block">{prodHasVariations ? 'Variation product' : 'Simple product'}</span>
                                                         <span className="text-[10px] opacity-70 mt-1 block">Use variations for size, weight, or option pricing.</span>
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => setProdIsHomeTreat(!prodIsHomeTreat)}
+                                                        className={`text-left border rounded-xl p-4 transition-colors ${
+                                                            prodIsHomeTreat
+                                                                ? 'bg-rose-50 border-rose-200 text-rose-800'
+                                                                : 'bg-white border-neutral-200 text-neutral-600 hover:border-neutral-400'
+                                                        }`}
+                                                    >
+                                                        <span className="text-xs font-black block">{prodIsHomeTreat ? 'Featured in Home Treats' : 'Standard catalog'}</span>
+                                                        <span className="text-[10px] opacity-70 mt-1 block">Show product card in landing page "Our Fine Home Made Treats" section.</span>
                                                     </button>
                                                 </div>
                                             </div>

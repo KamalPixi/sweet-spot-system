@@ -1,33 +1,94 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+
+const getImageUrl = (item) => {
+    if (!item) return '/images/placeholder.svg';
+    const resolveUrl = (url) => {
+        if (!url) return '/images/placeholder.svg';
+        if (url.startsWith('http')) return url;
+        const cleanUrl = url.replace(/^\/?(storage\/)+/, '');
+        return `/storage/${cleanUrl}`;
+    };
+    if (item.images && item.images.length > 0) {
+        const primary = item.images.find(img => img.is_primary);
+        const url = primary ? primary.url : item.images[0].url;
+        return resolveUrl(url);
+    }
+    if (item.image) {
+        return resolveUrl(item.image);
+    }
+    return '/images/placeholder.svg';
+};
+
+const defaultCards = [
+    {
+        id: 'default-1',
+        title: "Handcrafted cakes with premium layers.",
+        image: "/images/landing-cat-1.jpg",
+        tilt: "-rotate-2"
+    },
+    {
+        id: 'default-2',
+        title: "Fresh artisanal waffles & delicate sponges.",
+        image: "/images/landing-cat-3.jpg",
+        tilt: "rotate-0"
+    },
+    {
+        id: 'default-3',
+        title: "Decadent cookie stacks baked warm daily.",
+        image: "/images/landing-cat-2.jpg",
+        tilt: "rotate-2"
+    }
+];
 
 export default function HomeMadeTreatsSection() {
     const navigate = useNavigate();
+    const [cards, setCards] = useState(defaultCards);
 
-    // 3 Polaroid style cards with slight tilt matching the reference mockup
-    const cards = [
-        {
-            id: 1,
-            title: "Handcrafted cakes with premium layers.",
-            image: "/images/landing-cat-1.jpg",
-            tilt: "-rotate-2",
-            delay: "0"
-        },
-        {
-            id: 2,
-            title: "Fresh artisanal waffles & delicate sponges.",
-            image: "/images/landing-cat-3.jpg",
-            tilt: "rotate-0",
-            delay: "100"
-        },
-        {
-            id: 3,
-            title: "Decadent cookie stacks baked warm daily.",
-            image: "/images/landing-cat-2.jpg",
-            tilt: "rotate-2",
-            delay: "200"
-        }
-    ];
+    useEffect(() => {
+        const fetchHomeTreats = async () => {
+            try {
+                const tilts = ['-rotate-2', 'rotate-0', 'rotate-2'];
+                
+                // 1. First try fetching products explicitly flagged as is_home_treat
+                const res = await fetch('/api/products?is_home_treat=true');
+                if (res.ok) {
+                    const data = await res.json();
+                    let products = Array.isArray(data) ? data : (data.data || []);
+
+                    // 2. If no products are flagged, fetch all catalog products and pick 3 random products
+                    if (products.length === 0) {
+                        const allRes = await fetch('/api/products');
+                        if (allRes.ok) {
+                            const allData = await allRes.json();
+                            const allProducts = Array.isArray(allData) ? allData : (allData.data || []);
+                            if (allProducts.length > 0) {
+                                // Shuffle array randomly and pick up to 3 products
+                                const shuffled = [...allProducts].sort(() => 0.5 - Math.random());
+                                products = shuffled.slice(0, 3);
+                            }
+                        }
+                    }
+
+                    // 3. Map items if available
+                    if (products.length > 0) {
+                        const mappedCards = products.slice(0, 6).map((prod, index) => ({
+                            id: prod.id,
+                            title: prod.name,
+                            image: getImageUrl(prod),
+                            tilt: tilts[index % 3],
+                            isDynamicProduct: true
+                        }));
+                        setCards(mappedCards);
+                    }
+                }
+            } catch (err) {
+                console.error("Failed to fetch home treats products:", err);
+            }
+        };
+
+        fetchHomeTreats();
+    }, []);
 
     return (
         <section className="w-full bg-[#FCF3F5] py-10 md:py-14 px-6 md:px-12 lg:px-16 overflow-hidden">
@@ -54,7 +115,7 @@ export default function HomeMadeTreatsSection() {
                     </button>
                 </div>
 
-                {/* Right: 3 Polaroid-style feature cards */}
+                {/* Right: Dynamic Polaroid-style feature cards */}
                 <div className="lg:col-span-7 flex flex-wrap sm:flex-nowrap justify-center lg:justify-end gap-3 sm:gap-4 items-center">
                     {cards.map((card) => (
                         <div
@@ -72,7 +133,7 @@ export default function HomeMadeTreatsSection() {
                             </div>
 
                             {/* Caption text */}
-                            <p className="text-[10px] sm:text-[11px] text-neutral-600 font-normal leading-snug px-0.5 text-center">
+                            <p className="text-[10px] sm:text-[11px] text-neutral-600 font-medium leading-snug px-0.5 text-center line-clamp-2">
                                 {card.title}
                             </p>
                         </div>

@@ -109,6 +109,7 @@ class ProductService
                 'description' => $data['description'] ?? null,
                 'ingredients' => $data['ingredients'] ?? null,
                 'status' => filter_var($data['status'] ?? true, FILTER_VALIDATE_BOOLEAN),
+                'is_home_treat' => filter_var($data['is_home_treat'] ?? false, FILTER_VALIDATE_BOOLEAN),
                 'has_variations' => $hasVariations,
                 'base_price' => $hasVariations ? 0.00 : (float) ($data['base_price'] ?? 0.00),
                 'base_weight' => $hasVariations ? null : ($data['base_weight'] ? (float) $data['base_weight'] : null),

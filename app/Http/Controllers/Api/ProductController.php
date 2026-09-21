@@ -87,6 +87,10 @@ class ProductController extends Controller
             });
         }
 
+        if ($request->boolean('is_home_treat')) {
+            $query->where('is_home_treat', true);
+        }
+
         return response()->json([
             'success' => true,
             'data' => $query->get(),

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['category_id', 'name', 'slug', 'description', 'status', 'has_variations', 'base_price', 'base_weight', 'ingredients'])]
+#[Fillable(['category_id', 'name', 'slug', 'description', 'status', 'is_home_treat', 'has_variations', 'base_price', 'base_weight', 'ingredients'])]
 class Product extends Model
 {
     use SoftDeletes;
@@ -18,10 +18,11 @@ class Product extends Model
     protected function casts(): array
     {
         return [
-            'status'         => 'boolean',
+            'status'        => 'boolean',
+            'is_home_treat' => 'boolean',
             'has_variations' => 'boolean',
-            'base_price'     => 'decimal:2',
-            'base_weight'    => 'decimal:2',
+            'base_price'    => 'decimal:2',
+            'base_weight'   => 'decimal:2',
         ];
     }
 

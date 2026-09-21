@@ -32,6 +32,7 @@ class StoreProductRequest extends FormRequest
             'existing_images' => 'nullable|array',
             'existing_images.*' => 'nullable|string',
             'status' => 'nullable|boolean',
+            'is_home_treat' => 'nullable|boolean',
             'has_variations' => 'required|boolean',
             'base_price' => 'required_if:has_variations,false|numeric|min:0',
             'base_weight' => 'nullable|numeric|min:0',
