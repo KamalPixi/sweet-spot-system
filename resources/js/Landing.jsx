@@ -15,7 +15,7 @@ import HomeMadeTreatsSection from './landing/HomeMadeTreatsSection';
 import DifferenceSection from './landing/DifferenceSection';
 import LocalLoveSection from './landing/LocalLoveSection';
 import StoreLocationSection from './landing/StoreLocationSection';
-import OrderModal from './landing/OrderModal';
+import OrderPopover from './landing/OrderPopover';
 
 export default function Landing() {
     const navigate = useNavigate();
@@ -121,7 +121,7 @@ export default function Landing() {
             />
 
             {/* Order Fulfillment Selection Modal */}
-            <OrderModal
+            <OrderPopover
                 isOpen={isOrderModalOpen}
                 onClose={() => setIsOrderModalOpen(false)}
             />

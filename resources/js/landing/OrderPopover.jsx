@@ -37,8 +37,11 @@ const addDaysToDateParts = (parts, days) => {
 const formatDateKey = ({ year, month, day }) => `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
 const calculatePopoverPosition = (anchorElement) => {
-    if (!anchorElement || typeof window === 'undefined') {
+    if (typeof window === 'undefined') {
         return { top: 0, left: 0, arrowTop: 32, isReady: false };
+    }
+    if (!anchorElement) {
+        return { top: 0, left: 0, arrowTop: 0, isReady: true, isModal: true };
     }
     const isDesktop = window.innerWidth >= 768;
     if (!isDesktop) {
@@ -69,7 +72,7 @@ const calculatePopoverPosition = (anchorElement) => {
     return { top, left, arrowTop, isReady: true };
 };
 
-export default function OrderPopover({ isOpen, onClose, anchorRef }) {
+export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete }) {
     const navigate = useNavigate();
     const { 
         orderType, setOrderType, 
@@ -224,7 +227,11 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
 
                 setTimeout(() => {
                     onClose();
-                    navigate('/categories');
+                    if (onComplete) {
+                        onComplete(deliveryData);
+                    } else {
+                        navigate('/categories');
+                    }
                 }, 700);
             } else {
                 setDeliveryError(`We only deliver within ${info.max_radius_miles} miles. You are ${info.distance_miles} miles away.`);
@@ -257,7 +264,11 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
 
         setTimeout(() => {
             onClose();
-            navigate('/categories');
+            if (onComplete) {
+                onComplete(slotData);
+            } else {
+                navigate('/categories');
+            }
         }, 700);
     };
 
@@ -270,7 +281,7 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Backdrop for click outside */}
             <div 
-                className={`fixed inset-0 bg-black/40 md:bg-black/10 backdrop-blur-[2px] md:backdrop-blur-none pointer-events-auto transition-opacity duration-300 ease-out ${
+                className={`fixed inset-0 ${popoverPos.isModal ? 'bg-black/60 backdrop-blur-xs' : 'bg-black/40 md:bg-black/10 backdrop-blur-[2px] md:backdrop-blur-none'} pointer-events-auto transition-opacity duration-300 ease-out ${
                     isMounted ? 'opacity-100' : 'opacity-0'
                 }`} 
                 onClick={onClose}
@@ -285,22 +296,22 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
                 }`}
                 style={{ 
                     filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.3))',
-                    ...(popoverPos.isReady && window.innerWidth >= 768
+                    ...(popoverPos.isReady && !popoverPos.isModal && window.innerWidth >= 768
                         ? {
                             top: `${popoverPos.top}px`,
                             left: `${popoverPos.left}px`,
                         }
                         : {
-                            top: '5rem',
+                            top: '50%',
                             left: '50%',
-                            transform: isMounted ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(8px)',
+                            transform: isMounted ? 'translateX(-50%) translateY(-50%)' : 'translateX(-50%) translateY(-48%)',
                         }
                     )
                 }}
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Connected Arrow pointing left directly to the Order Now button (Desktop) */}
-                {window.innerWidth >= 768 && popoverPos.isReady && (
+                {/* Connected Arrow pointing left directly to the Order Now button (Desktop with Anchor) */}
+                {window.innerWidth >= 768 && popoverPos.isReady && !popoverPos.isModal && (
                     <div 
                         className="hidden md:block absolute -left-2 w-4 h-4 bg-white border-b border-l border-neutral-200 transform rotate-45 z-30"
                         style={{ top: `${popoverPos.arrowTop || 32}px` }}

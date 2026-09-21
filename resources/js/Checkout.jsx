@@ -4,10 +4,15 @@ import { useApp } from './AppContext';
 import Footer from './components/Footer';
 import Header from './components/Header';
 import Sidebar from './components/Sidebar';
-import { ShoppingBag, Search, ChevronRight, X, User, LogOut, ArrowLeft, Loader2, AlertCircle, CheckCircle, ChevronLeft, Plus, Minus, ArrowRight, Menu, Lock, Trash2, Eye, EyeOff, Phone, Mail, MapPin, Clock } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { loadStripe } from '@stripe/stripe-js';
 import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js';
+import { 
+    AlertCircle, Loader2, Lock, ChevronLeft, ChevronRight, 
+    Minus, Plus, Trash2, CheckCircle, Eye, EyeOff, 
+    LogOut, MapPin, Clock, ArrowRight, ShoppingBag 
+} from 'lucide-react';
+import OrderPopover from './landing/OrderPopover';
 
 const getImageUrl = (url) => {
     if (!url) return '/images/placeholder.svg';
@@ -394,6 +399,10 @@ export default function Checkout() {
     // Stepper flow: 'details' (Fulfillment & Contact) -> 'payment' (Payment Gateway & Review)
     const [checkoutStep, setCheckoutStep] = useState('details');
 
+    // In-page Fulfillment Popup Modal (replacing old standalone setup pages)
+    const [isFulfillmentModalOpen, setIsFulfillmentModalOpen] = useState(false);
+    const fulfillmentAnchorRef = React.useRef(null);
+
     // Status states
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -681,14 +690,7 @@ export default function Checkout() {
     };
 
     const handleSwitchOrderBanner = () => {
-        const currentPath = encodeURIComponent(window.location.pathname);
-        if (orderType === 'delivery') {
-            navigate(`/delivery-setup?redirect=${currentPath}`);
-        } else if (orderType === 'collection') {
-            navigate(`/collection-setup?redirect=${currentPath}`);
-        } else {
-            navigate('/');
-        }
+        setIsFulfillmentModalOpen(true);
     };
 
     return (
@@ -1380,7 +1382,7 @@ export default function Checkout() {
                                                     <div className="grid sm:grid-cols-2 gap-3">
                                                         <button 
                                                             type="button" 
-                                                            onClick={() => navigate('/delivery-setup?redirect=/cart')}
+                                                            onClick={() => setIsFulfillmentModalOpen(true)}
                                                             className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
                                                         >
                                                             <MapPin size={15} className="text-[#e5b582]" />
@@ -1388,7 +1390,7 @@ export default function Checkout() {
                                                         </button>
                                                         <button 
                                                             type="button" 
-                                                            onClick={() => navigate('/collection-setup?redirect=/cart')}
+                                                            onClick={() => setIsFulfillmentModalOpen(true)}
                                                             className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
                                                         >
                                                             <Clock size={15} className="text-[#e5b582]" />
@@ -1657,6 +1659,13 @@ export default function Checkout() {
                     )}
                 </div>
             )}
+
+            {/* Fulfillment Selection Popover / Modal */}
+            <OrderPopover 
+                isOpen={isFulfillmentModalOpen}
+                onClose={() => setIsFulfillmentModalOpen(false)}
+                onComplete={() => setIsFulfillmentModalOpen(false)}
+            />
 
             <Footer navigate={navigate} />
         </div>

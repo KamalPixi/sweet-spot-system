@@ -10,8 +10,6 @@ import SearchModal from './components/SearchModal';
 
 // Lazy-loaded Pages & Components
 const Landing = lazy(() => import('./Landing'));
-const DeliverySetup = lazy(() => import('./DeliverySetup'));
-const CollectionSetup = lazy(() => import('./CollectionSetup'));
 const Categories = lazy(() => import('./Categories'));
 const CategoryDetail = lazy(() => import('./CategoryDetail'));
 const Cart = lazy(() => import('./Cart'));
@@ -150,10 +148,6 @@ function TitleUpdater() {
         
         if (path === '/') {
             title = configs?.seo_title || 'Handcrafted Cakes & Specialty Coffee | Sweet Spot System';
-        } else if (path === '/delivery-setup') {
-            title = 'Setup Delivery | Sweet Spot System';
-        } else if (path === '/collection-setup') {
-            title = 'Setup Collection | Sweet Spot System';
         } else if (path === '/categories') {
             title = 'Our Categories | Sweet Spot System';
         } else if (path.startsWith('/categories/')) {
@@ -222,8 +216,8 @@ export default function MainApp() {
                     <Routes>
                         {/* Storefront Customer Routes */}
                         <Route path="/" element={<Landing />} />
-                        <Route path="/delivery-setup" element={<DeliverySetup />} />
-                        <Route path="/collection-setup" element={<CollectionSetup />} />
+                        <Route path="/delivery-setup" element={<Navigate to="/" replace />} />
+                        <Route path="/collection-setup" element={<Navigate to="/" replace />} />
                         <Route path="/categories" element={<Categories />} />
                         <Route path="/categories/:categorySlug" element={<CategoryDetail />} />
                         <Route path="/menu" element={<PdfMenu />} />
