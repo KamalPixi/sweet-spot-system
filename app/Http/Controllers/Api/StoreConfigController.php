@@ -119,6 +119,18 @@ class StoreConfigController extends Controller
             }
         }
 
+        // Handle store image feature photo upload
+        if ($request->hasFile('store_image')) {
+            $file = $request->file('store_image');
+            if ($file->isValid()) {
+                $path = $file->store('store', 'public');
+                $this->storeConfigService->set('store_image', '/storage/' . $path);
+            }
+            if (isset($configs['store_image'])) {
+                unset($configs['store_image']);
+            }
+        }
+
         // Handle other configs
         foreach ($configs as $key => $value) {
             $this->storeConfigService->set($key, $value);

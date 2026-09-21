@@ -19,8 +19,8 @@ export default function StoreLocationSection({ configs = {} }) {
                 <div className="lg:col-span-4 w-full flex justify-center">
                     <div className="w-full max-w-[260px] aspect-square rounded-2xl overflow-hidden border border-neutral-200/80 shadow-md">
                         <img
-                            src="/images/landing-storefront.jpg"
-                            alt="Sweet Spot Storefront in Barking"
+                            src={configs.store_image || "/images/landing-storefront.jpg"}
+                            alt="Sweet Spot Storefront"
                             className="w-full h-full object-cover select-none hover:scale-105 transition-transform duration-500"
                         />
                     </div>

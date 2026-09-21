@@ -197,6 +197,7 @@ export default function AdminDashboard() {
     const [settingsForm, setSettingsForm] = useState({});
     const [storeLogoFile, setStoreLogoFile] = useState(null);
     const [storeLogoWhiteFile, setStoreLogoWhiteFile] = useState(null);
+    const [storeImageFile, setStoreImageFile] = useState(null);
     const [settingsSubTab, setSettingsSubTab] = useState('configs'); // 'configs' or 'faqs'
     const [faqs, setFaqs] = useState([]);
     const [faqFormOpen, setFaqFormOpen] = useState(false);
@@ -1179,7 +1180,7 @@ export default function AdminDashboard() {
 
         const payload = new FormData();
         Object.entries(settingsForm).forEach(([key, val]) => {
-            if (key !== 'store_logo' && key !== 'store_logo_white') {
+            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image') {
                 payload.append(`configs[${key}]`, val || '');
             }
         });
@@ -1188,6 +1189,9 @@ export default function AdminDashboard() {
         }
         if (storeLogoWhiteFile) {
             payload.append('store_logo_white', storeLogoWhiteFile);
+        }
+        if (storeImageFile) {
+            payload.append('store_image', storeImageFile);
         }
 
         try {
@@ -1205,6 +1209,7 @@ export default function AdminDashboard() {
                 setSettingsForm(d.data);
                 setStoreLogoFile(null);
                 setStoreLogoWhiteFile(null);
+                setStoreImageFile(null);
             }
         } catch (err) {
             console.error(err);
@@ -3968,7 +3973,7 @@ export default function AdminDashboard() {
                                                 <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
                                                     <Store size={16} className="text-neutral-500" /> Store Information
                                                 </h2>
-                                                <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-2 gap-6 pb-4 border-b border-neutral-100">
+                                                <div className="md:col-span-3 grid grid-cols-1 md:grid-cols-3 gap-6 pb-4 border-b border-neutral-100">
                                                     {/* Branded Store Logo (Light Backgrounds) */}
                                                     <div className="flex items-center gap-6">
                                                         <div className="w-20 h-20 rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden flex items-center justify-center relative shrink-0">
@@ -4020,6 +4025,33 @@ export default function AdminDashboard() {
                                                                 className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
                                                             />
                                                             <p className="text-[9px] text-neutral-400">Used for store footer and dark headers.</p>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Storefront Section Photo */}
+                                                    <div className="flex items-center gap-6">
+                                                        <div className="w-20 h-20 rounded-xl border border-neutral-200 bg-neutral-50 overflow-hidden flex items-center justify-center relative shrink-0">
+                                                            {storeImageFile ? (
+                                                                <img src={URL.createObjectURL(storeImageFile)} alt="Preview" className="w-full h-full object-cover" />
+                                                            ) : settingsForm.store_image ? (
+                                                                <img src={settingsForm.store_image} alt="Store Image" className="w-full h-full object-cover" />
+                                                            ) : (
+                                                                <span className="text-[10px] text-neutral-400 font-bold uppercase">No Photo</span>
+                                                            )}
+                                                        </div>
+                                                        <div className="space-y-1.5">
+                                                            <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">Storefront Photo</label>
+                                                            <input 
+                                                                type="file" 
+                                                                accept="image/*"
+                                                                onChange={(e) => {
+                                                                    if (e.target.files && e.target.files[0]) {
+                                                                        setStoreImageFile(e.target.files[0]);
+                                                                    }
+                                                                }}
+                                                                className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
+                                                            />
+                                                            <p className="text-[9px] text-neutral-400">Used on landing page "Where dreams Meet Cream" section.</p>
                                                         </div>
                                                     </div>
                                                 </div>
