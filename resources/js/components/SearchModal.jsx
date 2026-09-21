@@ -26,9 +26,12 @@ export default function SearchModal({ isOpen, onClose }) {
     const [selectedCategorySlug, setSelectedCategorySlug] = useState('all');
     const inputRef = useRef(null);
 
-    // Focus input on open & manage escape key
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Focus input on open & manage escape key & smooth entrance
     useEffect(() => {
         if (isOpen) {
+            const raf = requestAnimationFrame(() => setIsMounted(true));
             const timer = setTimeout(() => {
                 inputRef.current?.focus();
             }, 60);
@@ -42,10 +45,13 @@ export default function SearchModal({ isOpen, onClose }) {
             document.body.style.overflow = 'hidden';
 
             return () => {
+                cancelAnimationFrame(raf);
                 clearTimeout(timer);
                 window.removeEventListener('keydown', handleKeyDown);
                 document.body.style.overflow = '';
             };
+        } else {
+            setIsMounted(false);
         }
     }, [isOpen, onClose]);
 
@@ -109,16 +115,22 @@ export default function SearchModal({ isOpen, onClose }) {
     const isSearching = Boolean(query.trim() || selectedCategorySlug !== 'all');
 
     return (
-        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 md:p-10 pt-16 sm:pt-24 overflow-y-auto animate-fadeIn select-none">
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:p-6 md:p-10 pt-16 sm:pt-24 overflow-y-auto select-none">
             {/* Ambient Backdrop */}
             <div 
-                className="fixed inset-0 bg-black/65 backdrop-blur-md transition-opacity"
+                className={`fixed inset-0 bg-black/65 backdrop-blur-md transition-opacity duration-300 ease-out ${
+                    isMounted ? 'opacity-100' : 'opacity-0'
+                }`}
                 onClick={onClose}
             />
 
             {/* Clean Floating Search Dialog */}
             <div 
-                className="relative z-10 w-full max-w-2xl md:max-w-3xl bg-[#24161b] text-white border border-white/10 rounded-[28px] shadow-2xl shadow-black/70 overflow-hidden flex flex-col max-h-[80vh]"
+                className={`relative z-10 w-full max-w-2xl md:max-w-3xl bg-[#24161b] text-white border border-white/10 rounded-[28px] shadow-2xl shadow-black/70 overflow-hidden flex flex-col max-h-[80vh] transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) ${
+                    isMounted 
+                        ? 'opacity-100 scale-100 translate-y-0' 
+                        : 'opacity-0 scale-95 -translate-y-2'
+                }`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* ── Search Input Row ── */}

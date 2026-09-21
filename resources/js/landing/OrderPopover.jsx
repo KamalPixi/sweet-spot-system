@@ -36,6 +36,39 @@ const addDaysToDateParts = (parts, days) => {
 
 const formatDateKey = ({ year, month, day }) => `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
+const calculatePopoverPosition = (anchorElement) => {
+    if (!anchorElement || typeof window === 'undefined') {
+        return { top: 0, left: 0, arrowTop: 32, isReady: false };
+    }
+    const isDesktop = window.innerWidth >= 768;
+    if (!isDesktop) {
+        return { top: 0, left: 0, arrowTop: 0, isReady: true };
+    }
+
+    const rect = anchorElement.getBoundingClientRect();
+    const popoverWidth = 420;
+    const popoverHeight = 440;
+
+    let left = rect.right + 16;
+    if (left + popoverWidth > window.innerWidth - 16) {
+        left = Math.max(16, rect.left - popoverWidth - 16);
+    }
+
+    const btnCenterY = rect.top + (rect.height / 2);
+    let top = btnCenterY - (popoverHeight / 2);
+
+    if (top < 16) {
+        top = 16;
+    }
+    const maxTop = window.innerHeight - popoverHeight - 16;
+    if (top > maxTop) {
+        top = Math.max(16, maxTop);
+    }
+
+    const arrowTop = Math.max(24, Math.min(popoverHeight - 24, btnCenterY - top));
+    return { top, left, arrowTop, isReady: true };
+};
+
 export default function OrderPopover({ isOpen, onClose, anchorRef }) {
     const navigate = useNavigate();
     const { 
@@ -54,9 +87,6 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
         }
     }, [isOpen, orderType]);
 
-    // Popover placement coordinates for desktop portal rendering
-    const [popoverPos, setPopoverPos] = useState({ top: 0, left: 0, arrowTop: 0, isReady: false });
-
     // Delivery Form States
     const [postcode, setPostcode] = useState(() => deliveryInfo?.postcode || '');
     const [addressLine1, setAddressLine1] = useState(() => deliveryInfo?.address_line_1 || '');
@@ -73,58 +103,36 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
     const [collectionError, setCollectionError] = useState(null);
     const [collectionSuccess, setCollectionSuccess] = useState(false);
 
-    // Dynamic position calculation based on anchorRef (the Order button)
+    // Calculate initial coordinates immediately upon render if open
+    const [popoverPos, setPopoverPos] = useState(() => calculatePopoverPosition(anchorRef?.current));
+    const [isMounted, setIsMounted] = useState(false);
+
+    // Keep position updated on open/resize/scroll
     useEffect(() => {
-        if (!isOpen) return;
+        if (!isOpen) {
+            setIsMounted(false);
+            return;
+        }
 
         const updatePosition = () => {
-            if (!anchorRef?.current) return;
-            const rect = anchorRef.current.getBoundingClientRect();
-            const scrollY = window.scrollY;
-            const scrollX = window.scrollX;
-            const isDesktop = window.innerWidth >= 768; // md breakpoint
-
-            if (isDesktop) {
-                // Dimensions & viewport bounds
-                const popoverWidth = 420;
-                const popoverHeight = 440;
-                
-                // Position to the right of the button with a 16px gap
-                let left = rect.right + 16;
-                // If overflowing right edge of window, flip or constrain
-                if (left + popoverWidth > window.innerWidth - 16) {
-                    left = Math.max(16, rect.left - popoverWidth - 16);
-                }
-
-                // Center vertically relative to the button
-                const btnCenterY = rect.top + (rect.height / 2);
-                let top = btnCenterY - (popoverHeight / 2);
-
-                // Prevent top viewport overflow
-                if (top < 16) {
-                    top = 16;
-                }
-
-                // Prevent bottom viewport overflow (keeps the full card and submit button visible on screen)
-                const maxTop = window.innerHeight - popoverHeight - 16;
-                if (top > maxTop) {
-                    top = Math.max(16, maxTop);
-                }
-
-                // Calculate arrow position relative to the popover top
-                const arrowTop = Math.max(24, Math.min(popoverHeight - 24, btnCenterY - top));
-
-                setPopoverPos({ top, left, arrowTop, isReady: true });
-            } else {
-                setPopoverPos({ top: 0, left: 0, arrowTop: 0, isReady: true });
+            if (anchorRef?.current) {
+                setPopoverPos(calculatePopoverPosition(anchorRef.current));
             }
         };
 
+        // Initial sync
         updatePosition();
+
+        // Animate in once coordinates are set
+        const raf = requestAnimationFrame(() => {
+            setIsMounted(true);
+        });
+
         window.addEventListener('resize', updatePosition);
         window.addEventListener('scroll', updatePosition, true);
 
         return () => {
+            cancelAnimationFrame(raf);
             window.removeEventListener('resize', updatePosition);
             window.removeEventListener('scroll', updatePosition, true);
         };
@@ -253,7 +261,7 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
         }, 700);
     };
 
-    if (!isOpen || typeof document === 'undefined') return null;
+    if (!isOpen || typeof document === 'undefined' || !popoverPos.isReady) return null;
 
     const storeAddress = configs?.store_address || '10 Soho Street, London';
     const storePostcode = configs?.store_postcode || 'W1D 1AN';
@@ -262,25 +270,30 @@ export default function OrderPopover({ isOpen, onClose, anchorRef }) {
         <div className="fixed inset-0 z-[9999] pointer-events-none">
             {/* Backdrop for click outside */}
             <div 
-                className="fixed inset-0 bg-black/40 md:bg-black/10 backdrop-blur-[2px] md:backdrop-blur-none pointer-events-auto transition-opacity" 
+                className={`fixed inset-0 bg-black/40 md:bg-black/10 backdrop-blur-[2px] md:backdrop-blur-none pointer-events-auto transition-opacity duration-300 ease-out ${
+                    isMounted ? 'opacity-100' : 'opacity-0'
+                }`} 
                 onClick={onClose}
             />
 
             {/* Popover Card Wrapper with Connected Arrow */}
             <div 
-                className="fixed pointer-events-auto w-[calc(100%-2rem)] max-w-[420px] max-h-[min(540px,calc(100vh-2rem))] flex flex-col rounded-2xl animate-fadeIn"
+                className={`fixed pointer-events-auto w-[calc(100%-2rem)] max-w-[420px] max-h-[min(540px,calc(100vh-2rem))] flex flex-col rounded-2xl transition-all duration-300 cubic-bezier(0.16, 1, 0.3, 1) ${
+                    isMounted 
+                        ? 'opacity-100 scale-100 translate-y-0' 
+                        : 'opacity-0 scale-95 translate-y-2'
+                }`}
                 style={{ 
                     filter: 'drop-shadow(0 20px 35px rgba(0,0,0,0.3))',
                     ...(popoverPos.isReady && window.innerWidth >= 768
                         ? {
                             top: `${popoverPos.top}px`,
                             left: `${popoverPos.left}px`,
-                            transform: 'none',
                         }
                         : {
                             top: '5rem',
                             left: '50%',
-                            transform: 'translateX(-50%)',
+                            transform: isMounted ? 'translateX(-50%) translateY(0)' : 'translateX(-50%) translateY(8px)',
                         }
                     )
                 }}
