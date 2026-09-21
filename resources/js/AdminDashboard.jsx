@@ -4280,6 +4280,142 @@ export default function AdminDashboard() {
                                                 </div>
                                             </div>
 
+                                            {/* Group 6: Why Choose Us / The Sweet Spot Difference */}
+                                            <div className="space-y-4 pt-4 border-t border-neutral-100 text-left">
+                                                <h2 className="text-sm font-bold text-neutral-900 border-b border-neutral-100 pb-2 uppercase tracking-wider flex items-center gap-2">
+                                                    "Why Choose Us" / Difference Section
+                                                </h2>
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Section Badge Tag</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.diff_badge || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, diff_badge: e.target.value })}
+                                                            placeholder="Why Choose Us"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Heading Line 1</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.diff_title_1 || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, diff_title_1: e.target.value })}
+                                                            placeholder="The Sweet Spot"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Heading Line 2 (Highlighted)</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.diff_title_2 || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, diff_title_2: e.target.value })}
+                                                            placeholder="Difference"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                        />
+                                                    </div>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Section Subtitle Paragraph</label>
+                                                    <textarea 
+                                                        rows={2}
+                                                        value={settingsForm.diff_description || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, diff_description: e.target.value })}
+                                                        placeholder="What makes us special? It's the little things — made with intention, served with love."
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary rounded-lg transition-colors"
+                                                    />
+                                                </div>
+
+                                                <div className="space-y-4 pt-2">
+                                                    <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-600 border-b border-neutral-100 pb-1">
+                                                        Accordion Feature Cards (3 Highlights)
+                                                    </p>
+                                                    
+                                                    {/* Card 1 */}
+                                                    <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
+                                                        <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 1</span>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                            <div className="md:col-span-1">
+                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
+                                                                <input 
+                                                                    type="text"
+                                                                    value={settingsForm.diff_item_1_title || ''}
+                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_1_title: e.target.value })}
+                                                                    placeholder="Made with love"
+                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                                />
+                                                            </div>
+                                                            <div className="md:col-span-2">
+                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
+                                                                <textarea 
+                                                                    rows={2}
+                                                                    value={settingsForm.diff_item_1_content || ''}
+                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_1_content: e.target.value })}
+                                                                    placeholder="Every dessert is crafted by hand using traditional recipes..."
+                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Card 2 */}
+                                                    <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
+                                                        <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 2</span>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                            <div className="md:col-span-1">
+                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
+                                                                <input 
+                                                                    type="text"
+                                                                    value={settingsForm.diff_item_2_title || ''}
+                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_2_title: e.target.value })}
+                                                                    placeholder="Premium Ingredients"
+                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                                />
+                                                            </div>
+                                                            <div className="md:col-span-2">
+                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
+                                                                <textarea 
+                                                                    rows={2}
+                                                                    value={settingsForm.diff_item_2_content || ''}
+                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_2_content: e.target.value })}
+                                                                    placeholder="We source real Madagascan vanilla pods..."
+                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Card 3 */}
+                                                    <div className="bg-neutral-50 p-4 rounded-xl border border-neutral-200/80 space-y-3">
+                                                        <span className="text-[10px] font-extrabold uppercase text-rose-600 tracking-wider">Highlight Card 3</span>
+                                                        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                                            <div className="md:col-span-1">
+                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Title</label>
+                                                                <input 
+                                                                    type="text"
+                                                                    value={settingsForm.diff_item_3_title || ''}
+                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_3_title: e.target.value })}
+                                                                    placeholder="Hygienic Promise"
+                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                                />
+                                                            </div>
+                                                            <div className="md:col-span-2">
+                                                                <label className="block text-neutral-500 text-[9px] font-bold uppercase tracking-wider mb-1">Content Text</label>
+                                                                <textarea 
+                                                                    rows={2}
+                                                                    value={settingsForm.diff_item_3_content || ''}
+                                                                    onChange={(e) => setSettingsForm({ ...settingsForm, diff_item_3_content: e.target.value })}
+                                                                    placeholder="Our kitchen strictly adheres to five-star food hygiene..."
+                                                                    className="w-full bg-white border border-neutral-200 px-3 py-2 text-xs text-neutral-800 focus:outline-none rounded-lg"
+                                                                />
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
                                             <button type="submit" className="w-full mt-6 bg-primary text-white font-bold py-3 hover:bg-primary-hover transition-colors text-xs rounded-lg uppercase tracking-wider cursor-pointer shadow-xs">
                                                 Save Settings Configurations
                                             </button>

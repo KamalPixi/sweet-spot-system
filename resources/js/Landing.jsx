@@ -100,7 +100,7 @@ export default function Landing() {
                     {/* Continuous Soft Pink Gradient Section: Treats -> Difference -> Local Love */}
                     <div className="w-full bg-gradient-to-b from-[#FAF0F3] via-[#FFF8FA] to-[#FAF0F3]">
                         <HomeMadeTreatsSection />
-                        <DifferenceSection />
+                        <DifferenceSection configs={configs} />
                         <LocalLoveSection />
                     </div>
 

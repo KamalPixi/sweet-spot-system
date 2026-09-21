@@ -1,21 +1,26 @@
 import React, { useState } from 'react';
 import { ArrowDown, ArrowUp } from 'lucide-react';
 
-export default function DifferenceSection() {
+export default function DifferenceSection({ configs = {} }) {
     const [openIndex, setOpenIndex] = useState(0);
+
+    const badgeTag = configs.diff_badge || "Why Choose Us";
+    const titleLine1 = configs.diff_title_1 || "The Sweet Spot";
+    const titleLine2 = configs.diff_title_2 || "Difference";
+    const descriptionText = configs.diff_description || "What makes us special? It's the little things — made with intention, served with love.";
 
     const items = [
         {
-            title: "Made with love",
-            content: "Every dessert is crafted by hand using traditional recipes and genuine passion for sweetness. We bake in small batches to guarantee unmatched flavor and texture in every mouthful."
+            title: configs.diff_item_1_title || "Made with love",
+            content: configs.diff_item_1_content || "Every dessert is crafted by hand using traditional recipes and genuine passion for sweetness. We bake in small batches to guarantee unmatched flavor and texture in every mouthful."
         },
         {
-            title: "Premium Ingredients",
-            content: "We source real Madagascan vanilla pods, pure Belgian cocoa, organic British dairy, and seasonal fresh berries without artificial flavorings or shortcuts."
+            title: configs.diff_item_2_title || "Premium Ingredients",
+            content: configs.diff_item_2_content || "We source real Madagascan vanilla pods, pure Belgian cocoa, organic British dairy, and seasonal fresh berries without artificial flavorings or shortcuts."
         },
         {
-            title: "Hygienic Promise",
-            content: "Our kitchen strictly adheres to five-star food hygiene standards. All bakes are prepared, sealed, and packaged under certified cleanroom protocols."
+            title: configs.diff_item_3_title || "Hygienic Promise",
+            content: configs.diff_item_3_content || "Our kitchen strictly adheres to five-star food hygiene standards. All bakes are prepared, sealed, and packaged under certified cleanroom protocols."
         }
     ];
 
@@ -29,16 +34,16 @@ export default function DifferenceSection() {
                 {/* Left: Heading and Subtitle */}
                 <div className="lg:col-span-5 flex flex-col items-start text-left">
                     <span className="text-[11px] md:text-xs font-semibold tracking-wider text-rose-500 uppercase mb-2">
-                        Why Choose Us
+                        {badgeTag}
                     </span>
 
                     <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-[#1f191b] tracking-tight leading-[1.15]">
-                        The Sweet Spot<br />
-                        <span className="font-bold">Difference</span>
+                        {titleLine1}<br />
+                        <span className="font-bold">{titleLine2}</span>
                     </h2>
 
                     <p className="mt-3 text-xs sm:text-sm text-neutral-600 font-light leading-relaxed max-w-sm">
-                        What makes us special? It's the little things — made with intention, served with love.
+                        {descriptionText}
                     </p>
                 </div>
 
