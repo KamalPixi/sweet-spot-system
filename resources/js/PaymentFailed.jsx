@@ -33,9 +33,6 @@ export default function PaymentFailed() {
                     {/* Failure Notice Card */}
                     <div className="bg-white rounded-[28px] border border-neutral-200/90 shadow-xl shadow-[#24161b]/5 p-6 sm:p-8 text-center space-y-6 relative overflow-hidden">
                         
-                        {/* Decorative Top Accent Bar */}
-                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-rose-500 via-amber-400 to-rose-600" />
-
                         {/* Animated Alert Icon */}
                         <div className="pt-2">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-rose-50 text-rose-600 flex items-center justify-center mx-auto mb-4 border border-rose-200/70 shadow-inner">

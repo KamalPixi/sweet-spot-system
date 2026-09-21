@@ -91,9 +91,6 @@ export default function PaymentSuccess() {
                     {/* Status Card */}
                     <div className="bg-white rounded-[28px] border border-neutral-200/90 shadow-xl shadow-[#24161b]/5 p-6 sm:p-8 text-center space-y-6 relative overflow-hidden">
                         
-                        {/* Decorative Top Accent Bar */}
-                        <div className="absolute top-0 inset-x-0 h-1.5 bg-gradient-to-r from-amber-400 via-[#e5b582] to-emerald-500" />
-
                         {/* Animated Badge & Success Icon */}
                         <div className="pt-2">
                             <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mx-auto mb-4 border border-emerald-200/70 shadow-inner">
