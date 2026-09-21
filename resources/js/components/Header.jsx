@@ -3,6 +3,7 @@ import { MenuIcon, SearchIcon, UserIcon } from './HeaderIcons';
 import { useApp } from '../AppContext';
 import { useLocation } from 'react-router-dom';
 import HeaderCartButton from './HeaderCartButton';
+import HeaderSearchButton from './HeaderSearchButton';
 
 const Logo = () => (
     <svg className="w-8 h-8 text-white fill-current transition-transform hover:scale-105" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -39,13 +40,7 @@ export default function Header({ setIsMenuOpen, setIsSearchOpen, isSearchOpen, n
                     </div>
 
                     <div className="flex items-center space-x-0 md:space-x-4">
-                        <button 
-                            onClick={() => setIsSearchOpen(!isSearchOpen)} 
-                            className="text-white hover:text-white/80 transition-colors px-1 py-1.5 md:p-2 cursor-pointer focus:outline-none flex items-center justify-center"
-                            aria-label="Search"
-                        >
-                            <SearchIcon className="w-[21px] h-[21px]" strokeWidth={1.75} />
-                        </button>
+                        <HeaderSearchButton className="px-1 py-1.5 md:p-2" />
                         {!isCartRoute && (
                             <HeaderCartButton />
                         )}

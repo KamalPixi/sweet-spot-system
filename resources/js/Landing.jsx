@@ -6,6 +6,7 @@ import { MenuIcon, SearchIcon, UserIcon } from './components/HeaderIcons';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import HeaderCartButton from './components/HeaderCartButton';
+import HeaderSearchButton from './components/HeaderSearchButton';
 
 // Landing Page Modular Sections
 import HeroSection from './landing/HeroSection';
@@ -68,13 +69,7 @@ export default function Landing() {
 
                 {/* Right: Actions (Search, Cart, User) */}
                 <div className="flex items-center space-x-1 sm:space-x-2 md:space-x-3">
-                    <button 
-                        onClick={() => setIsSearchOpen(!isSearchOpen)} 
-                        className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
-                        aria-label="Search products"
-                    >
-                        <SearchIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
-                    </button>
+                    <HeaderSearchButton className="p-1.5" />
 
                     <HeaderCartButton />
 

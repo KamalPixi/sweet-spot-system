@@ -6,6 +6,7 @@ import { useApp } from './AppContext';
 import Sidebar from './components/Sidebar';
 import Footer from './components/Footer';
 import HeaderCartButton from './components/HeaderCartButton';
+import HeaderSearchButton from './components/HeaderSearchButton';
 
 export default function PdfMenu() {
     const navigate = useNavigate();
@@ -139,13 +140,7 @@ export default function PdfMenu() {
 
                     {/* Right: Actions (Search, Cart, User) */}
                     <div className="flex items-center space-x-1.5 sm:space-x-3">
-                        <button 
-                            onClick={() => setIsSearchOpen(!isSearchOpen)} 
-                            className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
-                            aria-label="Search products"
-                        >
-                            <SearchIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
-                        </button>
+                        <HeaderSearchButton className="p-1.5" />
 
                         <HeaderCartButton />
 

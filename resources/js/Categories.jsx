@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import ProductCard from './components/ProductCard';
 import HeaderCartButton from './components/HeaderCartButton';
+import HeaderSearchButton from './components/HeaderSearchButton';
 import { MenuIcon, SearchIcon, UserIcon } from './components/HeaderIcons';
 import { SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
 
@@ -247,13 +248,7 @@ export default function Categories() {
 
                     {/* Right: Actions (Search, Cart, User) */}
                     <div className="flex items-center space-x-1.5 sm:space-x-3">
-                        <button 
-                            onClick={() => setIsSearchOpen(!isSearchOpen)} 
-                            className="text-white/90 hover:text-white transition-colors p-1.5 cursor-pointer focus:outline-none"
-                            aria-label="Search products"
-                        >
-                            <SearchIcon className="w-[19px] h-[19px]" strokeWidth={1.75} />
-                        </button>
+                        <HeaderSearchButton className="p-1.5" />
 
                         <HeaderCartButton />
 
