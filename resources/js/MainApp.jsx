@@ -269,6 +269,7 @@ export default function MainApp() {
                         <Route path="/admin/customers" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/customers/:id" element={<RequireAdmin><AdminCustomerDetailPage /></RequireAdmin>} />
                         <Route path="/admin/newsletter" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
+                        <Route path="/admin/reviews" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/profile" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/settings" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
                         <Route path="/admin/trash" element={<RequireAdmin><AdminDashboard /></RequireAdmin>} />
