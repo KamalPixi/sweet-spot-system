@@ -391,6 +391,9 @@ export default function Checkout() {
     // Guest contact method choice ('email' or 'phone')
     const [guestContactMethod, setGuestContactMethod] = useState('phone');
 
+    // Stepper flow: 'details' (Fulfillment & Contact) -> 'payment' (Payment Gateway & Review)
+    const [checkoutStep, setCheckoutStep] = useState('details');
+
     // Status states
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
@@ -442,6 +445,64 @@ export default function Checkout() {
         setError(null);
         toast.error(message);
         setLoading(false);
+    };
+
+    const validateStep1 = () => {
+        if (cart.length === 0) {
+            failCheckoutValidation('Your cart is empty.');
+            return false;
+        }
+
+        if (!orderType) {
+            failCheckoutValidation('Choose delivery or collection before proceeding.');
+            return false;
+        }
+
+        if (orderType === 'delivery' && !hasDeliveryDetails) {
+            failCheckoutValidation('Add your delivery address before proceeding.');
+            return false;
+        }
+
+        if (orderType === 'collection' && !hasCollectionDetails) {
+            failCheckoutValidation('Select a collection slot before proceeding.');
+            return false;
+        }
+
+        if (isGuestCheckout) {
+            if (guestContactMethod === 'email' && !email.trim()) {
+                failCheckoutValidation('Enter your email address to continue as a guest.');
+                return false;
+            }
+            if (guestContactMethod === 'phone' && !phone.trim()) {
+                failCheckoutValidation('Enter your phone number to continue as a guest.');
+                return false;
+            }
+        } else if (!user && authTab === 'auth') {
+            failCheckoutValidation('Please sign in or create an account to proceed, or choose Guest Checkout.');
+            return false;
+        } else if (user) {
+            if (!firstName || !lastName || (!phone && !email)) {
+                failCheckoutValidation('Please ensure your name and contact details are filled in.');
+                return false;
+            }
+        }
+
+        return true;
+    };
+
+    const handleProceedToPayment = async (e) => {
+        if (e) e.preventDefault();
+        setError(null);
+
+        if (!validateStep1()) return;
+
+        // If real Stripe is configured, automatically initialize payment intent by placing draft/pending order
+        if (isRealStripeConfigured) {
+            await handlePlaceOrder(e);
+        } else {
+            setCheckoutStep('payment');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
     };
 
     const handlePlaceOrder = async (e) => {
@@ -648,24 +709,59 @@ export default function Checkout() {
             <main className="w-full mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 px-3 sm:px-6 pt-5 pb-16 md:px-10 md:pt-8 md:pb-24 bg-[#fdfaf5] shadow-2xl flex-grow flex flex-col items-center">
                 <div className="w-full max-w-6xl">
 
-                    {/* Back Button */}
-                    {!stripeClientSecret && (
-                        <div className="mb-4 sm:mb-6">
-                            <button 
-                                type="button"
-                                onClick={() => {
-                                    if (window.history.state && window.history.state.idx > 0) {
-                                        navigate(-1);
-                                    } else {
-                                        navigate('/');
-                                    }
-                                }}
-                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-neutral-200 shadow-xs text-xs font-bold uppercase tracking-wider text-neutral-600 hover:text-[#24161b] hover:border-neutral-300 transition-all cursor-pointer"
-                            >
-                                <ChevronLeft size={14} /> <span>Back</span>
-                            </button>
+                    {/* Stepper Navigation Header & Back Button */}
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
+                        <button 
+                            type="button"
+                            onClick={() => {
+                                if (stripeClientSecret) {
+                                    setStripeClientSecret(null);
+                                    setActiveOrderNumber('');
+                                    setCheckoutStep('details');
+                                } else if (checkoutStep === 'payment') {
+                                    setCheckoutStep('details');
+                                } else if (window.history.state && window.history.state.idx > 0) {
+                                    navigate(-1);
+                                } else {
+                                    navigate('/');
+                                }
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-neutral-200 shadow-xs text-xs font-bold uppercase tracking-wider text-neutral-600 hover:text-[#24161b] hover:border-neutral-300 transition-all cursor-pointer w-fit"
+                        >
+                            <ChevronLeft size={14} /> <span>{checkoutStep === 'payment' || stripeClientSecret ? 'Back to Details' : 'Back'}</span>
+                        </button>
+
+                        {/* Top Stepper Breadcrumb */}
+                        <div className="flex items-center bg-white border border-neutral-200/80 px-3.5 py-1.5 rounded-full shadow-xs text-xs">
+                            <div className="flex items-center gap-2">
+                                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
+                                    (checkoutStep === 'payment' || stripeClientSecret)
+                                        ? 'bg-emerald-600 text-white' 
+                                        : 'bg-[#24161b] text-[#e5b582]'
+                                }`}>
+                                    {(checkoutStep === 'payment' || stripeClientSecret) ? '✓' : '1'}
+                                </span>
+                                <span className={`font-semibold ${checkoutStep === 'details' && !stripeClientSecret ? 'text-[#24161b]' : 'text-neutral-500'}`}>
+                                    Details & Fulfillment
+                                </span>
+                            </div>
+
+                            <span className="mx-3 text-neutral-300">──</span>
+
+                            <div className="flex items-center gap-2">
+                                <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
+                                    (checkoutStep === 'payment' || stripeClientSecret)
+                                        ? 'bg-[#24161b] text-[#e5b582]'
+                                        : 'bg-neutral-100 text-neutral-400'
+                                }`}>
+                                    2
+                                </span>
+                                <span className={`font-semibold ${(checkoutStep === 'payment' || stripeClientSecret) ? 'text-[#24161b]' : 'text-neutral-400'}`}>
+                                    Payment
+                                </span>
+                            </div>
                         </div>
-                    )}
+                    </div>
 
                     {/* Two-column responsive layout */}
                     <div className="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
@@ -675,43 +771,130 @@ export default function Checkout() {
                         ══════════════════════════════════════════ */}
                         <div className="w-full lg:flex-1 space-y-4 pb-4 lg:pb-10">
 
-                            {/* ── Stripe Payment Step (When active) ── */}
-                            {stripeClientSecret ? (
-                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xl shadow-[#24161b]/5 p-5 sm:p-7 space-y-6">
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
-                                            <Lock size={18} strokeWidth={2.2} />
+                            {/* ═══════════════════════════════════════
+                                STEP 2: PAYMENT (Stripe Gateway or Simulated)
+                            ═══════════════════════════════════════ */}
+                            {(stripeClientSecret || checkoutStep === 'payment') ? (
+                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xl shadow-[#24161b]/5 p-5 sm:p-7 space-y-6 animate-fadeIn">
+                                    <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
+                                                <Lock size={18} strokeWidth={2.2} />
+                                            </div>
+                                            <div>
+                                                <h2 className="text-[#24161b] font-serif text-xl font-bold">Secure Payment</h2>
+                                                <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                                                    <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                                                    Bank-Grade 256-Bit SSL Encrypted
+                                                </p>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <h2 className="text-[#24161b] font-serif text-xl font-bold">Secure Payment</h2>
-                                            <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
-                                                <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
-                                                Bank-Grade 256-Bit SSL Encrypted
-                                            </p>
-                                        </div>
+
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setStripeClientSecret(null);
+                                                setActiveOrderNumber('');
+                                                setCheckoutStep('details');
+                                            }}
+                                            className="text-xs font-semibold text-neutral-500 hover:text-[#24161b] underline cursor-pointer"
+                                        >
+                                            Edit Details
+                                        </button>
                                     </div>
 
+                                    {/* Order Reference & Total Header */}
                                     <div className="bg-[#fdfaf5] rounded-2xl p-4 text-xs space-y-2.5 border border-neutral-200/80">
-                                        <div className="flex justify-between items-center">
-                                            <span className="text-neutral-500">Order Reference</span>
-                                            <span className="font-mono font-bold text-[#24161b] bg-white px-2.5 py-1 rounded-lg border border-neutral-200 text-xs">
-                                                {activeOrderNumber}
+                                        {activeOrderNumber && (
+                                            <div className="flex justify-between items-center">
+                                                <span className="text-neutral-500">Order Reference</span>
+                                                <span className="font-mono font-bold text-[#24161b] bg-white px-2.5 py-1 rounded-lg border border-neutral-200 text-xs">
+                                                    {activeOrderNumber}
+                                                </span>
+                                            </div>
+                                        )}
+                                        <div className="flex justify-between items-center text-neutral-600">
+                                            <span>Fulfillment</span>
+                                            <span className="font-bold text-[#24161b] capitalize">
+                                                {orderType === 'delivery' ? 'Delivery' : 'Counter Collection'}
                                             </span>
                                         </div>
-                                        <div className="flex justify-between items-baseline pt-1 border-t border-neutral-200/60">
-                                            <span className="text-neutral-500 font-medium">Total Payable</span>
-                                            <span className="font-serif font-black text-[#24161b] text-base">£{cartTotal.toFixed(2)}</span>
+                                        <div className="flex justify-between items-baseline pt-2 border-t border-neutral-200/60">
+                                            <span className="text-neutral-600 font-medium">Total Payable</span>
+                                            <span className="font-serif font-black text-[#24161b] text-lg">£{cartTotal.toFixed(2)}</span>
                                         </div>
                                     </div>
 
-                                    <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret, appearance: stripeAppearance }}>
-                                        <StripePaymentForm
-                                            orderNumber={activeOrderNumber}
-                                            phone={phone}
-                                            email={email}
-                                            onClose={() => { setStripeClientSecret(null); setActiveOrderNumber(''); }}
-                                        />
-                                    </Elements>
+                                    {/* Stripe Elements Gateway */}
+                                    {stripeClientSecret ? (
+                                        <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret, appearance: stripeAppearance }}>
+                                            <StripePaymentForm
+                                                orderNumber={activeOrderNumber}
+                                                phone={phone}
+                                                email={email}
+                                                onClose={() => { setStripeClientSecret(null); setActiveOrderNumber(''); setCheckoutStep('details'); }}
+                                            />
+                                        </Elements>
+                                    ) : (
+                                        /* Simulated Card Fallback for Local/Test environment */
+                                        <form onSubmit={handlePlaceOrder} className="space-y-4">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-xs font-bold text-[#24161b]">Card Details</span>
+                                                <span className="text-[10px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
+                                                    Simulated Test Mode
+                                                </span>
+                                            </div>
+                                            <input 
+                                                type="text" 
+                                                value={cardNumber} 
+                                                onChange={e => setCardNumber(e.target.value)} 
+                                                placeholder="Card number"
+                                                className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
+                                            />
+                                            <div className="grid grid-cols-3 gap-3">
+                                                <input 
+                                                    type="text" 
+                                                    value={expDate} 
+                                                    onChange={e => setExpDate(e.target.value)} 
+                                                    placeholder="MM / YY"
+                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
+                                                />
+                                                <input 
+                                                    type="text" 
+                                                    value={cvc} 
+                                                    onChange={e => setCvc(e.target.value)} 
+                                                    placeholder="CVC"
+                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
+                                                />
+                                                <input 
+                                                    type="text" 
+                                                    value={cardName} 
+                                                    onChange={e => setCardName(e.target.value)} 
+                                                    placeholder="Name on card"
+                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-medium" 
+                                                />
+                                            </div>
+
+                                            {error && (
+                                                <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs animate-fadeIn">
+                                                    <AlertCircle size={16} className="shrink-0" />
+                                                    <span>{error}</span>
+                                                </div>
+                                            )}
+
+                                            <button 
+                                                type="submit" 
+                                                disabled={loading}
+                                                className="w-full bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] hover:text-white font-bold rounded-2xl py-4 flex items-center justify-center gap-2 shadow-xl shadow-[#24161b]/15 transition-all cursor-pointer text-sm tracking-wide active:scale-98"
+                                            >
+                                                {loading ? (
+                                                    <><Loader2 size={16} className="animate-spin" /><span>Confirming Order…</span></>
+                                                ) : (
+                                                    <><Lock size={15} className="shrink-0" strokeWidth={2.2} /><span>Pay £{cartTotal.toFixed(2)} & Confirm</span></>
+                                                )}
+                                            </button>
+                                        </form>
+                                    )}
 
                                     <div className="pt-4 border-t border-neutral-100 flex items-center justify-between text-[10px] text-neutral-400 font-medium">
                                         <span className="flex items-center gap-1"><Lock size={11} /> 256-bit SSL</span>
@@ -719,6 +902,9 @@ export default function Checkout() {
                                     </div>
                                 </div>
                             ) : (
+                                /* ═══════════════════════════════════════
+                                    STEP 1: DETAILS & FULFILLMENT
+                                ═══════════════════════════════════════ */
                                 <>
                                     {/* Mobile-only collapsible basket */}
                                     {cart.length > 0 && (
@@ -798,13 +984,13 @@ export default function Checkout() {
                                         </div>
                                     )}
 
-                                    {/* ── STEP 1 · Account ── */}
+                                    {/* ── CARD 1 · Customer & Contact ── */}
                                     <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
                                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
                                             <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
                                                 1
                                             </span>
-                                            <h2 className="text-sm font-bold text-[#24161b] tracking-wide">Account</h2>
+                                            <h2 className="text-sm font-bold text-[#24161b] tracking-wide">Customer & Contact</h2>
                                             {user && (
                                                 <span className="ml-auto text-[10px] font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-full flex items-center gap-1">
                                                     <CheckCircle size={10} /> Signed in
@@ -814,7 +1000,7 @@ export default function Checkout() {
                                         <div className="p-5 sm:p-6">
                                             {!user ? (
                                                 <div className="space-y-4">
-                                                    {/* Clean Modern Pill Switcher */}
+                                                    {/* Clean Modern Switcher */}
                                                     <div className="flex bg-neutral-100/80 p-1 rounded-2xl w-full border border-neutral-200/60">
                                                         <button 
                                                             type="button" 
@@ -839,6 +1025,69 @@ export default function Checkout() {
                                                             Sign In / Sign Up
                                                         </button>
                                                     </div>
+
+                                                    {/* Guest Contact Details */}
+                                                    {authTab === 'guest' && (
+                                                        <div className="space-y-3.5 pt-1 animate-fadeIn">
+                                                            <div>
+                                                                <div className="flex items-center justify-between mb-1.5">
+                                                                    <label className="text-xs font-medium text-neutral-700">
+                                                                        {guestContactMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
+                                                                    </label>
+                                                                    <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => { setGuestContactMethod('phone'); setEmail(''); }}
+                                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                guestContactMethod === 'phone'
+                                                                                    ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                    : 'text-neutral-500 hover:text-neutral-900'
+                                                                            }`}
+                                                                        >
+                                                                            Phone
+                                                                        </button>
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => { setGuestContactMethod('email'); setPhone(''); }}
+                                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
+                                                                                guestContactMethod === 'email'
+                                                                                    ? 'bg-white text-[#24161b] shadow-xs'
+                                                                                    : 'text-neutral-500 hover:text-neutral-900'
+                                                                            }`}
+                                                                        >
+                                                                            Email
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+
+                                                                {guestContactMethod === 'phone' ? (
+                                                                    <div className="relative flex items-center">
+                                                                        <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                                            <span className="text-sm">🇬🇧</span>
+                                                                            <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                        </div>
+                                                                        <input 
+                                                                            type="tel" 
+                                                                            required 
+                                                                            value={phone} 
+                                                                            onChange={e => setPhone(e.target.value)} 
+                                                                            placeholder="07123 456789"
+                                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                        />
+                                                                    </div>
+                                                                ) : (
+                                                                    <input 
+                                                                        type="email" 
+                                                                        required 
+                                                                        value={email} 
+                                                                        onChange={e => setEmail(e.target.value)} 
+                                                                        placeholder="jane.doe@example.com"
+                                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                    />
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    )}
 
                                                     {/* Inline Auth Form */}
                                                     {authTab === 'auth' && (
@@ -885,8 +1134,8 @@ export default function Checkout() {
                                                                                 </div>
                                                                                 <input 
                                                                                     type="tel" 
-                                                                                    value={phone}
-                                                                                    onChange={(e) => setPhone(e.target.value)}
+                                                                                    value={phone} 
+                                                                                    onChange={(e) => setPhone(e.target.value)} 
                                                                                     placeholder="07123 456789"
                                                                                     className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                                                 />
@@ -894,19 +1143,17 @@ export default function Checkout() {
                                                                         ) : (
                                                                             <input 
                                                                                 type="email" 
-                                                                                value={email}
-                                                                                onChange={(e) => setEmail(e.target.value)}
+                                                                                value={email} 
+                                                                                onChange={(e) => setEmail(e.target.value)} 
                                                                                 placeholder="jane.doe@example.com"
                                                                                 className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                                             />
                                                                         )}
                                                                     </div>
 
-                                                                    {/* Password with label & show/hide toggle */}
+                                                                    {/* Password */}
                                                                     <div>
-                                                                        <div className="flex justify-between items-center mb-1.5">
-                                                                            <label className="block text-xs font-medium text-neutral-700">Password</label>
-                                                                        </div>
+                                                                        <label className="block text-xs font-medium text-neutral-700 mb-1.5">Password</label>
                                                                         <div className="relative flex items-center">
                                                                             <input 
                                                                                 type={showPassword ? 'text' : 'password'}
@@ -1012,8 +1259,8 @@ export default function Checkout() {
                                                                                 </div>
                                                                                 <input 
                                                                                     type="tel" 
-                                                                                    value={phone}
-                                                                                    onChange={(e) => setPhone(e.target.value)}
+                                                                                    value={phone} 
+                                                                                    onChange={(e) => setPhone(e.target.value)} 
                                                                                     placeholder="07123 456789"
                                                                                     className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                                                 />
@@ -1021,15 +1268,15 @@ export default function Checkout() {
                                                                         ) : (
                                                                             <input 
                                                                                 type="email" 
-                                                                                value={email}
-                                                                                onChange={(e) => setEmail(e.target.value)}
+                                                                                value={email} 
+                                                                                onChange={(e) => setEmail(e.target.value)} 
                                                                                 placeholder="jane.doe@example.com"
                                                                                 className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                                             />
                                                                         )}
                                                                     </div>
 
-                                                                    {/* Password with label & show/hide toggle */}
+                                                                    {/* Password */}
                                                                     <div>
                                                                         <label className="block text-xs font-medium text-neutral-700 mb-1.5">Password</label>
                                                                         <div className="relative flex items-center">
@@ -1101,321 +1348,136 @@ export default function Checkout() {
                                         </div>
                                     </div>
 
-                                    {/* ── Checkout Steps Form ── */}
-                                    {(!!user || authTab === 'guest') && (
-                                        <form onSubmit={handlePlaceOrder} id="checkout-form" className="space-y-4">
-
-                                            {/* ── STEP 2 · Fulfillment Method (Delivery / Collection) ── */}
-                                            <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
-                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
-                                                    <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
-                                                        2
-                                                    </span>
-                                                    <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
-                                                        {!orderType ? 'Order Method' : orderType === 'delivery' ? 'Delivery Address' : 'Collection Slot'}
-                                                    </h2>
-                                                    {orderType && (
+                                    {/* ── CARD 2 · Fulfillment & Details ── */}
+                                    <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
+                                        <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
+                                            <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
+                                                2
+                                            </span>
+                                            <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
+                                                {!orderType ? 'Fulfillment Method' : orderType === 'delivery' ? 'Delivery Address' : 'Collection Slot'}
+                                            </h2>
+                                            {orderType && (
+                                                <button 
+                                                    type="button" 
+                                                    onClick={handleSwitchOrderBanner}
+                                                    className="ml-auto text-[10px] font-bold text-[#24161b] bg-neutral-100 hover:bg-neutral-200 px-3 py-1 rounded-full transition-all cursor-pointer uppercase tracking-wider border border-neutral-200"
+                                                >
+                                                    Change
+                                                </button>
+                                            )}
+                                        </div>
+                                        <div className="p-5 sm:p-6 text-xs space-y-4">
+                                            {!orderType ? (
+                                                <div className="space-y-4">
+                                                    <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
+                                                        <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
+                                                        <div>
+                                                            <p className="font-bold">Choose delivery or collection first.</p>
+                                                            <p className="text-[11px] text-amber-700 mt-1">We need this before calculating the final order details.</p>
+                                                        </div>
+                                                    </div>
+                                                    <div className="grid sm:grid-cols-2 gap-3">
                                                         <button 
                                                             type="button" 
-                                                            onClick={handleSwitchOrderBanner}
-                                                            className="ml-auto text-[10px] font-bold text-[#24161b] bg-neutral-100 hover:bg-neutral-200 px-3 py-1 rounded-full transition-all cursor-pointer uppercase tracking-wider border border-neutral-200"
+                                                            onClick={() => navigate('/delivery-setup?redirect=/cart')}
+                                                            className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
                                                         >
-                                                            Change
+                                                            <MapPin size={15} className="text-[#e5b582]" />
+                                                            <span>Set Delivery Address</span>
                                                         </button>
-                                                    )}
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => navigate('/collection-setup?redirect=/cart')}
+                                                            className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
+                                                        >
+                                                            <Clock size={15} className="text-[#e5b582]" />
+                                                            <span>Set Collection Slot</span>
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                                <div className="p-5 sm:p-6 text-xs">
-                                                    {!orderType ? (
-                                                        <div className="space-y-4">
-                                                            <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
-                                                                <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
-                                                                <div>
-                                                                    <p className="font-bold">Choose delivery or collection first.</p>
-                                                                    <p className="text-[11px] text-amber-700 mt-1">We need this before we can calculate the final order details.</p>
-                                                                </div>
+                                            ) : (
+                                                <div className="flex items-center gap-3.5">
+                                                    <div className="w-10 h-10 rounded-2xl bg-[#24161b]/5 text-[#24161b] border border-[#24161b]/10 flex items-center justify-center shrink-0">
+                                                        {orderType === 'delivery' ? <MapPin size={17} className="text-[#e5b582]" /> : <Clock size={17} className="text-[#e5b582]" />}
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        {selectedMethodIsComplete ? (
+                                                            <div>
+                                                                <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-0.5">
+                                                                    {orderType === 'delivery' ? 'Delivering To' : 'Confirmed Slot'}
+                                                                </span>
+                                                                <p className="text-neutral-900 font-bold text-xs sm:text-sm">
+                                                                    {orderType === 'delivery'
+                                                                        ? renderDeliveryAddress()
+                                                                        : <>{formatCollectionSlot(collectionSlot)}</>}
+                                                                </p>
                                                             </div>
-                                                            <div className="grid sm:grid-cols-2 gap-3">
-                                                                <button 
-                                                                    type="button" 
-                                                                    onClick={() => navigate('/delivery-setup?redirect=/cart')}
-                                                                    className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
-                                                                >
-                                                                    <MapPin size={15} className="text-[#e5b582]" />
-                                                                    <span>Set Delivery Address</span>
-                                                                </button>
-                                                                <button 
-                                                                    type="button" 
-                                                                    onClick={() => navigate('/collection-setup?redirect=/cart')}
-                                                                    className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
-                                                                >
-                                                                    <Clock size={15} className="text-[#e5b582]" />
-                                                                    <span>Set Collection Slot</span>
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        <div className="flex items-center gap-3.5">
-                                                            <div className="w-10 h-10 rounded-2xl bg-[#24161b]/5 text-[#24161b] border border-[#24161b]/10 flex items-center justify-center shrink-0">
-                                                                {orderType === 'delivery' ? <MapPin size={17} className="text-[#e5b582]" /> : <Clock size={17} className="text-[#e5b582]" />}
-                                                            </div>
-                                                            <div className="flex-1 min-w-0">
-                                                                {selectedMethodIsComplete ? (
+                                                        ) : (
+                                                            <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
+                                                                <div className="flex items-start gap-2 flex-1">
+                                                                    <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
                                                                     <div>
-                                                                        <span className="text-[10px] uppercase tracking-wider font-bold text-neutral-400 block mb-0.5">
-                                                                            {orderType === 'delivery' ? 'Delivering To' : 'Confirmed Slot'}
-                                                                        </span>
-                                                                        <p className="text-neutral-900 font-bold text-xs sm:text-sm">
+                                                                        <p className="font-bold">
+                                                                            {orderType === 'delivery' ? 'Delivery address is missing.' : 'Collection slot is missing.'}
+                                                                        </p>
+                                                                        <p className="text-[11px] text-amber-700 mt-0.5">
                                                                             {orderType === 'delivery'
-                                                                                ? renderDeliveryAddress()
-                                                                                : <>{formatCollectionSlot(collectionSlot)}</>}
+                                                                                ? 'Add your address so we can dispatch your sweets promptly.'
+                                                                                : 'Pick a date and time so our bakery counter prepares your items fresh.'}
                                                                         </p>
                                                                     </div>
-                                                                ) : (
-                                                                    <div className="flex flex-col sm:flex-row sm:items-center gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
-                                                                        <div className="flex items-start gap-2 flex-1">
-                                                                            <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
-                                                                            <div>
-                                                                                <p className="font-bold">
-                                                                                    {orderType === 'delivery' ? 'Delivery address is missing.' : 'Collection slot is missing.'}
-                                                                                </p>
-                                                                                <p className="text-[11px] text-amber-700 mt-0.5">
-                                                                                    {orderType === 'delivery'
-                                                                                        ? 'Add your address so we can dispatch your sweets promptly.'
-                                                                                        : 'Pick a date and time so our bakery counter prepares your items fresh.'}
-                                                                                </p>
-                                                                            </div>
-                                                                        </div>
-                                                                        <button 
-                                                                            type="button" 
-                                                                            onClick={handleSwitchOrderBanner}
-                                                                            className="shrink-0 rounded-full bg-white border border-amber-300 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
-                                                                        >
-                                                                            {orderType === 'delivery' ? 'Add Address' : 'Pick Slot'}
-                                                                        </button>
-                                                                    </div>
-                                                                )}
-                                                            </div>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* ── STEP 3 · Contact Details ── */}
-                                            <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
-                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
-                                                    <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
-                                                        3
-                                                    </span>
-                                                    <h2 className="text-sm font-bold text-[#24161b] tracking-wide">Contact Details</h2>
-                                                </div>
-                                                <div className="p-5 sm:p-6 space-y-3.5">
-                                                    {user ? (
-                                                        <div className="space-y-3">
-                                                            <div className="grid grid-cols-2 gap-3">
-                                                                <input 
-                                                                    type="text" 
-                                                                    required 
-                                                                    value={firstName} 
-                                                                    onChange={e => setFirstName(e.target.value)} 
-                                                                    placeholder="First name"
-                                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all w-full font-medium" 
-                                                                />
-                                                                <input 
-                                                                    type="text" 
-                                                                    required 
-                                                                    value={lastName} 
-                                                                    onChange={e => setLastName(e.target.value)} 
-                                                                    placeholder="Last name"
-                                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all w-full font-medium" 
-                                                                />
-                                                            </div>
-                                                            <input 
-                                                                type="email" 
-                                                                value={email} 
-                                                                onChange={e => setEmail(e.target.value)} 
-                                                                placeholder="Email address"
-                                                                className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-medium" 
-                                                            />
-                                                            <div className="flex bg-[#fdfaf5] border border-neutral-200 focus-within:border-[#24161b] focus-within:ring-2 focus-within:ring-[#e5b582]/30 focus-within:bg-white rounded-2xl px-4 py-1 transition-all items-center gap-2">
-                                                                <span className="text-sm leading-none shrink-0">🇬🇧</span>
-                                                                <input 
-                                                                    type="tel" 
-                                                                    value={phone} 
-                                                                    onChange={e => setPhone(e.target.value)} 
-                                                                    placeholder="Phone number"
-                                                                    className="flex-1 bg-transparent border-0 py-2.5 text-xs focus:outline-none font-medium" 
-                                                                />
-                                                            </div>
-                                                        </div>
-                                                    ) : (
-                                                        /* Guest contact */
-                                                        <div className="space-y-3.5 animate-fadeIn">
-                                                            {/* Contact field with Phone vs Email toggle header */}
-                                                            <div>
-                                                                <div className="flex items-center justify-between mb-1.5">
-                                                                    <label className="text-xs font-medium text-neutral-700">
-                                                                        {guestContactMethod === 'phone' ? 'UK Mobile Number' : 'Email Address'}
-                                                                    </label>
-                                                                    <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => { setGuestContactMethod('phone'); setEmail(''); }}
-                                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
-                                                                                guestContactMethod === 'phone'
-                                                                                    ? 'bg-white text-[#24161b] shadow-xs'
-                                                                                    : 'text-neutral-500 hover:text-neutral-900'
-                                                                            }`}
-                                                                        >
-                                                                            Phone
-                                                                        </button>
-                                                                        <button
-                                                                            type="button"
-                                                                            onClick={() => { setGuestContactMethod('email'); setPhone(''); }}
-                                                                            className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
-                                                                                guestContactMethod === 'email'
-                                                                                    ? 'bg-white text-[#24161b] shadow-xs'
-                                                                                    : 'text-neutral-500 hover:text-neutral-900'
-                                                                            }`}
-                                                                        >
-                                                                            Email
-                                                                        </button>
-                                                                    </div>
                                                                 </div>
-
-                                                                {guestContactMethod === 'phone' ? (
-                                                                    <div className="relative flex items-center">
-                                                                        <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
-                                                                            <span className="text-sm">🇬🇧</span>
-                                                                            <span className="text-xs font-semibold text-neutral-700">+44</span>
-                                                                        </div>
-                                                                        <input 
-                                                                            type="tel" 
-                                                                            required 
-                                                                            value={phone} 
-                                                                            onChange={e => setPhone(e.target.value)} 
-                                                                            placeholder="07123 456789"
-                                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
-                                                                        />
-                                                                    </div>
-                                                                ) : (
-                                                                    <input 
-                                                                        type="email" 
-                                                                        required 
-                                                                        value={email} 
-                                                                        onChange={e => setEmail(e.target.value)} 
-                                                                        placeholder="jane.doe@example.com"
-                                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
-                                                                    />
-                                                                )}
+                                                                <button 
+                                                                    type="button" 
+                                                                    onClick={handleSwitchOrderBanner}
+                                                                    className="shrink-0 rounded-full bg-white border border-amber-300 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
+                                                                >
+                                                                    {orderType === 'delivery' ? 'Add Address' : 'Pick Slot'}
+                                                                </button>
                                                             </div>
-                                                        </div>
-                                                    )}
-                                                    {(!!user || createAccount || (!createAccount && guestContactMethod === 'email')) && (
-                                                        <label className="flex items-center gap-2.5 cursor-pointer pt-1 select-none">
-                                                            <input type="checkbox" className="w-4 h-4 accent-[#24161b] rounded" defaultChecked />
-                                                            <span className="text-[11px] text-neutral-500 font-medium">Subscribe to artisanal drops, freshly baked offers & updates</span>
-                                                        </label>
-                                                    )}
-                                                </div>
-                                            </div>
-
-                                            {/* ── STEP 4 · Notes (optional) ── */}
-                                            <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
-                                                <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
-                                                    <span className="w-6 h-6 rounded-full bg-neutral-200 text-neutral-600 text-xs font-bold flex items-center justify-center shrink-0">
-                                                        4
-                                                    </span>
-                                                    <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
-                                                        Notes <span className="text-neutral-400 font-normal text-[11px]">(optional)</span>
-                                                    </h2>
-                                                </div>
-                                                <div className="p-5 sm:p-6">
-                                                    <textarea 
-                                                        rows="2" 
-                                                        value={notes} 
-                                                        onChange={e => setNotes(e.target.value)}
-                                                        placeholder="Delivery instructions, allergies, dietary requests, gift messages…"
-                                                        className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all resize-none font-medium" 
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            {/* ── STEP 5 · Payment (Simulated Mode fallback) ── */}
-                                            {!isRealStripeConfigured && (
-                                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-sm overflow-hidden transition-all">
-                                                    <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
-                                                        <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
-                                                            5
-                                                        </span>
-                                                        <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
-                                                            Payment <span className="text-[10px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full ml-1">Simulated</span>
-                                                        </h2>
-                                                    </div>
-                                                    <div className="p-5 sm:p-6 space-y-3">
-                                                        <input 
-                                                            type="text" 
-                                                            value={cardNumber} 
-                                                            onChange={e => setCardNumber(e.target.value)} 
-                                                            placeholder="Card number"
-                                                            className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
-                                                        />
-                                                        <div className="grid grid-cols-3 gap-3">
-                                                            <input 
-                                                                type="text" 
-                                                                value={expDate} 
-                                                                onChange={e => setExpDate(e.target.value)} 
-                                                                placeholder="MM / YY"
-                                                                className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
-                                                            />
-                                                            <input 
-                                                                type="text" 
-                                                                value={cvc} 
-                                                                onChange={e => setCvc(e.target.value)} 
-                                                                placeholder="CVC"
-                                                                className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
-                                                            />
-                                                            <input 
-                                                                type="text" 
-                                                                value={cardName} 
-                                                                onChange={e => setCardName(e.target.value)} 
-                                                                placeholder="Name on card"
-                                                                className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-medium" 
-                                                            />
-                                                        </div>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}
 
-                                            {isRealStripeConfigured && (
-                                                <div className="bg-white border border-neutral-200/80 rounded-2xl px-5 py-4 hidden lg:flex items-center gap-3 text-xs text-neutral-600 shadow-xs">
-                                                    <Lock size={15} className="shrink-0 text-emerald-600" strokeWidth={2.2} />
-                                                    <span>Your card details will be entered securely on the next step via <strong>Stripe 256-bit encryption</strong>.</span>
-                                                </div>
-                                            )}
+                                            {/* Optional Delivery instructions / Notes */}
+                                            <div className="pt-3 border-t border-neutral-100">
+                                                <label className="block text-[11px] font-bold text-neutral-700 mb-1.5">
+                                                    Order Notes & Requests <span className="text-neutral-400 font-normal">(optional)</span>
+                                                </label>
+                                                <textarea 
+                                                    rows="2" 
+                                                    value={notes} 
+                                                    onChange={e => setNotes(e.target.value)} 
+                                                    placeholder="Delivery instructions, allergies, dietary requests, gift messages…"
+                                                    className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all resize-none font-medium" 
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
 
-                                            {/* Error Message Display */}
-                                            {error && (
-                                                <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs animate-fadeIn">
-                                                    <AlertCircle size={16} className="shrink-0" />
-                                                    <span>{error}</span>
-                                                </div>
-                                            )}
-
-                                            {/* Primary Desktop Order CTA */}
-                                            <button 
-                                                type="submit" 
-                                                disabled={loading}
-                                                className="hidden lg:flex w-full bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] hover:text-white font-bold rounded-2xl py-4 items-center justify-center gap-2 shadow-xl shadow-[#24161b]/15 transition-all cursor-pointer text-sm tracking-wide active:scale-98"
-                                            >
-                                                {loading ? (
-                                                    <><Loader2 size={16} className="animate-spin" /><span>Placing Your Order…</span></>
-                                                ) : (
-                                                    <><Lock size={15} className="shrink-0" strokeWidth={2.2} /><span>{isRealStripeConfigured ? 'Continue to Secure Payment' : 'Place Order & Bake Fresh'}</span></>
-                                                )}
-                                            </button>
-
-                                        </form>
+                                    {/* Error Banner */}
+                                    {error && (
+                                        <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs animate-fadeIn">
+                                            <AlertCircle size={16} className="shrink-0" />
+                                            <span>{error}</span>
+                                        </div>
                                     )}
+
+                                    {/* Primary Continue Button (Desktop) */}
+                                    <button 
+                                        type="button" 
+                                        disabled={loading}
+                                        onClick={handleProceedToPayment}
+                                        className="hidden lg:flex w-full bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] hover:text-white font-bold rounded-2xl py-4 items-center justify-center gap-2 shadow-xl shadow-[#24161b]/15 transition-all cursor-pointer text-sm tracking-wide active:scale-98"
+                                    >
+                                        {loading ? (
+                                            <><Loader2 size={16} className="animate-spin" /><span>Preparing Payment Gateway…</span></>
+                                        ) : (
+                                            <><span>Continue to Payment</span><ArrowRight size={16} className="text-[#e5b582]" /></>
+                                        )}
+                                    </button>
                                 </>
                             )}
                         </div>
@@ -1569,13 +1631,21 @@ export default function Checkout() {
                         <button 
                             type="button" 
                             disabled={loading}
-                            onClick={() => document.getElementById('checkout-form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }))}
+                            onClick={(e) => {
+                                if (checkoutStep === 'details' && !stripeClientSecret) {
+                                    handleProceedToPayment(e);
+                                } else {
+                                    document.getElementById('checkout-form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+                                }
+                            }}
                             className="flex-shrink-0 bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] font-bold rounded-2xl px-6 py-3.5 flex items-center gap-2 shadow-lg shadow-[#24161b]/15 transition-all cursor-pointer text-xs uppercase tracking-wider active:scale-98"
                         >
                             {loading ? (
-                                <><Loader2 size={14} className="animate-spin" /><span>Placing…</span></>
+                                <><Loader2 size={14} className="animate-spin" /><span>Processing…</span></>
+                            ) : checkoutStep === 'details' && !stripeClientSecret ? (
+                                <><span>Continue to Payment</span><ArrowRight size={13} className="text-[#e5b582]" /></>
                             ) : (
-                                <><Lock size={13} strokeWidth={2.2} /><span>{isRealStripeConfigured ? 'Continue to Payment' : 'Place Order'}</span></>
+                                <><Lock size={13} strokeWidth={2.2} /><span>{isRealStripeConfigured ? 'Pay Now' : 'Confirm Order'}</span></>
                             )}
                         </button>
                     </div>
