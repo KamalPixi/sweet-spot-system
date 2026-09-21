@@ -4963,7 +4963,7 @@ export default function AdminDashboard() {
 
                         {/* 11. TABLES & QR CODE ORDERING TAB */}
                         {activeTab === 'tables' && (
-                            <AdminTablesTab orders={orders} />
+                            <AdminTablesTab orders={orders} configs={settings} />
                         )}
 
                         {/* 12. STAR CLOUDPRNT PRINTERS & QUEUE TAB */}

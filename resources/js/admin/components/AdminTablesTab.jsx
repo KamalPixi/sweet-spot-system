@@ -3,8 +3,13 @@ import {
     QrCode, Plus, Trash2, Printer, Download, ExternalLink, Check, Copy, UtensilsCrossed, AlertCircle, Info, Sparkles 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useApp } from '../../AppContext';
 
-export default function AdminTablesTab({ orders = [] }) {
+export default function AdminTablesTab({ orders = [], configs: configsProp }) {
+    const appContext = useApp ? useApp() : {};
+    const configs = configsProp || appContext?.configs || {};
+    const brandName = configs?.store_name || 'Sweet Spot';
+
     const [tables, setTables] = useState(() => {
         const saved = localStorage.getItem('sweet_spot_tables');
         if (saved) {
@@ -175,7 +180,7 @@ export default function AdminTablesTab({ orders = [] }) {
             </head>
             <body>
                 <div class="card">
-                    <div class="brand">Sweet Spot System</div>
+                    <div class="brand">${brandName}</div>
                     <div class="title">Table ${selectedTable.number}</div>
                     <div class="subtitle">Scan to browse our menu & order direct to your table</div>
                     <div class="qr-wrap">
@@ -373,6 +378,9 @@ export default function AdminTablesTab({ orders = [] }) {
                                 <span>Table QR Preview</span>
                             </div>
 
+                            <p className="text-[11px] font-black text-amber-600 uppercase tracking-wider mb-1">
+                                {brandName}
+                            </p>
                             <h3 className="text-xl font-black text-neutral-900">Table #{selectedTable.number}</h3>
                             <p className="text-xs text-neutral-400 mt-1">
                                 {selectedTable.area} · Seating for {selectedTable.capacity} guests
