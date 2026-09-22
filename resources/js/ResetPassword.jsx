@@ -4,7 +4,7 @@ import { useApp } from './AppContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
-import { Eye, EyeOff, Loader2, AlertCircle, ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, AlertCircle, ArrowLeft, CheckCircle2, Star, ShieldCheck, Truck } from 'lucide-react';
 
 export default function ResetPassword() {
     const navigate = useNavigate();
@@ -99,28 +99,77 @@ export default function ResetPassword() {
                 <div className="w-full max-w-6xl mx-auto">
                     {/* Integrated Editorial Split Card */}
                     <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-2xl shadow-[#24161b]/10 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
-                        {/* ════════ LEFT SHOWCASE (Pure Image with Overlay Back Button) ════════ */}
-                        <aside className="lg:col-span-5 relative hidden lg:block overflow-hidden bg-[#24161b] h-full w-full">
-                            <img 
-                                src="/images/auth-bakery.jpg" 
-                                alt="Sweet Spot Artisanal Treats" 
-                                className="w-full h-full object-cover object-center block"
-                                onError={(e) => {
-                                    e.currentTarget.src = "/images/landing-storefront.jpg";
-                                }}
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/30 pointer-events-none" />
+                        {/* ════════ LEFT SHOWCASE (Modern Premium Brand Showcase) ════════ */}
+                        <aside className="lg:col-span-5 relative hidden lg:flex flex-col justify-between p-8 sm:p-10 overflow-hidden bg-gradient-to-br from-[#1a0f13] via-[#24161b] to-[#331c26] text-white h-full w-full select-none">
+                            {/* Ambient Glowing background nodes */}
+                            <div className="absolute -top-16 -left-16 w-64 h-64 rounded-full bg-[#e5b582]/15 blur-3xl pointer-events-none" />
+                            <div className="absolute -bottom-16 -right-16 w-72 h-72 rounded-full bg-rose-500/10 blur-3xl pointer-events-none" />
+                            <div className="absolute inset-0 bg-[radial-gradient(#e5b582_1px,transparent_1px)] [background-size:24px_24px] opacity-10 pointer-events-none" />
 
-                            {/* Back Button Floating on top of Image */}
-                            <div className="absolute top-6 left-6 z-20">
+                            {/* Top Header Row */}
+                            <div className="relative z-20 flex items-center justify-between">
                                 <button 
                                     type="button"
                                     onClick={() => navigate('/login')} 
-                                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-black/30 hover:bg-black/50 text-white/90 hover:text-white backdrop-blur-md border border-white/20 transition-all text-xs font-semibold cursor-pointer shadow-sm group"
+                                    className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-white/10 hover:bg-white/20 text-white/90 hover:text-white backdrop-blur-md border border-white/15 transition-all text-xs font-semibold cursor-pointer shadow-sm group"
                                 >
                                     <ArrowLeft size={14} className="text-[#e5b582] group-hover:-translate-x-0.5 transition-transform" />
                                     <span>Sign In</span>
                                 </button>
+                            </div>
+
+                            {/* Center Editorial Hero Content */}
+                            <div className="relative z-20 space-y-5 my-auto py-4">
+                                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-400/30 text-[#e5b582] text-[10px] font-black uppercase tracking-widest shadow-2xs">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-[#e5b582] animate-pulse" />
+                                    <span>Artisanal Dessert Lounge</span>
+                                </div>
+
+                                <div className="space-y-2">
+                                    <h2 className="text-3xl font-black font-serif tracking-tight text-white leading-tight">
+                                        Where Dreams <br />
+                                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#e5b582] via-amber-200 to-[#e5b582]">
+                                            Meet Cream
+                                        </span>
+                                    </h2>
+                                    <p className="text-xs text-neutral-300 font-light leading-relaxed max-w-xs">
+                                        Freshly baked waffles, cookie dough, crepes, and signature milkshakes crafted to perfection.
+                                    </p>
+                                </div>
+
+                                {/* Feature Badges */}
+                                <div className="space-y-2.5 pt-2">
+                                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+                                        <div className="w-8 h-8 rounded-xl bg-[#e5b582]/20 text-[#e5b582] flex items-center justify-center shrink-0 border border-[#e5b582]/30">
+                                            <Truck size={15} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-white">Express Delivery & Collection</p>
+                                            <p className="text-[10px] text-neutral-400">Order online for prompt dispatch or pickup</p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/10 backdrop-blur-xs">
+                                        <div className="w-8 h-8 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center shrink-0 border border-amber-400/30">
+                                            <ShieldCheck size={15} />
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold text-white">Freshly Prepared Orders</p>
+                                            <p className="text-[10px] text-neutral-400">Handmade with premium dessert ingredients</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Bottom Social Proof / Rating Footer */}
+                            <div className="relative z-20 pt-4 border-t border-white/10 flex items-center justify-between">
+                                <div className="flex items-center gap-1 text-amber-400">
+                                    {[...Array(5)].map((_, i) => (
+                                        <Star key={i} size={12} fill="currentColor" />
+                                    ))}
+                                    <span className="text-xs font-bold text-white ml-1">4.9 / 5</span>
+                                </div>
+                                <span className="text-[11px] text-neutral-400 font-medium">1,200+ Happy Customers</span>
                             </div>
                         </aside>
 
@@ -129,8 +178,8 @@ export default function ResetPassword() {
                             {/* Mobile Top Visual Banner */}
                             <div className="lg:hidden mb-6 -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 relative overflow-hidden bg-[#24161b] text-white p-6 sm:p-8 rounded-b-[24px] shadow-sm">
                                 <img 
-                                    src="/images/auth-bakery.jpg" 
-                                    alt="Sweet Spot" 
+                                    src={configs?.store_image || configs?.hero_bg_image || "/images/landing-storefront.jpg"} 
+                                    alt={configs?.store_name || "Sweet Spot"} 
                                     className="absolute inset-0 w-full h-full object-cover object-center opacity-30"
                                 />
                                 <div className="relative z-10 flex items-center justify-between">
