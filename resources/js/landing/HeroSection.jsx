@@ -3,8 +3,9 @@ import { ArrowRight, Bike, Store, ChevronRight, Edit3, UtensilsCrossed } from 'l
 import { useApp } from '../AppContext';
 import OrderPopover from './OrderPopover';
 
-export default function HeroSection({ onOrderClick, configs = {} }) {
-    const { orderType, deliveryInfo, collectionSlot, tableNumber } = useApp();
+export default function HeroSection({ onOrderClick, configs: propConfigs }) {
+    const { orderType, deliveryInfo, collectionSlot, tableNumber, configs: contextConfigs } = useApp();
+    const configs = propConfigs && Object.keys(propConfigs).length > 0 ? propConfigs : contextConfigs;
     const [imageError, setImageError] = useState(false);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
