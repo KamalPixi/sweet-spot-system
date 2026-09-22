@@ -202,7 +202,7 @@ export default function Auth({ defaultMode = 'login' }) {
                             <img 
                                 src="/images/auth-bakery.jpg" 
                                 alt="Sweet Spot Artisanal Treats" 
-                                className="absolute inset-0 w-full h-full object-cover object-center"
+                                className="w-full h-full object-cover object-center block"
                                 onError={(e) => {
                                     e.currentTarget.src = "/images/landing-storefront.jpg";
                                 }}

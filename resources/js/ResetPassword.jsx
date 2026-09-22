@@ -100,11 +100,11 @@ export default function ResetPassword() {
                     {/* Integrated Editorial Split Card */}
                     <div className="bg-white rounded-[28px] sm:rounded-[32px] border border-neutral-200/80 shadow-2xl shadow-[#24161b]/10 overflow-hidden grid grid-cols-1 lg:grid-cols-12 min-h-[580px]">
                         {/* ════════ LEFT SHOWCASE (Pure Image with Overlay Back Button) ════════ */}
-                        <aside className="lg:col-span-5 relative hidden lg:block overflow-hidden bg-[#24161b]">
+                        <aside className="lg:col-span-5 relative hidden lg:block overflow-hidden bg-[#24161b] h-full w-full">
                             <img 
                                 src="/images/auth-bakery.jpg" 
                                 alt="Sweet Spot Artisanal Treats" 
-                                className="absolute inset-0 w-full h-full object-cover object-center"
+                                className="w-full h-full object-cover object-center block"
                                 onError={(e) => {
                                     e.currentTarget.src = "/images/landing-storefront.jpg";
                                 }}

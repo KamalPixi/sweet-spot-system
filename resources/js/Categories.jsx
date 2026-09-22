@@ -27,7 +27,8 @@ export default function Categories() {
         setSearchTerm,
         tableNumber,
         orderType,
-        clearDiningTable
+        clearDiningTable,
+        configs
     } = useApp();
 
     const [catalog, setCatalog] = useState([]);
