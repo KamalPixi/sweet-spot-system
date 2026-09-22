@@ -170,7 +170,8 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                         </button>
                     )}
 
-                    {/* Mini Newsletter */}
+                    {/* Mini Newsletter (Hidden / Commented Out) */}
+                    {/*
                     <div className="space-y-2.5">
                         <span className="text-[11px] text-rose-400 font-semibold uppercase tracking-wider block">
                             Sweet Spot Treats
@@ -214,7 +215,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                                     />
                                 )}
                                 <button 
-                                    type="submit"
+                                    type="submit" 
                                     disabled={loading}
                                     className="w-full bg-rose-500 hover:bg-rose-600 text-white font-medium rounded-full px-3 py-2.5 transition-colors flex items-center justify-center gap-1.5 cursor-pointer text-xs shadow-sm"
                                 >
@@ -230,6 +231,7 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                             </form>
                         )}
                     </div>
+                    */}
                 </div>
             </div>
         </div>
