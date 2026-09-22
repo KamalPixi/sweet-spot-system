@@ -10,7 +10,7 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { 
     AlertCircle, Loader2, Lock, ChevronLeft, ChevronRight, 
     Minus, Plus, Trash2, CheckCircle, Eye, EyeOff, 
-    LogOut, MapPin, Clock, ArrowRight, ShoppingBag 
+    LogOut, MapPin, Clock, ArrowRight, ShoppingBag, UtensilsCrossed 
 } from 'lucide-react';
 import OrderPopover from './landing/OrderPopover';
 import { CartBagIcon } from './components/HeaderIcons';
@@ -198,7 +198,7 @@ export default function Checkout() {
     const { 
         cart, cartSubtotal, cartDeliveryFee, flatDeliveryFee, cartTotal, orderType, 
         isFreeDelivery, freeDeliveryThreshold,
-        deliveryInfo, collectionSlot, clearCart, user, token,
+        deliveryInfo, collectionSlot, tableNumber, clearDiningTable, clearCart, user, token,
         login, logout, updateCartQty, removeFromCart, setOrderType,
         setDeliveryInfo, setCollectionSlot, isSearchOpen, setIsSearchOpen
     } = useApp();
@@ -413,14 +413,17 @@ export default function Checkout() {
         && deliveryInfo?.postcode
     );
     const hasCollectionDetails = !!collectionSlot?.datetime;
+    const hasDineInDetails = !!(tableNumber && String(tableNumber).trim());
     const isGuestCheckout = !user && authTab === 'guest';
     const hasGuestContact = !isGuestCheckout
         || (guestContactMethod === 'email' ? !!email.trim() : !!phone.trim());
-    const selectedMethodIsComplete = orderType === 'delivery'
-        ? hasDeliveryDetails
-        : orderType === 'collection'
-            ? hasCollectionDetails
-            : false;
+    const selectedMethodIsComplete = orderType === 'dine_in'
+        ? hasDineInDetails
+        : orderType === 'delivery'
+            ? hasDeliveryDetails
+            : orderType === 'collection'
+                ? hasCollectionDetails
+                : false;
 
     // Autofill if logged in
     useEffect(() => {
@@ -526,7 +529,12 @@ export default function Checkout() {
         }
 
         if (!orderType) {
-            failCheckoutValidation('Choose delivery or collection before placing your order.');
+            failCheckoutValidation('Choose delivery, collection, or dining table before placing your order.');
+            return;
+        }
+
+        if (orderType === 'dine_in' && !hasDineInDetails) {
+            failCheckoutValidation('Table number is missing. Please scan your dining table QR code or select your table.');
             return;
         }
 
@@ -622,6 +630,10 @@ export default function Checkout() {
             }))
         };
 
+        if (orderType === 'dine_in') {
+            payload.table_number = String(tableNumber).trim();
+        }
+
         // Customer details (always sent as route is open/not guarded by sanctum auth for guest checkouts)
         payload.customer = {
             first_name: (!user && authTab === 'guest') ? null : (firstName || null),
@@ -639,7 +651,7 @@ export default function Checkout() {
                 type: deliveryInfo?.type || 'home',
                 is_default: false
             };
-        } else {
+        } else if (orderType === 'collection') {
             payload.collection_time = collectionSlot?.datetime;
         }
 
@@ -819,7 +831,11 @@ export default function Checkout() {
                                         <div className="flex justify-between items-center text-neutral-600">
                                             <span>Fulfillment</span>
                                             <span className="font-bold text-[#24161b] capitalize">
-                                                {orderType === 'delivery' ? 'Delivery' : 'Counter Collection'}
+                                                {orderType === 'dine_in' 
+                                                    ? `Dine-In Table #${tableNumber || '?'}` 
+                                                    : orderType === 'delivery' 
+                                                        ? 'Home Delivery' 
+                                                        : 'Counter Collection'}
                                             </span>
                                         </div>
                                         <div className="flex justify-between items-baseline pt-2 border-t border-neutral-200/60">
@@ -1351,22 +1367,33 @@ export default function Checkout() {
                                         </div>
                                     </div>
 
-                                    {/* ── CARD 2 · Collection / Delivery Slot Selector ── */}
+                                    {/* ── CARD 2 · Fulfillment Method (Dine-In Table / Collection / Delivery) ── */}
                                     <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xs overflow-hidden transition-all">
                                         <div className="px-5 py-4 border-b border-neutral-100 flex items-center gap-3 bg-neutral-50/40">
                                             <span className="w-6 h-6 rounded-full bg-[#24161b] text-[#e5b582] text-xs font-bold flex items-center justify-center shrink-0">
                                                 2
                                             </span>
                                             <h2 className="text-sm font-bold text-[#24161b] tracking-wide">
-                                                {!orderType ? 'Fulfillment Method' : orderType === 'delivery' ? 'Delivery Address' : 'Collection Slot'}
+                                                {!orderType 
+                                                    ? 'Fulfillment Method' 
+                                                    : orderType === 'dine_in'
+                                                        ? 'Dine-In Table Service'
+                                                        : orderType === 'delivery' 
+                                                            ? 'Delivery Address' 
+                                                            : 'Collection Slot'}
                                             </h2>
                                             {orderType && (
                                                 <button 
                                                     type="button" 
-                                                    onClick={handleSwitchOrderBanner}
+                                                    onClick={() => {
+                                                        if (orderType === 'dine_in') {
+                                                            clearDiningTable();
+                                                        }
+                                                        handleSwitchOrderBanner();
+                                                    }}
                                                     className="ml-auto text-[10px] font-bold text-[#24161b] bg-neutral-100 hover:bg-neutral-200 px-3 py-1 rounded-full transition-all cursor-pointer uppercase tracking-wider border border-neutral-200"
                                                 >
-                                                    Change
+                                                    {orderType === 'dine_in' ? 'Switch to Takeaway' : 'Change'}
                                                 </button>
                                             )}
                                         </div>
@@ -1376,8 +1403,8 @@ export default function Checkout() {
                                                     <div className="flex items-start gap-3 rounded-2xl bg-amber-50 border border-amber-200 p-4 text-amber-800">
                                                         <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
                                                         <div>
-                                                            <p className="font-bold">Choose delivery or collection first.</p>
-                                                            <p className="text-[11px] text-amber-700 mt-1">We need this before calculating the final order details.</p>
+                                                            <p className="font-bold">Choose your fulfillment method.</p>
+                                                            <p className="text-[11px] text-amber-700 mt-1">Select home delivery, collection, or scan your table QR code.</p>
                                                         </div>
                                                     </div>
                                                     <div className="grid sm:grid-cols-2 gap-3">
@@ -1397,6 +1424,28 @@ export default function Checkout() {
                                                             <Clock size={15} className="text-[#e5b582]" />
                                                             <span>Set Collection Slot</span>
                                                         </button>
+                                                    </div>
+                                                </div>
+                                            ) : orderType === 'dine_in' ? (
+                                                <div className="flex items-center gap-3.5 p-3.5 rounded-2xl bg-amber-50/60 border border-amber-200/80">
+                                                    <div className="w-11 h-11 rounded-2xl bg-amber-500/20 text-amber-900 border border-amber-400/40 flex items-center justify-center shrink-0">
+                                                        <UtensilsCrossed size={20} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <div className="flex items-center gap-2">
+                                                            <span className="text-[10px] uppercase tracking-wider font-extrabold text-amber-800">
+                                                                Dine-In Service
+                                                            </span>
+                                                            <span className="px-2 py-0.5 rounded-full bg-amber-200/80 text-amber-950 text-[10px] font-black">
+                                                                Table #{tableNumber || '?'}
+                                                            </span>
+                                                        </div>
+                                                        <p className="text-neutral-900 font-bold text-xs sm:text-sm mt-0.5">
+                                                            Delivering directly to Table #{tableNumber}
+                                                        </p>
+                                                        <p className="text-[11px] text-neutral-500 mt-0.5">
+                                                            Sit back and relax! Our team will prepare your sweet treats and bring them straight to your table.
+                                                        </p>
                                                     </div>
                                                 </div>
                                             ) : (
@@ -1422,7 +1471,7 @@ export default function Checkout() {
                                                                     <AlertCircle size={15} className="shrink-0 mt-0.5 text-amber-600" />
                                                                     <div>
                                                                         <p className="font-bold">
-                                                                            {orderType === 'delivery' ? 'Delivery address is missing.' : 'Collection slot is missing.'}
+                                                                             {orderType === 'delivery' ? 'Delivery address is missing.' : 'Collection slot is missing.'}
                                                                         </p>
                                                                         <p className="text-[11px] text-amber-700 mt-0.5">
                                                                             {orderType === 'delivery'

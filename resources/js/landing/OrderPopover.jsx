@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
     Bike, Store, MapPin, Calendar, Clock, ArrowRight, 
-    X, Check, AlertCircle, Loader2, ChevronRight 
+    X, Check, AlertCircle, Loader2, ChevronRight, UtensilsCrossed 
 } from 'lucide-react';
 import { useApp } from '../AppContext';
 
@@ -78,6 +78,7 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
         orderType, setOrderType, 
         deliveryInfo, setDeliveryInfo, 
         collectionSlot, setCollectionSlot,
+        tableNumber, clearDiningTable,
         configs 
     } = useApp();
 
@@ -85,7 +86,7 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
 
     // Sync tab when opened or orderType updates
     useEffect(() => {
-        if (isOpen && orderType) {
+        if (isOpen && orderType && orderType !== 'dine_in') {
             setActiveTab(orderType);
         }
     }, [isOpen, orderType]);
@@ -355,6 +356,21 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
                             <X size={15} />
                         </button>
                     </div>
+
+                    {/* Active Dining Table notice if currently dining */}
+                    {orderType === 'dine_in' && tableNumber && (
+                        <div className="mb-3 p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                                <UtensilsCrossed size={14} className="text-amber-700 shrink-0" />
+                                <span className="text-[11px] font-bold text-amber-900 truncate">
+                                    Currently Dining at Table #{tableNumber}
+                                </span>
+                            </div>
+                            <span className="text-[10px] font-semibold text-amber-700 shrink-0">
+                                Switch below
+                            </span>
+                        </div>
+                    )}
 
                     {/* Tabs Pill Switcher */}
                     <div className="grid grid-cols-2 gap-1.5 bg-neutral-200/70 p-1 rounded-xl">

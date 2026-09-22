@@ -24,7 +24,32 @@ export function AppProvider({ children }) {
     });
 
     // Checkout Flow State
-    const [orderType, setOrderType] = useState(() => localStorage.getItem('pl_order_type') || null); // 'delivery' or 'collection'
+    // Dining table session check (session-scoped & expires after 3 hours to prevent at-home orders)
+    const getInitialDiningTable = () => {
+        try {
+            const savedTable = sessionStorage.getItem('pl_table_number');
+            const savedTime = sessionStorage.getItem('pl_table_timestamp');
+            if (savedTable && savedTime) {
+                const ageMs = Date.now() - Number(savedTime);
+                const maxAgeMs = 3 * 60 * 60 * 1000; // 3 hours
+                if (ageMs < maxAgeMs) {
+                    return savedTable;
+                }
+            }
+            sessionStorage.removeItem('pl_table_number');
+            sessionStorage.removeItem('pl_table_timestamp');
+            return null;
+        } catch (e) {
+            return null;
+        }
+    };
+
+    const initialDiningTable = getInitialDiningTable();
+    const [tableNumber, setTableNumber] = useState(initialDiningTable);
+    const [orderType, setOrderType] = useState(() => {
+        if (initialDiningTable) return 'dine_in';
+        return localStorage.getItem('pl_order_type') || null;
+    }); // 'delivery', 'collection', or 'dine_in'
     const [deliveryInfo, setDeliveryInfo] = useState(() => {
         const saved = localStorage.getItem('pl_delivery_info');
         return saved ? JSON.parse(saved) : null; // { postcode, address_line_1, address_line_2, city, distance_miles, delivery_fee }
@@ -109,8 +134,11 @@ export function AppProvider({ children }) {
     }, [cart]);
 
     useEffect(() => {
-        if (orderType) localStorage.setItem('pl_order_type', orderType);
-        else localStorage.removeItem('pl_order_type');
+        if (orderType && orderType !== 'dine_in') {
+            localStorage.setItem('pl_order_type', orderType);
+        } else if (!orderType) {
+            localStorage.removeItem('pl_order_type');
+        }
     }, [orderType]);
 
     useEffect(() => {
@@ -122,6 +150,41 @@ export function AppProvider({ children }) {
         if (collectionSlot) localStorage.setItem('pl_collection_slot', JSON.stringify(collectionSlot));
         else localStorage.removeItem('pl_collection_slot');
     }, [collectionSlot]);
+
+    // Dining table management
+    const setDiningTable = (table) => {
+        if (!table) return;
+        const cleanTable = String(table).trim();
+        setTableNumber(cleanTable);
+        setOrderType('dine_in');
+        try {
+            sessionStorage.setItem('pl_table_number', cleanTable);
+            sessionStorage.setItem('pl_table_timestamp', String(Date.now()));
+        } catch (e) {}
+    };
+
+    const clearDiningTable = () => {
+        setTableNumber(null);
+        try {
+            sessionStorage.removeItem('pl_table_number');
+            sessionStorage.removeItem('pl_table_timestamp');
+        } catch (e) {}
+        if (orderType === 'dine_in') {
+            setOrderType(null);
+        }
+    };
+
+    // Override setOrderType with clean dining table detachment when choosing delivery/collection
+    const handleSetOrderType = (type) => {
+        if (type === 'delivery' || type === 'collection') {
+            setTableNumber(null);
+            try {
+                sessionStorage.removeItem('pl_table_number');
+                sessionStorage.removeItem('pl_table_timestamp');
+            } catch (e) {}
+        }
+        setOrderType(type);
+    };
 
     // Actions
     const login = (newToken, newUser, type) => {
@@ -225,7 +288,8 @@ export function AppProvider({ children }) {
             cart, addToCart, updateCartQty, removeFromCart, clearCart,
             cartSubtotal, cartDeliveryFee, flatDeliveryFee, cartTotal, cartItemCount,
             isFreeDelivery, freeDeliveryThreshold,
-            orderType, setOrderType,
+            orderType, setOrderType: handleSetOrderType,
+            tableNumber, setDiningTable, clearDiningTable,
             deliveryInfo, setDeliveryInfo,
             collectionSlot, setCollectionSlot,
             configs,

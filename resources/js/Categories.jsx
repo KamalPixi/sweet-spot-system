@@ -7,7 +7,7 @@ import ProductCard from './components/ProductCard';
 import HeaderCartButton from './components/HeaderCartButton';
 import HeaderSearchButton from './components/HeaderSearchButton';
 import { MenuIcon, SearchIcon, UserIcon } from './components/HeaderIcons';
-import { SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
+import { SlidersHorizontal, ArrowUpDown, X, UtensilsCrossed } from 'lucide-react';
 
 const CATALOG_CACHE_KEY = 'cached_menu_catalog_v2';
 
@@ -24,7 +24,10 @@ export default function Categories() {
         isSearchOpen,
         setIsSearchOpen,
         searchTerm,
-        setSearchTerm
+        setSearchTerm,
+        tableNumber,
+        orderType,
+        clearDiningTable
     } = useApp();
 
     const [catalog, setCatalog] = useState([]);
@@ -272,6 +275,35 @@ export default function Categories() {
                 {/* 2. Floating Curved White Container Layout */}
                 <div className="w-full -mt-4 mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 bg-white shadow-2xl p-5 sm:p-7 md:p-10 lg:p-12">
                     <div className="max-w-7xl mx-auto w-full">
+
+                        {/* Dine-In Active Table Banner */}
+                        {orderType === 'dine_in' && tableNumber && (
+                            <div className="mb-6 p-3.5 sm:p-4 rounded-2xl bg-amber-50 border border-amber-200/80 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-left">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-800 flex items-center justify-center shrink-0">
+                                        <UtensilsCrossed size={18} />
+                                    </div>
+                                    <div>
+                                        <p className="text-xs sm:text-sm font-black text-amber-950">
+                                            Ordering for Table #{tableNumber}
+                                        </p>
+                                        <p className="text-[11px] text-amber-800/80">
+                                            Your order will be prepared and brought directly to your table.
+                                        </p>
+                                    </div>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        clearDiningTable();
+                                        navigate('/checkout');
+                                    }}
+                                    className="text-[11px] font-bold text-amber-900 hover:text-amber-950 bg-white hover:bg-amber-100/60 px-3.5 py-1.5 rounded-full border border-amber-300/80 shadow-2xs transition-colors cursor-pointer shrink-0"
+                                >
+                                    Not at Table #{tableNumber}? Switch
+                                </button>
+                            </div>
+                        )}
 
                         {/* 2-Column Responsive Layout matching Client Design */}
                         <div className="flex flex-col md:flex-row gap-8 lg:gap-12 items-start">

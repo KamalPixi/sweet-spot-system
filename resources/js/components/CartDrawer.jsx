@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from '../AppContext';
-import { X, Minus, Plus, Trash2, Truck, ArrowRight } from 'lucide-react';
+import { X, Minus, Plus, Trash2, Truck, ArrowRight, UtensilsCrossed } from 'lucide-react';
 import { CartBagIcon } from './HeaderIcons';
 
 const getImageUrl = (url) => {
@@ -21,7 +21,8 @@ export default function CartDrawer() {
         cartItemCount,
         isCartOpen, 
         setIsCartOpen,
-        orderType
+        orderType,
+        tableNumber
     } = useApp();
 
     const drawerRef = useRef(null);
@@ -222,9 +223,17 @@ export default function CartDrawer() {
 
                         {orderType && (
                             <div className="flex items-center gap-1.5 text-[11px] text-white/60">
-                                <Truck size={12} className="shrink-0 text-[#e5b582]" />
+                                {orderType === 'dine_in' ? (
+                                    <UtensilsCrossed size={12} className="shrink-0 text-[#e5b582]" />
+                                ) : (
+                                    <Truck size={12} className="shrink-0 text-[#e5b582]" />
+                                )}
                                 <span>
-                                    {orderType === 'delivery' ? 'Home Delivery • calculated at checkout' : 'Store Collection • free'}
+                                    {orderType === 'dine_in' 
+                                        ? `Dine-In Table #${tableNumber || '?'} • Table Service` 
+                                        : orderType === 'delivery' 
+                                            ? 'Home Delivery • calculated at checkout' 
+                                            : 'Store Collection • free'}
                                 </span>
                             </div>
                         )}

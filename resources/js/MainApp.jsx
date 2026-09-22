@@ -209,6 +209,31 @@ function TitleUpdater() {
     return null;
 }
 
+function TableParamDetector() {
+    const location = useLocation();
+    const { tableNumber, setDiningTable } = useApp();
+
+    useEffect(() => {
+        const searchParams = new URLSearchParams(location.search);
+        const urlTable = searchParams.get('table') || searchParams.get('table_number');
+        if (urlTable && urlTable.trim()) {
+            const clean = urlTable.trim();
+            if (clean !== tableNumber) {
+                setDiningTable(clean);
+                // Clean informative toast
+                import('react-hot-toast').then(({ default: toast }) => {
+                    toast.success(`🍽️ Welcome! Ordering for Table #${clean}`, {
+                        id: `table-welcome-${clean}`,
+                        duration: 4000,
+                    });
+                });
+            }
+        }
+    }, [location.search, tableNumber, setDiningTable]);
+
+    return null;
+}
+
 function GlobalProductModal() {
     const { modalProduct, closeProductModal } = useApp();
     return (
@@ -225,6 +250,7 @@ export default function MainApp() {
         <AppProvider>
             <Router>
                 <TitleUpdater />
+                <TableParamDetector />
                 <AppToaster />
                 <GlobalSearchOverlay />
                 <GlobalProductModal />

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { ArrowRight, Bike, Store, ChevronRight, Edit3 } from 'lucide-react';
+import { ArrowRight, Bike, Store, ChevronRight, Edit3, UtensilsCrossed } from 'lucide-react';
 import { useApp } from '../AppContext';
 import OrderPopover from './OrderPopover';
 
 export default function HeroSection({ onOrderClick, configs = {} }) {
-    const { orderType, deliveryInfo, collectionSlot } = useApp();
+    const { orderType, deliveryInfo, collectionSlot, tableNumber } = useApp();
     const [imageError, setImageError] = useState(false);
     const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
@@ -17,6 +17,7 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
     
     // Determine fulfillment state and appropriate button text
     const hasSelection = Boolean(
+        (orderType === 'dine_in' && tableNumber) ||
         (orderType === 'delivery' && deliveryInfo?.postcode) ||
         (orderType === 'collection' && collectionSlot?.time)
     );
@@ -24,7 +25,10 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
     let buttonLabel = 'Set Delivery or Collection';
     let selectionSummary = null;
 
-    if (orderType === 'delivery' && deliveryInfo?.postcode) {
+    if (orderType === 'dine_in' && tableNumber) {
+        buttonLabel = 'Dine-In Table';
+        selectionSummary = `Table #${tableNumber}`;
+    } else if (orderType === 'delivery' && deliveryInfo?.postcode) {
         buttonLabel = 'Delivering to';
         selectionSummary = deliveryInfo.postcode;
     } else if (orderType === 'collection' && collectionSlot?.time) {
@@ -102,7 +106,9 @@ export default function HeroSection({ onOrderClick, configs = {} }) {
                         >
                             {/* Icon based on selection */}
                             <span className={`p-1 rounded-full ${hasSelection ? 'bg-amber-500/20 text-amber-300' : 'bg-white/10 text-white/80'}`}>
-                                {orderType === 'delivery' && deliveryInfo?.postcode ? (
+                                {orderType === 'dine_in' && tableNumber ? (
+                                    <UtensilsCrossed size={14} />
+                                ) : orderType === 'delivery' && deliveryInfo?.postcode ? (
                                     <Bike size={14} />
                                 ) : orderType === 'collection' && collectionSlot?.time ? (
                                     <Store size={14} />
