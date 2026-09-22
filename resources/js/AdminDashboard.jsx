@@ -19,7 +19,8 @@ import {
     Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, User, Bell, RefreshCw, ChevronDown, Upload, Clock,
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, Sparkles, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
-    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart
+    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart,
+    FileText, Download
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
 
@@ -200,6 +201,7 @@ export default function AdminDashboard() {
     const [storeLogoWhiteFile, setStoreLogoWhiteFile] = useState(null);
     const [storeImageFile, setStoreImageFile] = useState(null);
     const [heroBgImageFile, setHeroBgImageFile] = useState(null);
+    const [menuPdfFile, setMenuPdfFile] = useState(null);
     const [settingsSubTab, setSettingsSubTab] = useState('configs'); // 'configs' or 'faqs'
     const [faqs, setFaqs] = useState([]);
     const [faqFormOpen, setFaqFormOpen] = useState(false);
@@ -1186,7 +1188,7 @@ export default function AdminDashboard() {
 
         const payload = new FormData();
         sectionKeys.forEach((key) => {
-            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image' && key !== 'hero_bg_image') {
+            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image' && key !== 'hero_bg_image' && key !== 'menu_pdf') {
                 payload.append(`configs[${key}]`, settingsForm[key] || '');
             }
         });
@@ -1207,6 +1209,13 @@ export default function AdminDashboard() {
                 payload.append('configs[hero_bg_image]', settingsForm.hero_bg_image || '');
             }
         }
+        if (sectionKeys.includes('menu_pdf')) {
+            if (menuPdfFile) {
+                payload.append('menu_pdf', menuPdfFile);
+            } else if (settingsForm.menu_pdf !== undefined) {
+                payload.append('configs[menu_pdf]', settingsForm.menu_pdf || '');
+            }
+        }
 
         try {
             const res = await fetch('/api/admin/configs', {
@@ -1225,6 +1234,7 @@ export default function AdminDashboard() {
                 if (sectionKeys.includes('store_logo_white')) setStoreLogoWhiteFile(null);
                 if (sectionKeys.includes('store_image')) setStoreImageFile(null);
                 if (sectionKeys.includes('hero_bg_image')) setHeroBgImageFile(null);
+                if (sectionKeys.includes('menu_pdf')) setMenuPdfFile(null);
             } else {
                 toast.error(d.message || `Failed to save ${sectionName}`);
             }
@@ -1244,7 +1254,7 @@ export default function AdminDashboard() {
 
         const payload = new FormData();
         Object.entries(settingsForm).forEach(([key, val]) => {
-            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image' && key !== 'hero_bg_image') {
+            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image' && key !== 'hero_bg_image' && key !== 'menu_pdf') {
                 payload.append(`configs[${key}]`, val || '');
             }
         });
@@ -1261,6 +1271,11 @@ export default function AdminDashboard() {
             payload.append('hero_bg_image', heroBgImageFile);
         } else if (settingsForm.hero_bg_image !== undefined) {
             payload.append('configs[hero_bg_image]', settingsForm.hero_bg_image || '');
+        }
+        if (menuPdfFile) {
+            payload.append('menu_pdf', menuPdfFile);
+        } else if (settingsForm.menu_pdf !== undefined) {
+            payload.append('configs[menu_pdf]', settingsForm.menu_pdf || '');
         }
 
         try {
@@ -1280,6 +1295,7 @@ export default function AdminDashboard() {
                 setStoreLogoWhiteFile(null);
                 setStoreImageFile(null);
                 setHeroBgImageFile(null);
+                setMenuPdfFile(null);
             }
         } catch (err) {
             console.error(err);
@@ -4011,7 +4027,7 @@ export default function AdminDashboard() {
                             <div className="space-y-8 animate-fade-in">
                                 <div className="flex flex-col lg:flex-row lg:justify-between lg:items-end gap-4">
                                     <div>
-                                        <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Settings & FAQs</h1>
+                                        <h1 className="text-3xl font-black text-neutral-900 tracking-tight">Settings</h1>
                                         <p className="text-xs text-neutral-500 mt-1">Configure store parameters and manage customer FAQs.</p>
                                     </div>
                                     <div className="flex items-center gap-1 bg-white border border-neutral-200 p-1 rounded-xl shadow-sm w-fit shrink-0">
@@ -4568,6 +4584,128 @@ export default function AdminDashboard() {
                                                     className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                                                 >
                                                     {savingSection === 'Footer Information' ? 'Saving...' : 'Save Footer Details'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Card: Downloadable Menu & PDF */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                    <FileText size={18} className="text-neutral-500" /> Downloadable Menu & PDF
+                                                </h2>
+                                                <p className="text-xs text-neutral-500 mt-0.5">
+                                                    Manage the PDF document and texts displayed on the customer menu page (<code className="text-primary font-mono text-[11px]">/menu</code>).
+                                                </p>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Page Main Title</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.menu_title ?? ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, menu_title: e.target.value })}
+                                                            placeholder="Our Menu"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        />
+                                                        <p className="text-[10px] text-neutral-400 mt-1">Default: Our Menu</p>
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Page Subtitle</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.menu_subtitle ?? ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, menu_subtitle: e.target.value })}
+                                                            placeholder="Browse our full menu below or download a copy to view offline."
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        />
+                                                        <p className="text-[10px] text-neutral-400 mt-1">Default: Browse our full menu below or download a copy to view offline.</p>
+                                                    </div>
+                                                </div>
+
+                                                {/* PDF File Upload & Status */}
+                                                <div className="p-4 rounded-xl bg-neutral-50 border border-neutral-200/80 space-y-3">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                        <div className="flex items-center gap-3">
+                                                            <div className="w-10 h-10 rounded-lg bg-rose-50 border border-rose-200 flex items-center justify-center text-rose-600 shrink-0">
+                                                                <FileText size={20} />
+                                                            </div>
+                                                            <div>
+                                                                <p className="text-xs font-bold text-neutral-900">
+                                                                    {menuPdfFile 
+                                                                        ? menuPdfFile.name 
+                                                                        : (settingsForm.menu_pdf ? 'Custom PDF Menu Uploaded' : 'Default Menu PDF Active (/Sweet-Spot-Menu.pdf)')
+                                                                    }
+                                                                </p>
+                                                                <p className="text-[10px] text-neutral-400">
+                                                                    {settingsForm.menu_pdf 
+                                                                        ? `Active file: ${settingsForm.menu_pdf}` 
+                                                                        : 'Using bundled fallback menu.'
+                                                                    }
+                                                                </p>
+                                                            </div>
+                                                        </div>
+
+                                                        <div className="flex items-center gap-2">
+                                                            <a
+                                                                href={menuPdfFile ? URL.createObjectURL(menuPdfFile) : (settingsForm.menu_pdf || '/Sweet-Spot-Menu.pdf')}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="px-3 py-1.5 bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-700 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                                                            >
+                                                                <Download size={13} />
+                                                                <span>Preview PDF</span>
+                                                            </a>
+                                                            {settingsForm.menu_pdf && (
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        setSettingsForm({ ...settingsForm, menu_pdf: '' });
+                                                                        setMenuPdfFile(null);
+                                                                    }}
+                                                                    className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-medium rounded-lg transition-colors cursor-pointer"
+                                                                    title="Reset to default menu PDF"
+                                                                >
+                                                                    Reset to Default
+                                                                </button>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="pt-2 border-t border-neutral-200/60 flex items-center justify-between">
+                                                        <div className="space-y-1">
+                                                            <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">
+                                                                Upload New Menu PDF
+                                                            </label>
+                                                            <input 
+                                                                type="file" 
+                                                                accept="application/pdf"
+                                                                onChange={(e) => {
+                                                                    if (e.target.files && e.target.files[0]) {
+                                                                        setMenuPdfFile(e.target.files[0]);
+                                                                    }
+                                                                }}
+                                                                className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
+                                                            />
+                                                        </div>
+                                                        {menuPdfFile && (
+                                                            <span className="text-xs text-emerald-600 font-bold bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                                                                Ready to save
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['menu_title', 'menu_subtitle', 'menu_pdf'], 'PDF Menu Settings')}
+                                                    disabled={savingSection === 'PDF Menu Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'PDF Menu Settings' ? 'Saving...' : 'Save Menu PDF'}
                                                 </button>
                                             </div>
                                         </div>

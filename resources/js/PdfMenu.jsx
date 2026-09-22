@@ -16,7 +16,8 @@ export default function PdfMenu() {
         isSearchOpen, 
         setIsSearchOpen, 
         user, 
-        logout 
+        logout,
+        configs 
     } = useApp();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -168,10 +169,10 @@ export default function PdfMenu() {
                         {/* Heading Row */}
                         <div className="flex flex-col sm:flex-row sm:items-baseline justify-start gap-3 sm:gap-6 mb-8 text-left">
                             <h1 className="text-3xl sm:text-4xl md:text-5xl font-black tracking-tight text-[#111111]">
-                                Our Menu
+                                {configs?.menu_title || 'Our Menu'}
                             </h1>
                             <p className="text-xs sm:text-sm text-neutral-500 font-light leading-relaxed max-w-sm">
-                                Browse our full menu below or download a copy to view offline.
+                                {configs?.menu_subtitle || 'Browse our full menu below or download a copy to view offline.'}
                             </p>
                         </div>
 
@@ -183,8 +184,8 @@ export default function PdfMenu() {
                         >
                             {/* Top-Right Download Floating Button */}
                             <a
-                                href="/Sweet-Spot-Menu.pdf"
-                                download="Sweet-Spot-Menu.pdf"
+                                href={configs?.menu_pdf || '/Sweet-Spot-Menu.pdf'}
+                                download={configs?.menu_pdf ? configs.menu_pdf.split('/').pop() : 'Sweet-Spot-Menu.pdf'}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="absolute top-5 right-5 sm:top-6 sm:right-6 z-20 w-11 h-11 rounded-full bg-white text-neutral-800 flex items-center justify-center shadow-md hover:bg-neutral-50 hover:shadow-lg transition-all cursor-pointer group active:scale-95"

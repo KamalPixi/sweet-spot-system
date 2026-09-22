@@ -143,6 +143,18 @@ class StoreConfigController extends Controller
             }
         }
 
+        // Handle downloadable PDF menu upload
+        if ($request->hasFile('menu_pdf')) {
+            $file = $request->file('menu_pdf');
+            if ($file->isValid()) {
+                $path = $file->store('store', 'public');
+                $this->storeConfigService->set('menu_pdf', '/storage/' . $path);
+            }
+            if (isset($configs['menu_pdf'])) {
+                unset($configs['menu_pdf']);
+            }
+        }
+
         // Handle other configs
         foreach ($configs as $key => $value) {
             $this->storeConfigService->set($key, $value);
