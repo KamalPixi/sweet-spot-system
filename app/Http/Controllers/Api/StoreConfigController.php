@@ -131,6 +131,18 @@ class StoreConfigController extends Controller
             }
         }
 
+        // Handle hero background banner image upload
+        if ($request->hasFile('hero_bg_image')) {
+            $file = $request->file('hero_bg_image');
+            if ($file->isValid()) {
+                $path = $file->store('store', 'public');
+                $this->storeConfigService->set('hero_bg_image', '/storage/' . $path);
+            }
+            if (isset($configs['hero_bg_image'])) {
+                unset($configs['hero_bg_image']);
+            }
+        }
+
         // Handle other configs
         foreach ($configs as $key => $value) {
             $this->storeConfigService->set($key, $value);

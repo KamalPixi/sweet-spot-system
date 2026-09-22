@@ -199,6 +199,7 @@ export default function AdminDashboard() {
     const [storeLogoFile, setStoreLogoFile] = useState(null);
     const [storeLogoWhiteFile, setStoreLogoWhiteFile] = useState(null);
     const [storeImageFile, setStoreImageFile] = useState(null);
+    const [heroBgImageFile, setHeroBgImageFile] = useState(null);
     const [settingsSubTab, setSettingsSubTab] = useState('configs'); // 'configs' or 'faqs'
     const [faqs, setFaqs] = useState([]);
     const [faqFormOpen, setFaqFormOpen] = useState(false);
@@ -1185,7 +1186,7 @@ export default function AdminDashboard() {
 
         const payload = new FormData();
         sectionKeys.forEach((key) => {
-            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image') {
+            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image' && key !== 'hero_bg_image') {
                 payload.append(`configs[${key}]`, settingsForm[key] || '');
             }
         });
@@ -1198,6 +1199,13 @@ export default function AdminDashboard() {
         }
         if (sectionKeys.includes('store_image') && storeImageFile) {
             payload.append('store_image', storeImageFile);
+        }
+        if (sectionKeys.includes('hero_bg_image')) {
+            if (heroBgImageFile) {
+                payload.append('hero_bg_image', heroBgImageFile);
+            } else if (settingsForm.hero_bg_image !== undefined) {
+                payload.append('configs[hero_bg_image]', settingsForm.hero_bg_image || '');
+            }
         }
 
         try {
@@ -1216,6 +1224,7 @@ export default function AdminDashboard() {
                 if (sectionKeys.includes('store_logo')) setStoreLogoFile(null);
                 if (sectionKeys.includes('store_logo_white')) setStoreLogoWhiteFile(null);
                 if (sectionKeys.includes('store_image')) setStoreImageFile(null);
+                if (sectionKeys.includes('hero_bg_image')) setHeroBgImageFile(null);
             } else {
                 toast.error(d.message || `Failed to save ${sectionName}`);
             }
@@ -1235,7 +1244,7 @@ export default function AdminDashboard() {
 
         const payload = new FormData();
         Object.entries(settingsForm).forEach(([key, val]) => {
-            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image') {
+            if (key !== 'store_logo' && key !== 'store_logo_white' && key !== 'store_image' && key !== 'hero_bg_image') {
                 payload.append(`configs[${key}]`, val || '');
             }
         });
@@ -1247,6 +1256,11 @@ export default function AdminDashboard() {
         }
         if (storeImageFile) {
             payload.append('store_image', storeImageFile);
+        }
+        if (heroBgImageFile) {
+            payload.append('hero_bg_image', heroBgImageFile);
+        } else if (settingsForm.hero_bg_image !== undefined) {
+            payload.append('configs[hero_bg_image]', settingsForm.hero_bg_image || '');
         }
 
         try {
@@ -1265,6 +1279,7 @@ export default function AdminDashboard() {
                 setStoreLogoFile(null);
                 setStoreLogoWhiteFile(null);
                 setStoreImageFile(null);
+                setHeroBgImageFile(null);
             }
         } catch (err) {
             console.error(err);
@@ -4162,7 +4177,156 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        {/* Card 2: Location & Coordinates */}
+                                        {/* Card 2: Landing Page Hero Banner & Photo */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="border-b border-neutral-100 pb-3 flex items-center justify-between">
+                                                <div>
+                                                    <h2 className="text-base font-bold text-neutral-900">
+                                                        Landing Page Hero Banner & Photo
+                                                    </h2>
+                                                    <p className="text-xs text-neutral-500 mt-0.5">
+                                                        Customize the hero background photo and headlines displayed at the top of your storefront.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Hero Photo Preview & Uploader */}
+                                            <div className="space-y-3">
+                                                <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">
+                                                    Hero Banner Photo
+                                                </label>
+
+                                                <div className="relative w-full h-48 sm:h-64 rounded-2xl border border-neutral-200 overflow-hidden bg-[#24161b] shadow-inner group">
+                                                    {heroBgImageFile ? (
+                                                        <img 
+                                                            src={URL.createObjectURL(heroBgImageFile)} 
+                                                            alt="Hero Preview" 
+                                                            className="w-full h-full object-cover object-center"
+                                                        />
+                                                    ) : settingsForm.hero_bg_image ? (
+                                                        <img 
+                                                            src={settingsForm.hero_bg_image} 
+                                                            alt="Hero Banner" 
+                                                            className="w-full h-full object-cover object-center"
+                                                            onError={(e) => { e.target.src = '/images/hero-bg.png'; }}
+                                                        />
+                                                    ) : (
+                                                        <img 
+                                                            src="/images/hero-bg.png" 
+                                                            alt="Default Hero Banner" 
+                                                            className="w-full h-full object-cover object-center"
+                                                        />
+                                                    )}
+                                                    {/* Live Preview Text Overlay matching landing page */}
+                                                    <div className="absolute inset-0 bg-gradient-to-r from-[#24161b]/85 via-[#24161b]/45 to-transparent pointer-events-none flex items-end p-4 sm:p-6">
+                                                        <div className="text-white text-left">
+                                                            <span className="text-[10px] uppercase font-bold tracking-widest bg-white/20 px-2.5 py-1 rounded-full backdrop-blur-xs border border-white/20">
+                                                                Live Preview Overlay
+                                                            </span>
+                                                            <h3 className="font-extrabold text-sm sm:text-base mt-2">
+                                                                {settingsForm.hero_title_line_1 || 'HOT OR COLD, WE'} {settingsForm.hero_title_line_2_prefix || 'SERVE'} <span className="font-serif italic text-amber-300">{settingsForm.hero_title_highlight || 'Sweetness'}</span>
+                                                            </h3>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex flex-wrap items-center justify-between gap-4 pt-1">
+                                                    <div className="space-y-1">
+                                                        <input 
+                                                            type="file" 
+                                                            accept="image/*"
+                                                            onChange={(e) => {
+                                                                if (e.target.files && e.target.files[0]) {
+                                                                    setHeroBgImageFile(e.target.files[0]);
+                                                                }
+                                                            }}
+                                                            className="text-xs text-neutral-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#8e5233]/10 file:text-[#8e5233] hover:file:bg-[#8e5233]/20 cursor-pointer"
+                                                        />
+                                                        <p className="text-[10px] text-neutral-400">
+                                                            Recommended: 1920×800px or high-resolution landscape photo (JPG, PNG, WEBP).
+                                                        </p>
+                                                    </div>
+
+                                                    {(heroBgImageFile || (settingsForm.hero_bg_image && settingsForm.hero_bg_image !== '/images/hero-bg.png')) && (
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setHeroBgImageFile(null);
+                                                                setSettingsForm({ ...settingsForm, hero_bg_image: '/images/hero-bg.png' });
+                                                            }}
+                                                            className="text-[11px] font-bold text-neutral-600 hover:text-rose-600 flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-neutral-200 hover:border-rose-200 bg-neutral-50 transition-colors cursor-pointer"
+                                                        >
+                                                            <RotateCcw size={12} />
+                                                            <span>Reset to Default Photo</span>
+                                                        </button>
+                                                    )}
+                                                </div>
+                                            </div>
+
+                                            {/* Hero Typography & Headlines */}
+                                            <div className="space-y-4 pt-3 border-t border-neutral-100">
+                                                <p className="text-[11px] font-bold uppercase tracking-wider text-neutral-600">
+                                                    Hero Typography & Text
+                                                </p>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Line 1</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.hero_title_line_1 || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, hero_title_line_1: e.target.value })}
+                                                            placeholder="HOT OR COLD, WE"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Title Line 2 Prefix</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.hero_title_line_2_prefix || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, hero_title_line_2_prefix: e.target.value })}
+                                                            placeholder="SERVE"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Highlight Word (Script Accent)</label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.hero_title_highlight || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, hero_title_highlight: e.target.value })}
+                                                            placeholder="Sweetness"
+                                                            className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Hero Subtitle / Description</label>
+                                                    <textarea 
+                                                        rows={2}
+                                                        value={settingsForm.hero_subtitle || ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, hero_subtitle: e.target.value })}
+                                                        placeholder="We are the best dessert spot for your cravings. Handcrafted waffles, sundaes, and shakes served fresh daily."
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['hero_bg_image', 'hero_title_line_1', 'hero_title_line_2_prefix', 'hero_title_highlight', 'hero_subtitle'], 'Hero Banner')}
+                                                    disabled={savingSection === 'Hero Banner'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Hero Banner' ? 'Saving...' : 'Save Hero Banner'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Card 3: Location & Coordinates */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
                                             <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
