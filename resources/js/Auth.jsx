@@ -278,7 +278,7 @@ export default function Auth({ defaultMode = 'login' }) {
                         </aside>
 
                         {/* ════════ RIGHT FORM CONTAINER ════════ */}
-                        <main className="lg:col-span-7 flex flex-col justify-between p-6 sm:p-10 lg:p-12 overflow-y-auto h-full">
+                        <main className="lg:col-span-7 flex flex-col justify-center p-6 sm:p-10 lg:p-12 overflow-y-auto h-full">
                             {/* Mobile Top Header (Clean Brand Bar, Left Image Removed) */}
                             <div className="lg:hidden -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 mb-6 bg-[#24161b] text-white p-5 sm:p-6 rounded-t-[28px] sm:rounded-t-[32px] rounded-b-[24px] shadow-sm">
                                 <div className="relative z-10 flex items-center justify-between">
@@ -309,7 +309,7 @@ export default function Auth({ defaultMode = 'login' }) {
                             </div>
 
                             {/* Form Card Body */}
-                            <div className="max-w-sm w-full mx-auto py-2 sm:py-4">
+                            <div className="max-w-sm w-full mx-auto my-auto py-2 sm:py-4">
                                 {/* Header Title */}
                                 <div className="text-center mb-6">
                                     <h1 className="text-2xl sm:text-3xl font-serif font-black text-[#24161b] tracking-tight">
