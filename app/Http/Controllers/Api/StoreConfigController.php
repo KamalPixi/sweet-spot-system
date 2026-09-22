@@ -27,9 +27,15 @@ class StoreConfigController extends Controller
      */
     public function index(): JsonResponse
     {
+        $configs = $this->storeConfigService->getAll();
+        $stripeKey = config('services.stripe.key') ?: env('STRIPE_KEY');
+        if ($stripeKey && !str_starts_with($stripeKey, '${')) {
+            $configs['stripe_publishable_key'] = $stripeKey;
+        }
+
         return response()->json([
             'success' => true,
-            'data' => $this->storeConfigService->getAll(),
+            'data' => $configs,
         ]);
     }
 

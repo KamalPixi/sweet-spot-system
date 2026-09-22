@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useApp } from './AppContext';
 import Footer from './components/Footer';
@@ -22,11 +22,6 @@ const getImageUrl = (url) => {
     return `/storage/${cleanUrl}`;
 };
 
-// Initialize Stripe JS SDK client instance
-const stripePublishableKey = import.meta.env.VITE_STRIPE_KEY || 'pk_test_sweet_spot_placeholder';
-const stripePromise = loadStripe(stripePublishableKey);
-
-const isRealStripeConfigured = stripePublishableKey && (stripePublishableKey.startsWith('pk_test_') || stripePublishableKey.startsWith('pk_live_')) && !stripePublishableKey.startsWith('pk_test_sweet_spot_placeholder');
 const UK_TIME_ZONE = 'Europe/London';
 
 const parseCollectionDateTime = (slot) => {
@@ -200,8 +195,23 @@ export default function Checkout() {
         isFreeDelivery, freeDeliveryThreshold,
         deliveryInfo, collectionSlot, tableNumber, clearDiningTable, clearCart, user, token,
         login, logout, updateCartQty, removeFromCart, setOrderType,
-        setDeliveryInfo, setCollectionSlot, isSearchOpen, setIsSearchOpen
+        setDeliveryInfo, setCollectionSlot, isSearchOpen, setIsSearchOpen,
+        configs
     } = useApp();
+
+    const activeStripeKey = useMemo(() => {
+        const rawKey = configs?.stripe_publishable_key || import.meta.env.VITE_STRIPE_KEY || '';
+        if (rawKey && !rawKey.startsWith('${') && (rawKey.startsWith('pk_test_') || rawKey.startsWith('pk_live_')) && !rawKey.startsWith('pk_test_sweet_spot_placeholder')) {
+            return rawKey;
+        }
+        return null;
+    }, [configs?.stripe_publishable_key]);
+
+    const stripePromise = useMemo(() => {
+        return activeStripeKey ? loadStripe(activeStripeKey) : null;
+    }, [activeStripeKey]);
+
+    const isRealStripeConfigured = !!activeStripeKey;
 
     const formatCollectionSlot = (slot) => {
         if (!slot) return '';
