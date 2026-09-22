@@ -396,6 +396,36 @@ export default function Checkout() {
 
     // Guest contact method choice ('email' or 'phone')
     const [guestContactMethod, setGuestContactMethod] = useState('phone');
+    const [hasRememberedGuest, setHasRememberedGuest] = useState(false);
+    const [showSecondaryContact, setShowSecondaryContact] = useState(false);
+
+    // Save guest contact info to localStorage for future smart checkout on this device
+    const saveGuestInfo = (overrides = {}) => {
+        if (user) return;
+        try {
+            const current = {
+                phone: overrides.phone !== undefined ? overrides.phone : phone,
+                email: overrides.email !== undefined ? overrides.email : email,
+                preferredContactMethod: overrides.preferredContactMethod !== undefined ? overrides.preferredContactMethod : guestContactMethod,
+                firstName: overrides.firstName !== undefined ? overrides.firstName : firstName,
+                lastName: overrides.lastName !== undefined ? overrides.lastName : lastName,
+            };
+            localStorage.setItem('pl_guest_checkout_info', JSON.stringify(current));
+        } catch (e) {}
+    };
+
+    const handleClearRememberedGuest = () => {
+        try {
+            localStorage.removeItem('pl_guest_checkout_info');
+        } catch (e) {}
+        setPhone('');
+        setEmail('');
+        setFirstName('');
+        setLastName('');
+        setHasRememberedGuest(false);
+        setShowSecondaryContact(false);
+        toast.success('Saved guest details cleared from this device');
+    };
 
     // Stepper flow: 'details' (Fulfillment & Contact) -> 'payment' (Payment Gateway & Review)
     const [checkoutStep, setCheckoutStep] = useState('details');
@@ -425,7 +455,7 @@ export default function Checkout() {
                 ? hasCollectionDetails
                 : false;
 
-    // Autofill if logged in
+    // Autofill if logged in, or restore smart remembered guest contact details
     useEffect(() => {
         if (user) {
             setFirstName(user.first_name || user.name?.split(' ')[0] || '');
@@ -433,6 +463,40 @@ export default function Checkout() {
             setPhone(user.phone || '');
             setEmail(user.email || '');
             setCreateAccount(false);
+            setHasRememberedGuest(false);
+        } else {
+            try {
+                const savedGuest = localStorage.getItem('pl_guest_checkout_info');
+                if (savedGuest) {
+                    const parsed = JSON.parse(savedGuest);
+                    let foundAny = false;
+                    if (parsed.phone) {
+                        setPhone(parsed.phone);
+                        foundAny = true;
+                    }
+                    if (parsed.email) {
+                        setEmail(parsed.email);
+                        foundAny = true;
+                    }
+                    if (parsed.firstName) setFirstName(parsed.firstName);
+                    if (parsed.lastName) setLastName(parsed.lastName);
+                    if (parsed.preferredContactMethod) {
+                        setGuestContactMethod(parsed.preferredContactMethod);
+                    } else if (parsed.phone) {
+                        setGuestContactMethod('phone');
+                    } else if (parsed.email) {
+                        setGuestContactMethod('email');
+                    }
+                    if (parsed.phone && parsed.email) {
+                        setShowSecondaryContact(true);
+                    }
+                    if (foundAny) {
+                        setHasRememberedGuest(true);
+                    }
+                }
+            } catch (e) {
+                console.error('Failed restoring guest checkout info:', e);
+            }
         }
     }, [user]);
 
@@ -634,12 +698,22 @@ export default function Checkout() {
             payload.table_number = String(tableNumber).trim();
         }
 
+        if (!user && authTab === 'guest') {
+            saveGuestInfo({
+                phone,
+                email,
+                preferredContactMethod: guestContactMethod,
+                firstName,
+                lastName
+            });
+        }
+
         // Customer details (always sent as route is open/not guarded by sanctum auth for guest checkouts)
         payload.customer = {
-            first_name: (!user && authTab === 'guest') ? null : (firstName || null),
-            last_name: (!user && authTab === 'guest') ? null : (lastName || null),
-            phone: (!user && authTab === 'guest' && guestContactMethod === 'email') ? null : phone,
-            email: (!user && authTab === 'guest' && guestContactMethod === 'phone') ? null : (email || null)
+            first_name: firstName ? String(firstName).trim() : null,
+            last_name: lastName ? String(lastName).trim() : null,
+            phone: phone ? String(phone).trim() : null,
+            email: email ? String(email).trim() : null
         };
 
         // Delivery Address or Collection time
@@ -1048,6 +1122,23 @@ export default function Checkout() {
                                                     {/* Guest Contact Details */}
                                                     {authTab === 'guest' && (
                                                         <div className="space-y-3.5 pt-1 animate-fadeIn">
+                                                            {/* Smart Device Memory Banner */}
+                                                            {hasRememberedGuest && (phone || email) && (
+                                                                <div className="flex items-center justify-between px-3.5 py-2 bg-[#fdfaf5] border border-[#e5b582]/50 rounded-xl text-[#24161b] text-xs shadow-2xs animate-fadeIn">
+                                                                    <span className="flex items-center gap-2 font-medium">
+                                                                        <Sparkles size={14} className="text-[#e5b582] shrink-0" />
+                                                                        <span>Auto-filled from previous order on this device</span>
+                                                                    </span>
+                                                                    <button
+                                                                        type="button"
+                                                                        onClick={handleClearRememberedGuest}
+                                                                        className="text-neutral-500 hover:text-rose-600 underline font-semibold text-[11px] cursor-pointer ml-3 shrink-0 transition-colors"
+                                                                    >
+                                                                        Clear
+                                                                    </button>
+                                                                </div>
+                                                            )}
+
                                                             <div>
                                                                 <div className="flex items-center justify-between mb-1.5">
                                                                     <label className="text-xs font-medium text-neutral-700">
@@ -1056,7 +1147,10 @@ export default function Checkout() {
                                                                     <div className="flex items-center bg-neutral-100 p-0.5 rounded-lg text-[11px]">
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => { setGuestContactMethod('phone'); setEmail(''); }}
+                                                                            onClick={() => {
+                                                                                setGuestContactMethod('phone');
+                                                                                saveGuestInfo({ preferredContactMethod: 'phone' });
+                                                                            }}
                                                                             className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
                                                                                 guestContactMethod === 'phone'
                                                                                     ? 'bg-white text-[#24161b] shadow-xs'
@@ -1067,7 +1161,10 @@ export default function Checkout() {
                                                                         </button>
                                                                         <button
                                                                             type="button"
-                                                                            onClick={() => { setGuestContactMethod('email'); setPhone(''); }}
+                                                                            onClick={() => {
+                                                                                setGuestContactMethod('email');
+                                                                                saveGuestInfo({ preferredContactMethod: 'email' });
+                                                                            }}
                                                                             className={`px-2.5 py-0.5 rounded-md font-semibold transition-all cursor-pointer ${
                                                                                 guestContactMethod === 'email'
                                                                                     ? 'bg-white text-[#24161b] shadow-xs'
@@ -1080,30 +1177,130 @@ export default function Checkout() {
                                                                 </div>
 
                                                                 {guestContactMethod === 'phone' ? (
-                                                                    <div className="relative flex items-center">
-                                                                        <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
-                                                                            <span className="text-sm">🇬🇧</span>
-                                                                            <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                    <div className="space-y-2">
+                                                                        <div className="relative flex items-center">
+                                                                            <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                                                <span className="text-sm">🇬🇧</span>
+                                                                                <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                            </div>
+                                                                            <input 
+                                                                                type="tel" 
+                                                                                required 
+                                                                                value={phone} 
+                                                                                onChange={e => {
+                                                                                    setPhone(e.target.value);
+                                                                                    saveGuestInfo({ phone: e.target.value });
+                                                                                }} 
+                                                                                placeholder="07123 456789"
+                                                                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                            />
                                                                         </div>
-                                                                        <input 
-                                                                            type="tel" 
-                                                                            required 
-                                                                            value={phone} 
-                                                                            onChange={e => setPhone(e.target.value)} 
-                                                                            placeholder="07123 456789"
-                                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
-                                                                        />
+
+                                                                        {/* Secondary Email Option */}
+                                                                        {showSecondaryContact || email ? (
+                                                                            <div className="pt-1 animate-fadeIn">
+                                                                                <label className="block text-[11px] font-medium text-neutral-600 mb-1">
+                                                                                    Email Address <span className="text-neutral-400 font-normal">(for receipt & tracking confirmation)</span>
+                                                                                </label>
+                                                                                <input 
+                                                                                    type="email" 
+                                                                                    value={email} 
+                                                                                    onChange={e => {
+                                                                                        setEmail(e.target.value);
+                                                                                        saveGuestInfo({ email: e.target.value });
+                                                                                    }} 
+                                                                                    placeholder="jane.doe@example.com"
+                                                                                    className="w-full h-10 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                                />
+                                                                            </div>
+                                                                        ) : (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setShowSecondaryContact(true)}
+                                                                                className="text-[11px] text-neutral-500 hover:text-[#24161b] font-medium flex items-center gap-1 pt-0.5 cursor-pointer transition-colors"
+                                                                            >
+                                                                                <span>+ Add email address for digital receipt (optional)</span>
+                                                                            </button>
+                                                                        )}
                                                                     </div>
                                                                 ) : (
-                                                                    <input 
-                                                                        type="email" 
-                                                                        required 
-                                                                        value={email} 
-                                                                        onChange={e => setEmail(e.target.value)} 
-                                                                        placeholder="jane.doe@example.com"
-                                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
-                                                                    />
+                                                                    <div className="space-y-2">
+                                                                        <input 
+                                                                            type="email" 
+                                                                            required 
+                                                                            value={email} 
+                                                                            onChange={e => {
+                                                                                setEmail(e.target.value);
+                                                                                saveGuestInfo({ email: e.target.value });
+                                                                            }} 
+                                                                            placeholder="jane.doe@example.com"
+                                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                        />
+
+                                                                        {/* Secondary Phone Option */}
+                                                                        {showSecondaryContact || phone ? (
+                                                                            <div className="pt-1 animate-fadeIn">
+                                                                                <label className="block text-[11px] font-medium text-neutral-600 mb-1">
+                                                                                    UK Mobile Number <span className="text-neutral-400 font-normal">(for SMS delivery/table updates)</span>
+                                                                                </label>
+                                                                                <div className="relative flex items-center">
+                                                                                    <div className="absolute left-3.5 flex items-center gap-1.5 text-neutral-500 pr-2.5 border-r border-neutral-200 select-none">
+                                                                                        <span className="text-sm">🇬🇧</span>
+                                                                                        <span className="text-xs font-semibold text-neutral-700">+44</span>
+                                                                                    </div>
+                                                                                    <input 
+                                                                                        type="tel" 
+                                                                                        value={phone} 
+                                                                                        onChange={e => {
+                                                                                            setPhone(e.target.value);
+                                                                                            saveGuestInfo({ phone: e.target.value });
+                                                                                        }} 
+                                                                                        placeholder="07123 456789"
+                                                                                        className="w-full h-10 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl pl-20 pr-3.5 text-xs text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                                    />
+                                                                                </div>
+                                                                            </div>
+                                                                        ) : (
+                                                                            <button
+                                                                                type="button"
+                                                                                onClick={() => setShowSecondaryContact(true)}
+                                                                                className="text-[11px] text-neutral-500 hover:text-[#24161b] font-medium flex items-center gap-1 pt-0.5 cursor-pointer transition-colors"
+                                                                            >
+                                                                                <span>+ Add UK mobile number for SMS updates (optional)</span>
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 )}
+
+                                                                {/* Optional Name fields */}
+                                                                <div className="grid grid-cols-2 gap-3 pt-2.5">
+                                                                    <div>
+                                                                        <label className="block text-[11px] font-medium text-neutral-500 mb-1">First Name (optional)</label>
+                                                                        <input 
+                                                                            type="text" 
+                                                                            value={firstName} 
+                                                                            onChange={e => {
+                                                                                setFirstName(e.target.value);
+                                                                                saveGuestInfo({ firstName: e.target.value });
+                                                                            }} 
+                                                                            placeholder="Jane"
+                                                                            className="w-full h-10 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] rounded-xl px-3 text-xs text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                        />
+                                                                    </div>
+                                                                    <div>
+                                                                        <label className="block text-[11px] font-medium text-neutral-500 mb-1">Last Name (optional)</label>
+                                                                        <input 
+                                                                            type="text" 
+                                                                            value={lastName} 
+                                                                            onChange={e => {
+                                                                                setLastName(e.target.value);
+                                                                                saveGuestInfo({ lastName: e.target.value });
+                                                                            }} 
+                                                                            placeholder="Doe"
+                                                                            className="w-full h-10 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] rounded-xl px-3 text-xs text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                                        />
+                                                                    </div>
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     )}
