@@ -4029,20 +4029,12 @@ export default function AdminDashboard() {
                                 {settingsSubTab === 'configs' ? (
                                     <div className="space-y-6 w-full text-left">
                                         
-                                        {/* Card 1: Store Information & Logos */}
+                                         {/* Card 1: Store Information & Logos */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                            <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
                                                     <Store size={18} className="text-neutral-500" /> Store Profile & Logos
                                                 </h2>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSaveSection(['store_logo', 'store_logo_white', 'store_image', 'store_name', 'store_email', 'store_phone'], 'Store Information')}
-                                                    disabled={savingSection === 'Store Information'}
-                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {savingSection === 'Store Information' ? 'Saving...' : 'Save Store Info'}
-                                                </button>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-4 border-b border-neutral-100">
@@ -4157,22 +4149,25 @@ export default function AdminDashboard() {
                                                     />
                                                 </div>
                                             </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['store_logo', 'store_logo_white', 'store_image', 'store_name', 'store_email', 'store_phone'], 'Store Information')}
+                                                    disabled={savingSection === 'Store Information'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Store Information' ? 'Saving...' : 'Save Store Info'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Card 2: Location & Coordinates */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                            <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
                                                     <MapPin size={18} className="text-neutral-500" /> Location & Coordinates
                                                 </h2>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSaveSection(['store_address', 'store_postcode', 'store_latitude', 'store_longitude'], 'Location Settings')}
-                                                    disabled={savingSection === 'Location Settings'}
-                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {savingSection === 'Location Settings' ? 'Saving...' : 'Save Location'}
-                                                </button>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
@@ -4216,22 +4211,25 @@ export default function AdminDashboard() {
                                                     />
                                                 </div>
                                             </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['store_address', 'store_postcode', 'store_latitude', 'store_longitude'], 'Location Settings')}
+                                                    disabled={savingSection === 'Location Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Location Settings' ? 'Saving...' : 'Save Location'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Card 3: Delivery Parameters */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                            <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
                                                     <Truck size={18} className="text-neutral-500" /> Delivery Parameters
                                                 </h2>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSaveSection(['store_delivery_max_radius_miles', 'delivery_fee', 'free_delivery_threshold'], 'Delivery Parameters')}
-                                                    disabled={savingSection === 'Delivery Parameters'}
-                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {savingSection === 'Delivery Parameters' ? 'Saving...' : 'Save Delivery'}
-                                                </button>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 <div>
@@ -4268,22 +4266,25 @@ export default function AdminDashboard() {
                                                     <p className="text-[10px] text-neutral-400 mt-1">Orders at or above this amount get free delivery.</p>
                                                 </div>
                                             </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['store_delivery_max_radius_miles', 'delivery_fee', 'free_delivery_threshold'], 'Delivery Parameters')}
+                                                    disabled={savingSection === 'Delivery Parameters'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Delivery Parameters' ? 'Saving...' : 'Save Delivery'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Card 4: Social Links */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                            <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
                                                     <Users size={18} className="text-neutral-500" /> Social Links
                                                 </h2>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSaveSection(['social_instagram', 'social_tiktok', 'social_facebook', 'social_twitter'], 'Social Links')}
-                                                    disabled={savingSection === 'Social Links'}
-                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {savingSection === 'Social Links' ? 'Saving...' : 'Save Social Links'}
-                                                </button>
                                             </div>
                                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                                 <div>
@@ -4329,22 +4330,25 @@ export default function AdminDashboard() {
                                                     />
                                                 </div>
                                             </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['social_instagram', 'social_tiktok', 'social_facebook', 'social_twitter'], 'Social Links')}
+                                                    disabled={savingSection === 'Social Links'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Social Links' ? 'Saving...' : 'Save Social Links'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Card 5: SEO & Metadata Settings */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                            <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
                                                     <Globe size={18} className="text-neutral-500" /> SEO & Metadata Settings
                                                 </h2>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSaveSection(['seo_title', 'seo_description', 'seo_keywords'], 'SEO Settings')}
-                                                    disabled={savingSection === 'SEO Settings'}
-                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {savingSection === 'SEO Settings' ? 'Saving...' : 'Save SEO Settings'}
-                                                </button>
                                             </div>
                                             <div className="space-y-4">
                                                 <div>
@@ -4381,22 +4385,25 @@ export default function AdminDashboard() {
                                                     <p className="text-[10px] text-neutral-400 mt-1">Comma-separated list of search terms representing your business.</p>
                                                 </div>
                                             </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['seo_title', 'seo_description', 'seo_keywords'], 'SEO Settings')}
+                                                    disabled={savingSection === 'SEO Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'SEO Settings' ? 'Saving...' : 'Save SEO Settings'}
+                                                </button>
+                                            </div>
                                         </div>
 
                                         {/* Card 6: Why Choose Us / The Sweet Spot Difference */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="flex items-center justify-between border-b border-neutral-100 pb-3">
+                                            <div className="border-b border-neutral-100 pb-3">
                                                 <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
                                                     "Why Choose Us" / Difference Section
                                                 </h2>
-                                                <button
-                                                    type="button"
-                                                    onClick={() => handleSaveSection(['diff_badge', 'diff_title_1', 'diff_title_2', 'diff_description', 'diff_item_1_title', 'diff_item_1_content', 'diff_item_2_title', 'diff_item_2_content', 'diff_item_3_title', 'diff_item_3_content'], 'Difference Highlights')}
-                                                    disabled={savingSection === 'Difference Highlights'}
-                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
-                                                >
-                                                    {savingSection === 'Difference Highlights' ? 'Saving...' : 'Save Difference Section'}
-                                                </button>
                                             </div>
 
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -4527,6 +4534,17 @@ export default function AdminDashboard() {
                                                         </div>
                                                     </div>
                                                 </div>
+                                            </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['diff_badge', 'diff_title_1', 'diff_title_2', 'diff_description', 'diff_item_1_title', 'diff_item_1_content', 'diff_item_2_title', 'diff_item_2_content', 'diff_item_3_title', 'diff_item_3_content'], 'Difference Highlights')}
+                                                    disabled={savingSection === 'Difference Highlights'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Difference Highlights' ? 'Saving...' : 'Save Difference Section'}
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
