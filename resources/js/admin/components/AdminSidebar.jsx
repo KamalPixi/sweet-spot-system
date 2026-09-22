@@ -78,7 +78,6 @@ export default function AdminSidebar({
 
                         {/* Brand Badge */}
                         <div className="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary-light border border-white/10 text-accent text-[10px] font-semibold tracking-wide">
-                            <Sparkles size={11} className="text-accent" />
                             <span>Sweet Spot · {adminRole}</span>
                         </div>
                     </div>
