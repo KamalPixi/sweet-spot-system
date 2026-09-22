@@ -19,7 +19,8 @@ export default function Auth({ defaultMode = 'login' }) {
         cartItemCount, 
         isSearchOpen, 
         setIsSearchOpen, 
-        catalog 
+        catalog,
+        configs 
     } = useApp();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);

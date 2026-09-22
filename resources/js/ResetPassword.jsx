@@ -15,7 +15,8 @@ export default function ResetPassword() {
         cartItemCount, 
         isSearchOpen, 
         setIsSearchOpen, 
-        catalog 
+        catalog,
+        configs 
     } = useApp();
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
