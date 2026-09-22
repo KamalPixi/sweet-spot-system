@@ -4507,6 +4507,71 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
+                                        {/* Card: Footer & Copyright Information */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="border-b border-neutral-100 pb-3">
+                                                <h2 className="text-base font-bold text-neutral-900">
+                                                    Footer & Copyright Information
+                                                </h2>
+                                                <p className="text-xs text-neutral-500 mt-0.5">
+                                                    Customize the copyright notice and credits displayed at the bottom of every page.
+                                                </p>
+                                            </div>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Copyright Line</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.footer_copyright ?? ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, footer_copyright: e.target.value })}
+                                                        placeholder="© 2026 SweetSpot Bake, by Captoirs Studio"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Default: &copy; 2026 SweetSpot Bake, by Captoirs Studio</p>
+                                                </div>
+                                                <div>
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Subtext / Rights Note</label>
+                                                    <input 
+                                                        type="text" 
+                                                        value={settingsForm.footer_subtext ?? ''}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, footer_subtext: e.target.value })}
+                                                        placeholder="All rights reserved"
+                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Default: All rights reserved</p>
+                                                </div>
+
+                                                {/* Live Footer Preview */}
+                                                <div className="pt-2">
+                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Live Footer Preview</label>
+                                                    <div className="bg-[#1a120f] p-5 rounded-xl border border-neutral-800 flex items-center justify-between">
+                                                        <div>
+                                                            <p className="text-[12px] text-white/50 font-light">
+                                                                {settingsForm.footer_copyright || '© 2026 SweetSpot Bake, by Captoirs Studio'}
+                                                            </p>
+                                                            <p className="text-[12px] text-white/50 font-light mt-0.5">
+                                                                {settingsForm.footer_subtext || 'All rights reserved'}
+                                                            </p>
+                                                        </div>
+                                                        <span className="text-[10px] uppercase font-bold text-white/30 border border-white/10 px-2.5 py-1 rounded-md">
+                                                            Storefront Footer
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection(['footer_copyright', 'footer_subtext'], 'Footer Information')}
+                                                    disabled={savingSection === 'Footer Information'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Footer Information' ? 'Saving...' : 'Save Footer Details'}
+                                                </button>
+                                            </div>
+                                        </div>
+
                                         {/* Card 5: SEO & Metadata Settings */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
                                             <div className="border-b border-neutral-100 pb-3">

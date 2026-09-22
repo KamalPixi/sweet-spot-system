@@ -69,8 +69,8 @@ export default function Footer({ onCategoryClick, navigate }) {
                     </div>
                     
                     <div className="text-[12px] sm:text-[13px] text-white/50 font-light leading-relaxed">
-                        <p>&copy; 2026 SweetSpot Bake, by Captoirs Studio</p>
-                        <p className="mt-0.5">All rights reserved</p>
+                        <p>{configs.footer_copyright ?? '© 2026 SweetSpot Bake, by Captoirs Studio'}</p>
+                        <p className="mt-0.5">{configs.footer_subtext ?? 'All rights reserved'}</p>
                     </div>
                 </div>
 
