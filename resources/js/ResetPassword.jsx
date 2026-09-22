@@ -134,7 +134,13 @@ export default function ResetPassword() {
                                 />
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="cursor-pointer" onClick={() => navigate('/')}>
-                                        <img src="/logo-white-sweetspot.png" alt="Sweet Spot" className="h-7 w-auto object-contain" />
+                                        {configs?.store_logo_white ? (
+                                            <img src={configs.store_logo_white} alt={configs?.store_name || "Sweet Spot"} className="h-7 w-auto object-contain" />
+                                        ) : configs?.store_name ? (
+                                            <span className="text-white font-black text-lg tracking-tight">
+                                                {configs.store_name}
+                                            </span>
+                                        ) : null}
                                     </div>
                                     <button 
                                         type="button"

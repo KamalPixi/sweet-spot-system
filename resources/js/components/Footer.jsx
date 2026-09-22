@@ -56,16 +56,21 @@ export default function Footer({ onCategoryClick, navigate }) {
                 {/* Column 1: Brand & Copyright */}
                 <div className="col-span-12 md:col-span-4 flex flex-col justify-between space-y-6">
                     <div>
-                        <div className="cursor-pointer inline-block" onClick={() => navigate ? navigate('/') : (window.location.href = '/')}>
-                            <img 
-                                src={brandLogo} 
-                                alt="Sweet Spot" 
-                                className="h-9 sm:h-11 w-auto object-contain block"
-                                onError={(e) => {
-                                    e.currentTarget.src = "/images/logo-white-sweetspot.png";
-                                }}
-                            />
-                        </div>
+                        {configs?.store_logo_white ? (
+                            <div className="cursor-pointer inline-block" onClick={() => navigate ? navigate('/') : (window.location.href = '/')}>
+                                <img 
+                                    src={configs.store_logo_white} 
+                                    alt={configs?.store_name || "Sweet Spot"} 
+                                    className="h-9 sm:h-11 w-auto object-contain block"
+                                />
+                            </div>
+                        ) : configs?.store_name ? (
+                            <div className="cursor-pointer inline-block" onClick={() => navigate ? navigate('/') : (window.location.href = '/')}>
+                                <span className="text-white font-black text-xl tracking-tight">
+                                    {configs.store_name}
+                                </span>
+                            </div>
+                        ) : null}
                     </div>
                     
                     <div className="text-[12px] sm:text-[13px] text-white/50 font-light leading-relaxed">

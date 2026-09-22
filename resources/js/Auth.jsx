@@ -233,7 +233,13 @@ export default function Auth({ defaultMode = 'login' }) {
                             <div className="lg:hidden -mx-6 sm:-mx-10 -mt-6 sm:-mt-10 mb-6 bg-[#24161b] text-white p-5 sm:p-6 rounded-t-[28px] sm:rounded-t-[32px] rounded-b-[24px] shadow-sm">
                                 <div className="relative z-10 flex items-center justify-between">
                                     <div className="cursor-pointer" onClick={() => navigate('/')}>
-                                        <img src="/logo-white-sweetspot.png" alt="Sweet Spot" className="h-7 w-auto object-contain" />
+                                        {configs?.store_logo_white ? (
+                                            <img src={configs.store_logo_white} alt={configs?.store_name || "Sweet Spot"} className="h-7 w-auto object-contain" />
+                                        ) : configs?.store_name ? (
+                                            <span className="text-white font-black text-lg tracking-tight">
+                                                {configs.store_name}
+                                            </span>
+                                        ) : null}
                                     </div>
                                     <button 
                                         type="button"

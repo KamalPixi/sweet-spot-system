@@ -4,7 +4,7 @@ import { CartBagIcon } from './HeaderIcons';
 import { useApp } from '../AppContext';
 
 export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemCount, user, logout }) {
-    const { setIsCartOpen } = useApp();
+    const { setIsCartOpen, configs } = useApp();
     const [email, setEmail] = useState('');
     const [subscribed, setSubscribed] = useState(false);
     const [alreadySubscribed, setAlreadySubscribed] = useState(false);
@@ -65,11 +65,17 @@ export default function Sidebar({ isMenuOpen, setIsMenuOpen, navigate, cartItemC
                             className="cursor-pointer flex items-center select-none" 
                             onClick={() => { navigate('/'); setIsMenuOpen(false); }}
                         >
-                            <img 
-                                src="/logo-white-sweetspot.png" 
-                                alt="Sweet Spot" 
-                                className="h-10 w-auto object-contain transition-transform hover:scale-105" 
-                            />
+                            {configs?.store_logo_white ? (
+                                <img 
+                                    src={configs.store_logo_white} 
+                                    alt={configs?.store_name || "Sweet Spot"} 
+                                    className="h-10 w-auto object-contain transition-transform hover:scale-105" 
+                                />
+                            ) : configs?.store_name ? (
+                                <span className="text-white font-black text-xl tracking-tight">
+                                    {configs.store_name}
+                                </span>
+                            ) : null}
                         </div>
                         <button 
                             onClick={() => setIsMenuOpen(false)}

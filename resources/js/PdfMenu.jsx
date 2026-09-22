@@ -135,11 +135,17 @@ export default function PdfMenu() {
                             onClick={() => navigate('/')} 
                             className="cursor-pointer flex items-center justify-center select-none"
                         >
-                            <img 
-                                src="/logo-white-sweetspot.png" 
-                                alt="Sweet Spot" 
-                                className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
-                            />
+                            {configs?.store_logo_white ? (
+                                <img 
+                                    src={configs.store_logo_white} 
+                                    alt={configs?.store_name || "Sweet Spot"} 
+                                    className="h-7 sm:h-8 w-auto object-contain transition-transform hover:scale-105" 
+                                />
+                            ) : configs?.store_name ? (
+                                <span className="text-white font-black text-lg tracking-tight hover:opacity-90 transition-opacity">
+                                    {configs.store_name}
+                                </span>
+                            ) : null}
                         </div>
                     </div>
 
