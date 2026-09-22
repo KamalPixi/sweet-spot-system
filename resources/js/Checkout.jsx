@@ -26,7 +26,7 @@ const getImageUrl = (url) => {
 const stripePublishableKey = import.meta.env.VITE_STRIPE_KEY || 'pk_test_sweet_spot_placeholder';
 const stripePromise = loadStripe(stripePublishableKey);
 
-const isRealStripeConfigured = stripePublishableKey && !stripePublishableKey.startsWith('pk_test_sweet_spot_placeholder');
+const isRealStripeConfigured = stripePublishableKey && (stripePublishableKey.startsWith('pk_test_') || stripePublishableKey.startsWith('pk_live_')) && !stripePublishableKey.startsWith('pk_test_sweet_spot_placeholder');
 const UK_TIME_ZONE = 'Europe/London';
 
 const parseCollectionDateTime = (slot) => {
