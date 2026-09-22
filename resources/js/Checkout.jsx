@@ -432,6 +432,7 @@ export default function Checkout() {
 
     // In-page Fulfillment Popup Modal (replacing old standalone setup pages)
     const [isFulfillmentModalOpen, setIsFulfillmentModalOpen] = useState(false);
+    const [fulfillmentInitialTab, setFulfillmentInitialTab] = useState('delivery');
     const fulfillmentAnchorRef = React.useRef(null);
 
     // Status states
@@ -776,7 +777,12 @@ export default function Checkout() {
         }
     };
 
-    const handleSwitchOrderBanner = () => {
+    const handleSwitchOrderBanner = (preferredTab) => {
+        if (preferredTab) {
+            setFulfillmentInitialTab(preferredTab);
+        } else if (orderType === 'collection' || orderType === 'delivery') {
+            setFulfillmentInitialTab(orderType);
+        }
         setIsFulfillmentModalOpen(true);
     };
 
@@ -1599,7 +1605,7 @@ export default function Checkout() {
                                                     <div className="grid sm:grid-cols-2 gap-3">
                                                         <button 
                                                             type="button" 
-                                                            onClick={() => setIsFulfillmentModalOpen(true)}
+                                                            onClick={() => handleSwitchOrderBanner('delivery')}
                                                             className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
                                                         >
                                                             <MapPin size={15} className="text-[#e5b582]" />
@@ -1607,7 +1613,7 @@ export default function Checkout() {
                                                         </button>
                                                         <button 
                                                             type="button" 
-                                                            onClick={() => setIsFulfillmentModalOpen(true)}
+                                                            onClick={() => handleSwitchOrderBanner('collection')}
                                                             className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
                                                         >
                                                             <Clock size={15} className="text-[#e5b582]" />
@@ -1671,7 +1677,7 @@ export default function Checkout() {
                                                                 </div>
                                                                 <button 
                                                                     type="button" 
-                                                                    onClick={handleSwitchOrderBanner}
+                                                                    onClick={() => handleSwitchOrderBanner(orderType === 'delivery' ? 'delivery' : 'collection')}
                                                                     className="shrink-0 rounded-full bg-white border border-amber-300 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-wider text-amber-800 hover:bg-amber-100 transition-colors cursor-pointer"
                                                                 >
                                                                     {orderType === 'delivery' ? 'Add Address' : 'Pick Slot'}
@@ -1904,6 +1910,7 @@ export default function Checkout() {
                 isOpen={isFulfillmentModalOpen}
                 onClose={() => setIsFulfillmentModalOpen(false)}
                 onComplete={() => setIsFulfillmentModalOpen(false)}
+                initialTab={fulfillmentInitialTab}
             />
 
             <Footer navigate={navigate} />

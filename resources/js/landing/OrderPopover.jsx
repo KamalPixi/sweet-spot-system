@@ -72,7 +72,7 @@ const calculatePopoverPosition = (anchorElement) => {
     return { top, left, arrowTop, isReady: true };
 };
 
-export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete }) {
+export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete, initialTab }) {
     const navigate = useNavigate();
     const { 
         orderType, setOrderType, 
@@ -82,14 +82,18 @@ export default function OrderPopover({ isOpen, onClose, anchorRef, onComplete })
         configs 
     } = useApp();
 
-    const [activeTab, setActiveTab] = useState(() => orderType === 'collection' ? 'collection' : 'delivery');
+    const [activeTab, setActiveTab] = useState(() => initialTab || (orderType === 'collection' ? 'collection' : 'delivery'));
 
-    // Sync tab when opened or orderType updates
+    // Sync tab when opened or initialTab/orderType updates
     useEffect(() => {
-        if (isOpen && orderType && orderType !== 'dine_in') {
-            setActiveTab(orderType);
+        if (isOpen) {
+            if (initialTab) {
+                setActiveTab(initialTab);
+            } else if (orderType && orderType !== 'dine_in') {
+                setActiveTab(orderType);
+            }
         }
-    }, [isOpen, orderType]);
+    }, [isOpen, initialTab, orderType]);
 
     // Delivery Form States
     const [postcode, setPostcode] = useState(() => deliveryInfo?.postcode || '');
