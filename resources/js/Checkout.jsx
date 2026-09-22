@@ -1131,8 +1131,7 @@ export default function Checkout() {
                                                             {/* Smart Device Memory Banner */}
                                                             {hasRememberedGuest && (phone || email) && (
                                                                 <div className="flex items-center justify-between px-3.5 py-2 bg-[#fdfaf5] border border-[#e5b582]/50 rounded-xl text-[#24161b] text-xs shadow-2xs animate-fadeIn">
-                                                                    <span className="flex items-center gap-2 font-medium">
-                                                                        <Sparkles size={14} className="text-[#e5b582] shrink-0" />
+                                                                    <span className="flex items-center font-medium">
                                                                         <span>Auto-filled from previous order on this device</span>
                                                                     </span>
                                                                     <button

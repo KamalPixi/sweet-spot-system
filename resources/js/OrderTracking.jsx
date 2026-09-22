@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useParams, useNavigate } from 'react-router-dom';
 import { useApp } from './AppContext';
 import { 
-    CheckCircle, Clock, MapPin, Sparkles, ArrowRight, ArrowLeft, 
+    CheckCircle, Clock, MapPin, ArrowRight, ArrowLeft, 
     Loader2, Search, RefreshCw, AlertCircle, Copy, Check, Truck, 
     ExternalLink, Phone, Store, Bike, UtensilsCrossed,
     Calendar, ShieldCheck, Flame, ChefHat, Navigation, HeartHandshake,
@@ -272,14 +272,9 @@ export default function OrderTracking() {
 
                         {recentOrderNumber && (
                             <div className="mt-5 pt-5 border-t border-neutral-200/70 flex items-center justify-between gap-3 bg-white p-3.5 rounded-2xl border border-neutral-200/70">
-                                <div className="flex items-center gap-3">
-                                    <div className="w-9 h-9 rounded-xl bg-[#FCF3F5] text-[#f43f5e] flex items-center justify-center shrink-0">
-                                        <Sparkles size={16} />
-                                    </div>
-                                    <div>
-                                        <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Recent Order Found</p>
-                                        <p className="text-xs font-mono font-black text-[#24161b]">{recentOrderNumber}</p>
-                                    </div>
+                                <div>
+                                    <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Recent Order Found</p>
+                                    <p className="text-xs font-mono font-black text-[#24161b]">{recentOrderNumber}</p>
                                 </div>
                                 <button
                                     onClick={() => navigate(`/track/${recentOrderNumber}`)}
@@ -708,7 +703,6 @@ export default function OrderTracking() {
 
                                         <div className="p-3.5 bg-[#fdfaf5] border border-[#e5b582]/40 rounded-xl space-y-1.5">
                                             <div className="flex items-center gap-2 text-[#24161b] font-bold text-xs">
-                                                <Sparkles size={14} className="text-[#e5b582]" />
                                                 <span>Sit Back & Enjoy Table Service</span>
                                             </div>
                                             <p className="text-[11px] text-neutral-600 leading-relaxed">

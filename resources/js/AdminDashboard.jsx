@@ -17,7 +17,7 @@ import {
     LayoutDashboard, ClipboardList, FolderTree, Egg, Mail, Settings, 
     ArrowLeft, LogOut, Loader2, AlertCircle, Plus, Edit, Trash, Check, X, ShieldAlert, ChevronLeft, ChevronRight, BarChart3,
     Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, User, Bell, RefreshCw, ChevronDown, Upload, Clock,
-    Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, Sparkles, DollarSign, Flame, CheckCircle2, ArrowUpRight,
+    Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
     Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart,
     FileText, Download
@@ -2946,7 +2946,7 @@ export default function AdminDashboard() {
                                                 badge={
                                                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 inline-block animate-pulse" />
                                                 }
-                                                icon={Sparkles}
+                                                icon={CheckCircle2}
                                             />
                                             <AdminStatCard
                                                 label="Categorized Products"

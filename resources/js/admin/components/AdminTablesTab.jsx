@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { 
-    QrCode, Plus, Trash2, Printer, Download, ExternalLink, Check, Copy, UtensilsCrossed, AlertCircle, Info, Sparkles 
+    QrCode, Plus, Trash2, Printer, Download, ExternalLink, Check, Copy, UtensilsCrossed, AlertCircle, Info 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useApp } from '../../AppContext';

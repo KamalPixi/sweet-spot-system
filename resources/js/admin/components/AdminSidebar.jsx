@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronLeft, ChevronRight, LogOut, Sparkles, User, X } from 'lucide-react';
+import { ChevronLeft, ChevronRight, LogOut, User, X } from 'lucide-react';
 
 export default function AdminSidebar({
     collapsed,

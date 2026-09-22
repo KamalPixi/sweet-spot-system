@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { 
-    Bell, ChevronDown, LogOut, RefreshCw, Users, X, Sparkles, Clock, 
+    Bell, ChevronDown, LogOut, RefreshCw, Users, X, Clock, 
     CheckCircle2, Plus, QrCode, Printer, ExternalLink, ShieldCheck, 
     Activity, Store, Search, Menu
 } from 'lucide-react';

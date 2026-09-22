@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { 
     Printer, RefreshCw, CheckCircle2, Clock, AlertTriangle, Play, FileText, Cpu, 
-    Wifi, Layers, ShieldCheck, Check, Sparkles, XCircle, Trash2 
+    Wifi, Layers, ShieldCheck, Check, XCircle, Trash2 
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 

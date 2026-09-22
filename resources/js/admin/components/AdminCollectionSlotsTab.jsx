@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
-    Clock, Calendar, Sparkles, CheckCircle2, XCircle, AlertCircle, 
+    Clock, Calendar, CheckCircle2, XCircle, AlertCircle, 
     Edit3, Copy, Layers, Timer, Sliders, Check, Eye, RefreshCw,
     Sun, Moon, ChevronRight, X, Info, Zap
 } from 'lucide-react';

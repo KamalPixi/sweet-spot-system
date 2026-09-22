@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ChevronRight, X, Heart, MessageSquare, Search, Sparkles } from 'lucide-react';
+import { Star, ChevronRight, X, Heart, MessageSquare, Search } from 'lucide-react';
 
 const DEFAULT_REVIEWS = [
     {

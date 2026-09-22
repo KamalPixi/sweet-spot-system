@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
     Star, Plus, Edit2, Trash2, Eye, EyeOff, MessageSquare, Check, X, RefreshCw, 
-    Search, Filter, Heart, Sparkles, SlidersHorizontal
+    Search, Filter, Heart, SlidersHorizontal
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { AdminStatCard, AdminStatGrid } from './AdminStatCard';

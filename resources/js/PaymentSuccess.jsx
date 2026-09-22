@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { CheckCircle2, ArrowRight, ShieldCheck, Sparkles, Receipt, Clock, MapPin, Store, Bike } from 'lucide-react';
+import { CheckCircle2, ArrowRight, ShieldCheck, Receipt, Clock, MapPin, Store, Bike } from 'lucide-react';
 import { useApp } from './AppContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
@@ -98,7 +98,6 @@ export default function PaymentSuccess() {
                             </div>
 
                             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200/60 text-[10px] font-black uppercase tracking-widest text-emerald-700 mb-2.5">
-                                <Sparkles size={11} className="text-emerald-500" />
                                 Payment Confirmed
                             </div>
 
