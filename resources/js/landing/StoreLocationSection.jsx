@@ -11,8 +11,17 @@ export default function StoreLocationSection({ configs = {} }) {
     const [isViewerOpen, setIsViewerOpen] = useState(false);
 
     const handleDirections = () => {
-        const query = encodeURIComponent(`${address}, ${city} ${postcode}`);
-        window.open(`https://www.google.com/maps/search/?api=1&query=${query}`, '_blank');
+        const lat = configs.store_latitude || configs.store_lat || configs.latitude;
+        const lng = configs.store_longitude || configs.store_lng || configs.longitude;
+
+        let destination = '';
+        if (lat && lng) {
+            destination = `${encodeURIComponent(lat)},${encodeURIComponent(lng)}`;
+        } else {
+            destination = encodeURIComponent(`${address}, ${city} ${postcode}`);
+        }
+
+        window.open(`https://www.google.com/maps/dir/?api=1&destination=${destination}`, '_blank');
     };
 
     // Close image viewer on Escape key press
@@ -100,7 +109,10 @@ export default function StoreLocationSection({ configs = {} }) {
                     {/* 2 Info Cards: Location & Opening Hours */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-4">
                         {/* Location Card */}
-                        <div className="bg-white rounded-xl p-4 sm:p-5 border border-neutral-200/80 flex items-start justify-between shadow-xs hover:border-neutral-300 transition-colors">
+                        <div 
+                            onClick={handleDirections}
+                            className="bg-white rounded-xl p-4 sm:p-5 border border-neutral-200/80 flex items-start justify-between shadow-xs hover:border-neutral-300 transition-colors cursor-pointer"
+                        >
                             <div className="space-y-0.5">
                                 <h4 className="text-xs sm:text-sm font-bold text-neutral-900">
                                     Location
