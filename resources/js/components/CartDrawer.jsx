@@ -110,12 +110,7 @@ export default function CartDrawer() {
                     {cart.length === 0 ? (
                         <div className="h-full min-h-[320px] flex flex-col items-center justify-center text-center space-y-3.5 py-12 px-4">
                             <div className="w-16 h-16 rounded-full bg-[#faf7f2] border border-[#e5b582]/40 flex items-center justify-center text-[#24161b] shadow-2xs">
-                                <img 
-                                    src="/images/icons/bag.png" 
-                                    alt="Empty" 
-                                    className="w-6 h-6 object-contain" 
-                                    style={{ filter: 'brightness(0) saturate(100%) invert(11%) sepia(21%) saturate(2036%) hue-rotate(296deg) brightness(96%) contrast(97%)' }} 
-                                />
+                                <CartBagIcon className="w-7 h-7 text-[#24161b]" strokeWidth={1.75} />
                             </div>
                             <div className="space-y-1">
                                 <h4 className="font-black text-neutral-900 text-base">Your bag is empty</h4>
