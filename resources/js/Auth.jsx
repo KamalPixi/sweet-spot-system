@@ -317,14 +317,14 @@ export default function Auth({ defaultMode = 'login' }) {
                                         {mode === 'register' && 'Create Account'}
                                         {mode === 'forgot_password' && 'Reset Password'}
                                         {mode === 'verify_code' && 'Enter Code'}
-                                        {mode === 'admin' && 'Staff Portal'}
+                                        {mode === 'admin' && 'Admin Portal'}
                                     </h1>
                                     <p className="text-xs text-neutral-500 mt-1.5 font-normal">
                                         {mode === 'login' && 'Welcome back to Sweet Spot.'}
                                         {mode === 'register' && 'Create your account to order treats.'}
                                         {mode === 'forgot_password' && 'Enter your contact info to reset password.'}
                                         {mode === 'verify_code' && `Enter the 6-digit code sent to ${forgotInput}.`}
-                                        {mode === 'admin' && 'Store staff access only.'}
+                                        {mode === 'admin' && 'Store admin access only.'}
                                     </p>
                                 </div>
 
@@ -452,7 +452,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                     {mode === 'admin' && (
                                         <div className="animate-auth-switch">
                                             <label className="block text-xs font-medium text-neutral-700 mb-1.5">
-                                                Staff Email
+                                                Admin Email
                                             </label>
                                             <input 
                                                 type="email" 
@@ -646,7 +646,7 @@ export default function Auth({ defaultMode = 'login' }) {
                                                         {mode === 'register' && 'Create Account'}
                                                         {mode === 'forgot_password' && 'Send Reset Code'}
                                                         {mode === 'verify_code' && 'Confirm Password'}
-                                                        {mode === 'admin' && 'Staff Login'}
+                                                        {mode === 'admin' && 'Admin Login'}
                                                     </span>
                                                 )}
                                             </button>
@@ -691,19 +691,6 @@ export default function Auth({ defaultMode = 'login' }) {
                                             Sign In
                                         </button>
                                     </p>
-                                )}
-
-                                {/* Staff Mode Return */}
-                                {defaultMode === 'admin' && (
-                                    <div className="mt-4 text-center">
-                                        <button 
-                                            type="button"
-                                            onClick={() => navigate('/login')}
-                                            className="text-xs text-neutral-500 hover:text-[#24161b] cursor-pointer font-medium"
-                                        >
-                                            ← Customer sign in
-                                        </button>
-                                    </div>
                                 )}
                             </div>
                         </main>
