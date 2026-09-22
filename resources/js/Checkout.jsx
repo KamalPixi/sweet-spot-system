@@ -1197,7 +1197,7 @@ export default function Checkout() {
                                                                         </div>
 
                                                                         {/* Secondary Email Option */}
-                                                                        {showSecondaryContact || email ? (
+                                                                        {(showSecondaryContact || email) && (
                                                                             <div className="pt-1 animate-fadeIn">
                                                                                 <label className="block text-[11px] font-medium text-neutral-600 mb-1">
                                                                                     Email Address <span className="text-neutral-400 font-normal">(for receipt & tracking confirmation)</span>
@@ -1213,14 +1213,6 @@ export default function Checkout() {
                                                                                     className="w-full h-10 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
                                                                                 />
                                                                             </div>
-                                                                        ) : (
-                                                                            <button
-                                                                                type="button"
-                                                                                onClick={() => setShowSecondaryContact(true)}
-                                                                                className="text-[11px] text-neutral-500 hover:text-[#24161b] font-medium flex items-center gap-1 pt-0.5 cursor-pointer transition-colors"
-                                                                            >
-                                                                                <span>+ Add email address for digital receipt (optional)</span>
-                                                                            </button>
                                                                         )}
                                                                     </div>
                                                                 ) : (

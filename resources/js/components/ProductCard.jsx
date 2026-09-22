@@ -1,6 +1,7 @@
 import React from 'react';
 import { useApp } from '../AppContext';
 import { Minus, Plus } from 'lucide-react';
+import { CartBagIcon } from './HeaderIcons';
 
 const getImageUrl = (item) => {
     if (!item) return '/images/placeholder.svg';
@@ -118,12 +119,7 @@ export default function ProductCard({ product }) {
                         onClick={handleAdd}
                         className="w-full bg-[#24161b] hover:bg-black text-[#e5b582] hover:text-white border border-[#e5b582]/30 rounded-full py-2.5 px-4 text-xs font-semibold flex items-center justify-center gap-2 transition-all cursor-pointer active:scale-98 shadow-xs"
                     >
-                        <img 
-                            src="/images/icons/bag.png" 
-                            alt="Add" 
-                            className="w-3.5 h-3.5 object-contain inline-block" 
-                            style={{ filter: 'brightness(0) saturate(100%) invert(80%) sepia(26%) saturate(693%) hue-rotate(345deg) brightness(96%) contrast(89%)' }} 
-                        />
+                        <CartBagIcon className="w-3.5 h-3.5" strokeWidth={1.75} />
                         <span>Add to cart</span>
                     </button>
                 ) : (
@@ -159,12 +155,7 @@ export default function ProductCard({ product }) {
                             className="w-10 h-8 sm:w-11 sm:h-8.5 rounded-xl bg-[#24161b] hover:bg-black text-[#e5b582] flex items-center justify-center shrink-0 shadow-xs cursor-pointer active:scale-95 transition-all"
                             title="View in Cart"
                         >
-                            <img 
-                                src="/images/icons/bag.png" 
-                                alt="Cart" 
-                                className="w-3.5 h-3.5 object-contain inline-block" 
-                                style={{ filter: 'brightness(0) saturate(100%) invert(80%) sepia(26%) saturate(693%) hue-rotate(345deg) brightness(96%) contrast(89%)' }} 
-                            />
+                            <CartBagIcon className="w-4 h-4" strokeWidth={1.75} />
                         </button>
                     </div>
                 )}

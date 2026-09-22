@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight, Minus, Plus, Check } from 'lucide-react';
 import { useApp } from '../AppContext';
+import { CartBagIcon } from './HeaderIcons';
 
 const formatImageUrl = (url) => {
     if (!url) return '/images/placeholder.svg';
@@ -308,12 +309,7 @@ export default function ProductDetailModal({ isOpen, onClose, product }) {
                                     </>
                                 ) : (
                                     <>
-                                        <img 
-                                            src="/images/icons/bag.png" 
-                                            alt="Add" 
-                                            className="w-3.5 h-3.5 object-contain inline-block shrink-0" 
-                                            style={{ filter: 'brightness(0) saturate(100%) invert(80%) sepia(26%) saturate(693%) hue-rotate(345deg) brightness(96%) contrast(89%)' }} 
-                                        />
+                                        <CartBagIcon className="w-3.5 h-3.5 shrink-0" strokeWidth={1.75} />
                                         <span className="whitespace-nowrap">Add to cart • £ {totalPrice}</span>
                                     </>
                                 )}
