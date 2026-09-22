@@ -55,12 +55,13 @@ const OrderStepper = ({ status, type }) => {
     const currentStep = cfg?.step ?? 0;
     const isCancelled = status === 'cancelled';
     const isDelivery = type === 'delivery';
+    const isDineIn = type === 'dine_in';
 
     const steps = [
         'Placed',
         'Preparing',
-        isDelivery ? 'On Delivery' : 'Ready',
-        isDelivery ? 'Delivered' : 'Collected'
+        isDelivery ? 'On Delivery' : isDineIn ? 'Serving' : 'Ready',
+        isDelivery ? 'Delivered' : isDineIn ? 'Served' : 'Collected'
     ];
 
     if (isCancelled) {
@@ -705,8 +706,16 @@ export default function CustomerPortal() {
                                                                     <span className="font-serif font-black text-sm text-[#24161b]">
                                                                         #{order.order_number}
                                                                     </span>
-                                                                    <span className="px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-500 text-[9px] font-bold uppercase tracking-wider">
-                                                                        {order.type}
+                                                                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                                                                        order.type === 'dine_in'
+                                                                            ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                                                            : 'bg-neutral-100 text-neutral-500'
+                                                                    }`}>
+                                                                        {order.type === 'dine_in'
+                                                                            ? `Dine-In • Table #${order.table_number || ''}`
+                                                                            : order.type === 'delivery'
+                                                                                ? 'Delivery'
+                                                                                : 'Collection'}
                                                                     </span>
                                                                     <StatusBadge status={order.status} />
                                                                 </div>
@@ -890,8 +899,16 @@ export default function CustomerPortal() {
                                                                         <span className="font-serif font-black text-sm text-[#24161b]">
                                                                             #{order.order_number}
                                                                         </span>
-                                                                        <span className="px-2.5 py-0.5 bg-neutral-100 text-neutral-700 text-[10px] font-bold uppercase tracking-wider rounded-full">
-                                                                            {order.type}
+                                                                        <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full ${
+                                                                            order.type === 'dine_in'
+                                                                                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                                                                : 'bg-neutral-100 text-neutral-700'
+                                                                        }`}>
+                                                                            {order.type === 'dine_in'
+                                                                                ? `Dine-In • Table #${order.table_number || ''}`
+                                                                                : order.type === 'delivery'
+                                                                                    ? 'Delivery'
+                                                                                    : 'Collection'}
                                                                         </span>
                                                                         <StatusBadge status={order.status} />
                                                                     </div>
@@ -1018,8 +1035,16 @@ export default function CustomerPortal() {
                                                                             {formatDate(order.created_at)}
                                                                         </td>
                                                                         <td className="px-4 py-4">
-                                                                            <span className="px-2.5 py-1 rounded-full bg-neutral-100 text-neutral-600 text-[10px] font-bold uppercase tracking-wider">
-                                                                                {order.type}
+                                                                            <span className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                                                                                order.type === 'dine_in'
+                                                                                    ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
+                                                                                    : 'bg-neutral-100 text-neutral-600'
+                                                                            }`}>
+                                                                                {order.type === 'dine_in'
+                                                                                    ? `Dine-In • Table #${order.table_number || ''}`
+                                                                                    : order.type === 'delivery'
+                                                                                        ? 'Delivery'
+                                                                                        : 'Collection'}
                                                                             </span>
                                                                         </td>
                                                                         <td className="px-4 py-4 text-xs text-neutral-600 text-center font-medium">

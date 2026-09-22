@@ -114,6 +114,7 @@ export default function OrderTracking() {
     };
 
     const isDelivery = order?.type === 'delivery';
+    const isDineIn = order?.type === 'dine_in';
     const steps = [
         { 
             name: 'Order Confirmed', 
@@ -128,50 +129,72 @@ export default function OrderTracking() {
             icon: Flame
         },
         { 
-            name: isDelivery ? 'Out for Delivery' : 'Ready for Counter', 
-            short: isDelivery ? 'Dispatched' : 'Ready',
-            desc: isDelivery ? 'Courier on the road' : 'Boxed at store counter',
-            icon: isDelivery ? Bike : Store
+            name: isDelivery ? 'Out for Delivery' : isDineIn ? 'Serving to Table' : 'Ready for Counter', 
+            short: isDelivery ? 'Dispatched' : isDineIn ? 'Serving' : 'Ready',
+            desc: isDelivery 
+                ? 'Courier on the road' 
+                : isDineIn 
+                    ? (order?.table_number ? `Brought to Table #${order.table_number}` : 'Brought to your table')
+                    : 'Boxed at store counter',
+            icon: isDelivery ? Bike : isDineIn ? UtensilsCrossed : Store
         },
         { 
-            name: isDelivery ? 'Delivered Fresh' : 'Collected', 
+            name: isDelivery ? 'Delivered Fresh' : isDineIn ? 'Served at Table' : 'Collected', 
             short: 'Complete',
-            desc: isDelivery ? 'Enjoy warm & fresh' : 'Collected with love',
+            desc: isDelivery ? 'Enjoy warm & fresh' : isDineIn ? 'Enjoyed at your table' : 'Collected with love',
             icon: HeartHandshake
         }
     ];
 
     // Status description helper
-    const getStatusHeadline = (status, type) => {
+    const getStatusHeadline = (status, type, currentOrder) => {
         switch (status?.toLowerCase()) {
             case 'pending':
                 return {
-                    title: 'Order Confirmed & In Kitchen Queue',
-                    subtitle: 'Our pastry chefs have received your ticket and are assembling fresh ingredients.',
+                    title: type === 'dine_in' 
+                        ? (currentOrder?.table_number ? `Order Confirmed for Table #${currentOrder.table_number}` : 'Table Order Confirmed')
+                        : 'Order Confirmed & In Kitchen Queue',
+                    subtitle: type === 'dine_in'
+                        ? 'Sit back and relax! Our kitchen has received your ticket and is preparing your order for table service.'
+                        : 'Our pastry chefs have received your ticket and are assembling fresh ingredients.',
                     color: 'text-[#e5b582]'
                 };
             case 'preparing':
                 return {
                     title: 'Baking Fresh In The Oven',
-                    subtitle: 'Your sweet treats are currently handcrafted, baked to golden perfection, and delicately decorated.',
+                    subtitle: type === 'dine_in'
+                        ? (currentOrder?.table_number 
+                            ? `Your sweet treats are currently handcrafted, baked to golden perfection, and plated for Table #${currentOrder.table_number}.`
+                            : 'Your sweet treats are currently handcrafted, baked to golden perfection, and plated for table service.')
+                        : 'Your sweet treats are currently handcrafted, baked to golden perfection, and delicately decorated.',
                     color: 'text-amber-400'
                 };
             case 'ready':
-                return type === 'delivery' 
-                    ? {
+                if (type === 'delivery') {
+                    return {
                         title: 'Courier Dispatched & Heading Your Way',
                         subtitle: 'Freshly packed in insulated artisanal boxes and currently on the road to your doorstep.',
                         color: 'text-emerald-400'
-                    }
-                    : {
+                    };
+                } else if (type === 'dine_in') {
+                    return {
+                        title: currentOrder?.table_number ? `Serving Now to Table #${currentOrder.table_number}` : 'Serving Directly to Your Table',
+                        subtitle: 'Our floor staff is bringing your freshly prepared treats directly to your table right now!',
+                        color: 'text-emerald-400'
+                    };
+                } else {
+                    return {
                         title: 'Ready for Counter Pickup',
                         subtitle: 'Your box is waiting fresh at our Plumstead store counter. Pop in anytime within your slot!',
                         color: 'text-emerald-400'
                     };
+                }
             case 'completed':
                 return {
-                    title: 'Order Completed Fresh & Enjoyed',
-                    subtitle: 'Thank you for choosing Sweet Spot! We hope every single bite brings pure delight.',
+                    title: type === 'dine_in' ? 'Served & Enjoyed at Your Table' : 'Order Completed Fresh & Enjoyed',
+                    subtitle: type === 'dine_in' 
+                        ? 'Thank you for dining with us at Sweet Spot! We hope every single bite brings pure delight.'
+                        : 'Thank you for choosing Sweet Spot! We hope every single bite brings pure delight.',
                     color: 'text-emerald-300'
                 };
             case 'cancelled':
@@ -288,10 +311,10 @@ export default function OrderTracking() {
 
                         <div className="p-4 rounded-2xl bg-white border border-neutral-200/70 shadow-2xs">
                             <div className="w-8 h-8 rounded-xl bg-[#24161b] text-[#e5b582] flex items-center justify-center mb-3">
-                                <Store size={16} />
+                                <UtensilsCrossed size={16} />
                             </div>
-                            <h4 className="text-xs font-black text-[#24161b]">Store Collection</h4>
-                            <p className="text-[11px] text-neutral-500 mt-1 leading-snug">Counter pickup slots and rapid collection passes.</p>
+                            <h4 className="text-xs font-black text-[#24161b]">Table & Counter</h4>
+                            <p className="text-[11px] text-neutral-500 mt-1 leading-snug">Live dine-in table service & counter pickup slots.</p>
                         </div>
                     </div>
                 </div>
@@ -337,7 +360,7 @@ export default function OrderTracking() {
         }
 
         const currentStep = getStatusStep(order.status);
-        const headline = getStatusHeadline(order.status, order.type);
+        const headline = getStatusHeadline(order.status, order.type, order);
 
         /* ══════════════════════════════════════════
             CASE 4: Live Order Dashboard
@@ -426,8 +449,20 @@ export default function OrderTracking() {
                                 </span>
 
                                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#e5b582]/20 text-[#e5b582] border border-[#e5b582]/30">
-                                    {order.type === 'delivery' ? <Bike size={13} /> : <Store size={13} />}
-                                    <span>{order.type === 'delivery' ? 'Home Delivery' : 'Store Collection'}</span>
+                                    {order.type === 'delivery' ? (
+                                        <Bike size={13} />
+                                    ) : order.type === 'dine_in' ? (
+                                        <UtensilsCrossed size={13} />
+                                    ) : (
+                                        <Store size={13} />
+                                    )}
+                                    <span>
+                                        {order.type === 'delivery' 
+                                            ? 'Home Delivery' 
+                                            : order.type === 'dine_in'
+                                                ? `Dine-In Table #${order.table_number || ''}`
+                                                : 'Store Collection'}
+                                    </span>
                                 </span>
                             </div>
 
@@ -442,31 +477,39 @@ export default function OrderTracking() {
                         {/* Estimated Time Slot Badge / Action */}
                         <div className="shrink-0 bg-white/10 backdrop-blur-md border border-white/15 p-4 sm:p-5 rounded-2xl w-full md:w-auto text-left md:text-right">
                             <p className="text-[10px] uppercase font-bold tracking-widest text-[#e5b582]">
-                                {order.type === 'delivery' ? 'Fulfillment Target' : 'Collection Slot'}
+                                {order.type === 'delivery' 
+                                    ? 'Fulfillment Target' 
+                                    : order.type === 'dine_in'
+                                        ? 'Dining Table'
+                                        : 'Collection Slot'}
                             </p>
                             <p className="text-lg sm:text-xl font-serif font-bold text-white mt-0.5">
                                 {order.type === 'delivery' 
                                     ? (order.delivery_time || '35 - 50 mins')
-                                    : (() => {
-                                        if (!order.collection_time) return 'Confirmed Window';
-                                        try {
-                                            const date = new Date(order.collection_time.replace(' ', 'T'));
-                                            return date.toLocaleDateString('en-GB', {
-                                                weekday: 'short',
-                                                day: 'numeric',
-                                                month: 'short',
-                                                hour: '2-digit',
-                                                minute: '2-digit',
-                                                hour12: true
-                                            });
-                                        } catch (e) {
-                                            return order.collection_time;
-                                        }
-                                    })()
+                                    : order.type === 'dine_in'
+                                        ? `Table #${order.table_number || 'N/A'}`
+                                        : (() => {
+                                            if (!order.collection_time) return 'Confirmed Window';
+                                            try {
+                                                const date = new Date(order.collection_time.replace(' ', 'T'));
+                                                return date.toLocaleDateString('en-GB', {
+                                                    weekday: 'short',
+                                                    day: 'numeric',
+                                                    month: 'short',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit',
+                                                    hour12: true
+                                                });
+                                            } catch (e) {
+                                                return order.collection_time;
+                                            }
+                                        })()
                                 }
                             </p>
                             <p className="text-[10px] text-white/60 mt-1">
-                                Placed on {order.created_at ? new Date(order.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Today'}
+                                {order.type === 'dine_in'
+                                    ? 'Table Service in Restaurant'
+                                    : `Placed on ${order.created_at ? new Date(order.created_at).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: true }) : 'Today'}`}
                             </p>
                         </div>
                     </div>
@@ -543,15 +586,25 @@ export default function OrderTracking() {
                                 <div className="flex items-center gap-2">
                                     {order.type === 'delivery' ? (
                                         <Truck size={17} className="text-[#f43f5e]" />
+                                    ) : order.type === 'dine_in' ? (
+                                        <UtensilsCrossed size={17} className="text-[#f43f5e]" />
                                     ) : (
                                         <Store size={17} className="text-[#f43f5e]" />
                                     )}
                                     <h3 className="text-xs font-black uppercase tracking-wider text-[#24161b]">
-                                        {order.type === 'delivery' ? 'Delivery Destination & Courier' : 'Counter Collection Pass'}
+                                        {order.type === 'delivery' 
+                                            ? 'Delivery Destination & Courier' 
+                                            : order.type === 'dine_in'
+                                                ? 'Dine-In Table Service'
+                                                : 'Counter Collection Pass'}
                                     </h3>
                                 </div>
                                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#24161b] bg-white border border-neutral-200 px-3 py-0.5 rounded-full">
-                                    {order.type === 'delivery' ? 'Home Courier' : 'In-Store'}
+                                    {order.type === 'delivery' 
+                                        ? 'Home Courier' 
+                                        : order.type === 'dine_in' 
+                                            ? 'Table Service' 
+                                            : 'In-Store'}
                                 </span>
                             </div>
 
@@ -629,6 +682,39 @@ export default function OrderTracking() {
                                                 </p>
                                             </div>
                                         )}
+                                    </div>
+                                </div>
+                            ) : order.type === 'dine_in' ? (
+                                /* Dine-In Table Service Content */
+                                <div className="space-y-4 text-xs">
+                                    <div className="p-4 sm:p-5 bg-white rounded-2xl border border-neutral-200/80 space-y-4">
+                                        <div className="flex items-start gap-3.5">
+                                            <div className="w-10 h-10 rounded-xl bg-[#24161b] text-[#e5b582] flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                                                <UtensilsCrossed size={18} />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-[10px] font-bold uppercase tracking-wider text-neutral-400">Assigned Service Location</p>
+                                                <div className="flex items-center gap-2">
+                                                    <span className="font-serif font-black text-[#24161b] text-base">Table #{order.table_number || 'N/A'}</span>
+                                                    <span className="px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-[10px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                                                        Table Service Active
+                                                    </span>
+                                                </div>
+                                                <p className="font-bold text-[#24161b] text-xs pt-1">Sweet Spot Dessert Lounge</p>
+                                                <p className="text-neutral-500 text-[11px]">114 Plumstead High St, London SE18 1SJ</p>
+                                            </div>
+                                        </div>
+
+                                        <div className="p-3.5 bg-[#fdfaf5] border border-[#e5b582]/40 rounded-xl space-y-1.5">
+                                            <div className="flex items-center gap-2 text-[#24161b] font-bold text-xs">
+                                                <Sparkles size={14} className="text-[#e5b582]" />
+                                                <span>Sit Back & Enjoy Table Service</span>
+                                            </div>
+                                            <p className="text-[11px] text-neutral-600 leading-relaxed">
+                                                No need to wait at the counter. Our floor staff will bring your freshly baked waffles, cookie dough, crepes, and drinks straight to <strong>Table #{order.table_number || ''}</strong> as soon as they come out of the kitchen.
+                                            </p>
+                                        </div>
                                     </div>
                                 </div>
                             ) : (
@@ -767,6 +853,13 @@ export default function OrderTracking() {
                                     </div>
                                 )}
 
+                                {order.type === 'dine_in' && (
+                                    <div className="flex justify-between text-neutral-600">
+                                        <span>Table Service</span>
+                                        <span className="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60 text-[11px]">Free Table Service</span>
+                                    </div>
+                                )}
+
                                 <div className="flex justify-between items-center text-sm font-black text-[#24161b] pt-3 border-t border-neutral-200/80">
                                     <span>Total Paid</span>
                                     <span className="text-lg font-serif font-black text-[#24161b]">
@@ -790,10 +883,16 @@ export default function OrderTracking() {
                         {/* Order Again Action */}
                         <div className="space-y-3">
                             <button 
-                                onClick={() => navigate('/categories')}
+                                onClick={() => {
+                                    if (order.type === 'dine_in' && order.table_number) {
+                                        navigate(`/categories?table=${order.table_number}`);
+                                    } else {
+                                        navigate('/categories');
+                                    }
+                                }}
                                 className="w-full bg-[#24161b] hover:bg-black text-[#e5b582] hover:text-white border border-[#e5b582]/30 font-bold py-3.5 rounded-full transition-all text-xs uppercase tracking-wider flex items-center justify-center gap-2 shadow-md hover:shadow-lg cursor-pointer active:scale-98"
                             >
-                                <span>Order More Delights</span>
+                                <span>{order.type === 'dine_in' ? 'Order More Treats to Table' : 'Order More Delights'}</span>
                                 <ArrowRight size={14} />
                             </button>
 
