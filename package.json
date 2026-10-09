@@ -20,6 +20,8 @@
         "laravel-echo": "^2.3.7",
         "lucide-react": "^1.17.0",
         "mapbox-gl": "^3.25.0",
+        "page-flip": "^2.0.7",
+        "pdfjs-dist": "^6.4.299",
         "pusher-js": "^8.5.0",
         "react": "^19.2.7",
         "react-dom": "^19.2.7",
