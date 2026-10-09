@@ -10,9 +10,13 @@ class Review extends Model
     use HasFactory;
 
     protected $fillable = [
+        'google_review_id',
         'author_name',
+        'author_photo_url',
         'quote',
         'source',
+        'relative_time',
+        'review_url',
         'rating',
         'is_active',
         'sort_order',
@@ -22,5 +26,9 @@ class Review extends Model
         'rating' => 'integer',
         'is_active' => 'boolean',
         'sort_order' => 'integer',
+    ];
+
+    protected $hidden = [
+        'google_review_id',
     ];
 }

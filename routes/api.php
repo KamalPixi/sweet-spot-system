@@ -144,6 +144,7 @@ Route::middleware('throttle:global_api')->group(function () {
             // Admin Reviews (Local Love) Management
             Route::get('/reviews', [ReviewController::class, 'adminIndex']);
             Route::post('/reviews', [ReviewController::class, 'store']);
+            Route::post('/reviews/sync-google', [ReviewController::class, 'syncGoogle']);
             Route::put('/reviews/{review}', [ReviewController::class, 'update']);
             Route::patch('/reviews/{review}/toggle-active', [ReviewController::class, 'toggleActive']);
             Route::delete('/reviews/{review}', [ReviewController::class, 'destroy']);

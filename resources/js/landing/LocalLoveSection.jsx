@@ -1,33 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ChevronRight, X, Heart, MessageSquare, Search } from 'lucide-react';
-
-const DEFAULT_REVIEWS = [
-    {
-        id: 1,
-        quote: "The cookie dough is absolutely out of this world! Warm, gooey, and perfect.",
-        author_name: "Sarah A.",
-        source: "Google Review",
-        rating: 5
-    },
-    {
-        id: 2,
-        quote: "Best dessert spot in Barking! Exceptional service and the milkshakes are unmatched.",
-        author_name: "Michael R.",
-        source: "Google Review",
-        rating: 5
-    },
-    {
-        id: 3,
-        quote: "Super fast delivery and everything arrived piping hot. Will definitely order again!",
-        author_name: "Emma T.",
-        source: "Google Review",
-        rating: 5
-    }
-];
+import { Star, ChevronRight, X, Heart, MessageSquare, Search, ExternalLink } from 'lucide-react';
 
 export default function LocalLoveSection() {
-    const [reviews, setReviews] = useState(DEFAULT_REVIEWS);
+    const [reviews, setReviews] = useState([]);
     const [avgRating, setAvgRating] = useState('4.9');
+    const [totalRatings, setTotalRatings] = useState(0);
+    const [googleMapsUrl, setGoogleMapsUrl] = useState(null);
     const [loading, setLoading] = useState(true);
 
     // Modal state for "See all"
@@ -40,10 +18,18 @@ export default function LocalLoveSection() {
             try {
                 const res = await fetch('/api/reviews');
                 const data = await res.json();
-                if (data.success && data.data && data.data.length > 0) {
+                if (data.success && data.data) {
                     setReviews(data.data);
-                    if (data.meta && data.meta.average_rating) {
-                        setAvgRating(data.meta.average_rating.toFixed(1));
+                    if (data.meta) {
+                        if (data.meta.average_rating) {
+                            setAvgRating(Number(data.meta.average_rating).toFixed(1));
+                        }
+                        if (data.meta.user_ratings_total) {
+                            setTotalRatings(data.meta.user_ratings_total);
+                        }
+                        if (data.meta.google_maps_url) {
+                            setGoogleMapsUrl(data.meta.google_maps_url);
+                        }
                     }
                 }
             } catch (err) {
@@ -73,6 +59,15 @@ export default function LocalLoveSection() {
         };
     }, [isModalOpen]);
 
+    // Helper to get initials
+    const getInitials = (name) => {
+        if (!name) return 'G';
+        const parts = name.trim().split(' ');
+        return parts.length > 1 
+            ? (parts[0][0] + parts[1][0]).toUpperCase() 
+            : parts[0].slice(0, 2).toUpperCase();
+    };
+
     // Initial 3 reviews displayed on landing section
     const displayedLandingReviews = reviews.slice(0, 3);
 
@@ -88,6 +83,10 @@ export default function LocalLoveSection() {
 
         return matchesSearch && matchesRating;
     });
+
+    if (!loading && reviews.length === 0) {
+        return null; // Gracefully hide if no active reviews
+    }
 
     return (
         <section className="w-full bg-transparent py-10 md:py-14 px-6 md:px-12 lg:px-16 text-neutral-900">
@@ -105,9 +104,14 @@ export default function LocalLoveSection() {
                                     <Star key={i} size={15} fill="currentColor" strokeWidth={0} />
                                 ))}
                             </div>
-                            <span className="text-xs md:text-[13px] font-medium text-neutral-500">
+                            <span className="text-xs md:text-[13px] font-semibold text-neutral-600">
                                 {avgRating}/5 Avg Rating
                             </span>
+                            {totalRatings > 0 && (
+                                <span className="text-[11px] text-neutral-400 font-normal">
+                                    • {totalRatings}+ Google Reviews
+                                </span>
+                            )}
                         </div>
                     </div>
 
@@ -116,7 +120,7 @@ export default function LocalLoveSection() {
                             onClick={() => setIsModalOpen(true)}
                             className="text-xs font-bold text-rose-600 hover:text-rose-700 flex items-center gap-1 cursor-pointer self-start sm:self-center transition-colors"
                         >
-                            <span>View All {reviews.length} Reviews</span>
+                            <span>View All ({reviews.length})</span>
                             <ChevronRight size={14} />
                         </button>
                     )}
@@ -127,49 +131,80 @@ export default function LocalLoveSection() {
                     {displayedLandingReviews.map((review) => (
                         <div
                             key={review.id}
-                            className="bg-[#FDEEF2]/90 rounded-2xl p-5 flex flex-col justify-between text-left border border-rose-200/50 shadow-xs hover:shadow-sm transition-all duration-300"
+                            className="bg-[#FDEEF2]/90 rounded-2xl p-5 flex flex-col justify-between text-left border border-rose-200/50 shadow-xs hover:shadow-sm transition-all duration-300 relative group"
                         >
                             <div>
-                                {/* Quote Icon */}
-                                <div className="text-rose-400 mb-1.5 select-none">
-                                    <span className="font-serif text-3xl leading-none block font-bold text-rose-300">“</span>
+                                {/* Quote mark & Google icon badge */}
+                                <div className="flex items-center justify-between mb-2">
+                                    <span className="font-serif text-3xl leading-none font-bold text-rose-300 select-none">“</span>
+                                    <div className="flex items-center gap-1 text-rose-500">
+                                        {[...Array(review.rating || 5)].map((_, i) => (
+                                            <Star key={i} size={11} fill="currentColor" strokeWidth={0} />
+                                        ))}
+                                    </div>
                                 </div>
 
-                                <p className="text-xs text-neutral-700 font-light leading-relaxed mb-4">
+                                <p className="text-xs text-neutral-700 font-light leading-relaxed mb-4 line-clamp-4">
                                     {review.quote}
                                 </p>
                             </div>
 
-                            <div className="pt-2.5 border-t border-rose-200/40 flex items-center justify-between">
-                                <div>
-                                    <h4 className="text-xs font-bold text-neutral-900">
-                                        {review.author_name || review.author}
-                                    </h4>
-                                    <span className="text-[10px] text-neutral-500 font-light">
-                                        {review.source}
-                                    </span>
+                            <div className="pt-3 border-t border-rose-200/40 flex items-center justify-between">
+                                <div className="flex items-center gap-2.5 min-w-0">
+                                    {review.author_photo_url ? (
+                                        <img 
+                                            src={review.author_photo_url} 
+                                            alt={review.author_name} 
+                                            className="w-8 h-8 rounded-full object-cover border border-rose-200 shrink-0" 
+                                            onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                                        />
+                                    ) : (
+                                        <div className="w-8 h-8 rounded-full bg-rose-200/80 text-rose-800 text-[11px] font-black flex items-center justify-center shrink-0 border border-rose-300/60">
+                                            {getInitials(review.author_name)}
+                                        </div>
+                                    )}
+
+                                    <div className="min-w-0">
+                                        <h4 className="text-xs font-bold text-neutral-900 truncate">
+                                            {review.author_name || review.author}
+                                        </h4>
+                                        <div className="flex items-center gap-1 text-[10px] text-neutral-500 font-light">
+                                            <span>{review.source || 'Google Review'}</span>
+                                            {review.relative_time && (
+                                                <span>• {review.relative_time}</span>
+                                            )}
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="flex items-center text-rose-500">
-                                    {[...Array(review.rating || 5)].map((_, i) => (
-                                        <Star key={i} size={11} fill="currentColor" strokeWidth={0} />
-                                    ))}
-                                </div>
+                                {review.review_url && (
+                                    <a
+                                        href={review.review_url}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-neutral-400 hover:text-rose-600 p-1 transition-colors shrink-0"
+                                        title="View on Google Maps"
+                                    >
+                                        <ExternalLink size={12} />
+                                    </a>
+                                )}
                             </div>
                         </div>
                     ))}
                 </div>
 
                 {/* Bottom Center Pill CTA */}
-                <div className="flex justify-center mt-6">
-                    <button 
-                        onClick={() => setIsModalOpen(true)}
-                        className="border border-rose-300 hover:border-rose-400 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold px-6 py-2 rounded-full transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
-                    >
-                        <span>See all ({reviews.length})</span>
-                        <ChevronRight size={13} className="text-rose-500" />
-                    </button>
-                </div>
+                {reviews.length > 3 && (
+                    <div className="flex justify-center mt-6">
+                        <button 
+                            onClick={() => setIsModalOpen(true)}
+                            className="border border-rose-300 hover:border-rose-400 bg-white hover:bg-rose-50 text-rose-600 text-xs font-semibold px-6 py-2 rounded-full transition-all cursor-pointer shadow-xs flex items-center gap-1.5"
+                        >
+                            <span>See all ({reviews.length})</span>
+                            <ChevronRight size={13} className="text-rose-500" />
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Full-Screen "All Customer Reviews" Lightbox Modal */}
@@ -190,7 +225,7 @@ export default function LocalLoveSection() {
                                         <Heart size={11} className="fill-rose-500 text-rose-500" /> Local Love
                                     </span>
                                     <span className="text-xs font-medium text-neutral-500">
-                                        {reviews.length} Verified Reviews
+                                        {reviews.length} Verified 5-Star Reviews
                                     </span>
                                 </div>
                                 <h3 className="text-xl sm:text-2xl font-black text-neutral-900 tracking-tight">
@@ -225,7 +260,7 @@ export default function LocalLoveSection() {
                                 <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-400" />
                                 <input
                                     type="text"
-                                    placeholder="Search feedback or customer..."
+                                    placeholder="Search reviews or customers..."
                                     value={modalSearch}
                                     onChange={(e) => setModalSearch(e.target.value)}
                                     className="w-full bg-white border border-neutral-200/80 rounded-xl pl-8 pr-3 py-1.5 text-xs text-neutral-800 placeholder-neutral-400 focus:outline-none focus:border-rose-400"
@@ -240,24 +275,17 @@ export default function LocalLoveSection() {
                                 )}
                             </div>
 
-                            <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto">
-                                <span className="text-[10px] font-bold text-neutral-400 uppercase tracking-wider mr-1">
-                                    Rating:
-                                </span>
-                                {['all', '5', '4', '3'].map((r) => (
-                                    <button
-                                        key={r}
-                                        onClick={() => setModalRatingFilter(r)}
-                                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold transition-all cursor-pointer ${
-                                            modalRatingFilter === r
-                                                ? 'bg-rose-500 text-white shadow-xs'
-                                                : 'bg-white text-neutral-600 hover:bg-neutral-100 border border-neutral-200/60'
-                                        }`}
-                                    >
-                                        {r === 'all' ? 'All' : `${r} Stars ⭐`}
-                                    </button>
-                                ))}
-                            </div>
+                            {googleMapsUrl && (
+                                <a 
+                                    href={googleMapsUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-xs font-bold text-rose-600 hover:underline flex items-center gap-1 shrink-0"
+                                >
+                                    <span>View on Google Maps</span>
+                                    <ExternalLink size={12} />
+                                </a>
+                            )}
                         </div>
 
                         {/* Modal Reviews Grid */}
@@ -266,7 +294,7 @@ export default function LocalLoveSection() {
                                 <div className="py-12 text-center space-y-2">
                                     <MessageSquare size={32} className="mx-auto text-neutral-300" />
                                     <p className="text-xs font-semibold text-neutral-600">No matching reviews found</p>
-                                    <p className="text-[11px] text-neutral-400">Try changing your search term or rating filter.</p>
+                                    <p className="text-[11px] text-neutral-400">Try changing your search term.</p>
                                 </div>
                             ) : (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -293,12 +321,41 @@ export default function LocalLoveSection() {
                                             </div>
 
                                             <div className="pt-2 border-t border-rose-200/40 flex items-center justify-between">
-                                                <h4 className="text-xs font-bold text-neutral-900">
-                                                    {review.author_name || review.author}
-                                                </h4>
-                                                <span className="text-[10px] text-rose-400 font-medium">
-                                                    Verified Customer
-                                                </span>
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    {review.author_photo_url ? (
+                                                        <img 
+                                                            src={review.author_photo_url} 
+                                                            alt={review.author_name} 
+                                                            className="w-7 h-7 rounded-full object-cover border border-rose-200 shrink-0" 
+                                                        />
+                                                    ) : (
+                                                        <div className="w-7 h-7 rounded-full bg-rose-200 text-rose-800 text-[10px] font-black flex items-center justify-center shrink-0">
+                                                            {getInitials(review.author_name)}
+                                                        </div>
+                                                    )}
+                                                    <div className="min-w-0">
+                                                        <h4 className="text-xs font-bold text-neutral-900 truncate">
+                                                            {review.author_name || review.author}
+                                                        </h4>
+                                                        {review.relative_time && (
+                                                            <span className="text-[10px] text-neutral-400 font-light block">
+                                                                {review.relative_time}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
+
+                                                {review.review_url && (
+                                                    <a 
+                                                        href={review.review_url} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="text-xs font-bold text-rose-600 hover:text-rose-800 flex items-center gap-1 shrink-0"
+                                                    >
+                                                        <span>Verified</span>
+                                                        <ExternalLink size={10} />
+                                                    </a>
+                                                )}
                                             </div>
                                         </div>
                                     ))}
@@ -309,7 +366,7 @@ export default function LocalLoveSection() {
                         {/* Modal Footer */}
                         <div className="p-4 bg-neutral-50 border-t border-neutral-100 flex items-center justify-between text-xs">
                             <span className="text-neutral-500 text-[11px]">
-                                Reviews are collected from verified Google and customer feedback.
+                                Reviews are verified from Google Places Business profile.
                             </span>
                             <button
                                 onClick={() => setIsModalOpen(false)}

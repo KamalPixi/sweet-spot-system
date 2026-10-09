@@ -40,6 +40,8 @@ class AdminSeeder extends Seeder
             'store_phone' => '+44 20 3795 5048',
             'store_logo' => '/storage/brand_logo.png',
             'store_logo_white' => '/storage/brand_logo_white.png',
+            'google_places_api_key' => 'AIzaSyCQpJraLjnumbY2_qkhnhV_J2ESMmQmnZ8',
+            'google_place_id' => 'ChIJ2YYyijyl2EcRsXdfidBY8k8',
         ];
 
         // Copy default logo to storage

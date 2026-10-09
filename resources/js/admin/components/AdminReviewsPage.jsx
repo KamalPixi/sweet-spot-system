@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { 
     Star, Plus, Edit2, Trash2, Eye, EyeOff, MessageSquare, Check, X, RefreshCw, 
-    Search, Filter, Heart, SlidersHorizontal
+    Search, Filter, Heart, SlidersHorizontal, Settings, Key, ExternalLink
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { AdminStatCard, AdminStatGrid } from './AdminStatCard';
@@ -15,6 +15,13 @@ export default function AdminReviewsPage({ token }) {
     // Search and filter state
     const [searchQuery, setSearchQuery] = useState('');
     const [statusFilter, setStatusFilter] = useState('all'); // 'all', 'active', 'hidden'
+
+    // Google API settings modal state
+    const [isGoogleSettingsOpen, setIsGoogleSettingsOpen] = useState(false);
+    const [googleConfig, setGoogleConfig] = useState({
+        api_key: '',
+        place_id: '',
+    });
 
     // Modal state
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,6 +50,12 @@ export default function AdminReviewsPage({ token }) {
             if (data.success) {
                 setReviews(data.data || []);
                 setMeta(data.meta || { total: 0, active_count: 0, average_rating: 5.0 });
+                if (data.meta) {
+                    setGoogleConfig({
+                        api_key: data.meta.has_google_api_key ? '•••••••••••••••••••••••••••••••••••••••' : '',
+                        place_id: data.meta.google_place_id || '',
+                    });
+                }
             }
         } catch (err) {
             console.error('Error fetching reviews:', err);
@@ -184,6 +197,46 @@ export default function AdminReviewsPage({ token }) {
         }
     };
 
+    const [syncingGoogle, setSyncingGoogle] = useState(false);
+
+    const handleSyncGoogle = async (customConfig = null) => {
+        setSyncingGoogle(true);
+        try {
+            const body = {};
+            if (customConfig) {
+                if (customConfig.api_key && !customConfig.api_key.includes('•••')) {
+                    body.api_key = customConfig.api_key;
+                }
+                if (customConfig.place_id) {
+                    body.place_id = customConfig.place_id;
+                }
+            }
+
+            const res = await fetch('/api/admin/reviews/sync-google', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast.success(data.message || 'Synced 5-star Google Reviews successfully!');
+                setIsGoogleSettingsOpen(false);
+                fetchReviews(true);
+            } else {
+                toast.error(data.message || 'Failed to sync Google Reviews');
+            }
+        } catch (err) {
+            console.error('Error syncing Google Reviews:', err);
+            toast.error('Failed to sync Google Reviews');
+        } finally {
+            setSyncingGoogle(false);
+        }
+    };
+
     return (
         <div className="space-y-6 w-full text-left">
             {/* Top Page Header - Matched with Customer Directory */}
@@ -193,14 +246,28 @@ export default function AdminReviewsPage({ token }) {
                         Local Love Reviews
                     </h1>
                     <p className="text-xs text-stone-500 mt-1">
-                        Manage customer testimonials shown in the "Local Love" section on your store's landing page.
+                        Manage customer testimonials & sync live 5-star reviews from Google Maps.
                     </p>
                 </div>
 
-                <div className="flex items-center gap-3 self-start sm:self-center">
-                    <div className="text-[11px] font-bold text-stone-400 mr-1 hidden sm:block">
-                        Showing <span className="font-black text-primary">{filteredReviews.length}</span> reviews
-                    </div>
+                <div className="flex items-center gap-2.5 self-start sm:self-center flex-wrap">
+                    <button
+                        onClick={() => setIsGoogleSettingsOpen(true)}
+                        className="w-9 h-9 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-600 flex items-center justify-center transition-colors shadow-2xs cursor-pointer shrink-0"
+                        title="Configure Google Places API Key & Place ID"
+                    >
+                        <Settings size={15} />
+                    </button>
+
+                    <button
+                        onClick={() => handleSyncGoogle()}
+                        disabled={syncingGoogle || loading}
+                        className="bg-white border border-stone-200/90 hover:bg-stone-50 text-stone-800 text-xs font-semibold px-3.5 py-2.5 rounded-xl transition-all shadow-2xs flex items-center gap-2 cursor-pointer shrink-0 disabled:opacity-50"
+                        title="Fetch latest 5-star reviews from Google Places API"
+                    >
+                        <RefreshCw size={14} className={syncingGoogle ? 'animate-spin text-rose-500' : 'text-stone-500'} />
+                        <span>{syncingGoogle ? 'Syncing...' : 'Sync Google Reviews'}</span>
+                    </button>
 
                     <button
                         onClick={() => fetchReviews(false)}
@@ -344,7 +411,26 @@ export default function AdminReviewsPage({ token }) {
                                             #{review.sort_order}
                                         </td>
                                         <td className="py-3.5 px-5 font-bold text-stone-900 whitespace-nowrap">
-                                            {review.author_name}
+                                            <div className="flex items-center gap-2.5">
+                                                {review.author_photo_url ? (
+                                                    <img 
+                                                        src={review.author_photo_url} 
+                                                        alt={review.author_name} 
+                                                        className="w-7 h-7 rounded-full object-cover border border-stone-200 shrink-0" 
+                                                        referrerPolicy="no-referrer"
+                                                    />
+                                                ) : (
+                                                    <div className="w-7 h-7 rounded-full bg-rose-50 border border-rose-200/80 text-rose-600 font-bold text-[11px] flex items-center justify-center shrink-0">
+                                                        {(review.author_name || 'U').charAt(0).toUpperCase()}
+                                                    </div>
+                                                )}
+                                                <div>
+                                                    <div className="font-bold text-stone-900">{review.author_name}</div>
+                                                    {review.relative_time && (
+                                                        <div className="text-[10px] font-normal text-stone-400">{review.relative_time}</div>
+                                                    )}
+                                                </div>
+                                            </div>
                                         </td>
                                         <td className="py-3.5 px-5 max-w-md">
                                             <p className="line-clamp-2 text-stone-600 font-light italic">
@@ -542,6 +628,96 @@ export default function AdminReviewsPage({ token }) {
                                     className="px-5 py-2 rounded-xl text-xs font-bold bg-primary text-white hover:bg-black transition-all shadow-2xs cursor-pointer disabled:opacity-50"
                                 >
                                     {actionLoading ? 'Saving...' : editingReview ? 'Save Changes' : 'Create Review'}
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Google Integration Settings Modal */}
+            {isGoogleSettingsOpen && (
+                <div className="fixed inset-0 z-50 bg-stone-900/40 backdrop-blur-xs flex items-center justify-center p-4">
+                    <div className="bg-surface rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 space-y-5 animate-scaleIn">
+                        <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-600 flex items-center justify-center">
+                                    <Key size={16} />
+                                </div>
+                                <div>
+                                    <h3 className="text-base font-bold text-stone-900">
+                                        Google Reviews Configuration
+                                    </h3>
+                                    <p className="text-[11px] text-stone-500">
+                                        Store your Google Places API Key and physical store Place ID.
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                onClick={() => setIsGoogleSettingsOpen(false)} 
+                                className="text-stone-400 hover:text-stone-700 p-1 rounded-md"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <form onSubmit={(e) => { e.preventDefault(); handleSyncGoogle(googleConfig); }} className="space-y-4 text-left">
+                            <div>
+                                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">
+                                    Google Places API Key
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="AIzaSy..."
+                                    value={googleConfig.api_key}
+                                    onChange={(e) => setGoogleConfig({ ...googleConfig, api_key: e.target.value })}
+                                    className="w-full bg-canvas border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-900 focus:bg-white focus:border-stone-900 focus:outline-none transition-colors font-mono"
+                                />
+                                <p className="text-[10px] text-stone-400 mt-1">
+                                    Uses the Google Places API (New) to fetch verified reviews.
+                                </p>
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] font-bold text-stone-500 uppercase tracking-wider mb-1">
+                                    Google Place ID
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="e.g. ChIJ..."
+                                    value={googleConfig.place_id}
+                                    onChange={(e) => setGoogleConfig({ ...googleConfig, place_id: e.target.value })}
+                                    className="w-full bg-canvas border border-stone-200 rounded-xl px-3.5 py-2.5 text-xs text-stone-900 focus:bg-white focus:border-stone-900 focus:outline-none transition-colors font-mono"
+                                />
+                                <p className="text-[10px] text-stone-400 mt-1">
+                                    The unique identifier for your physical store on Google Maps.
+                                </p>
+                            </div>
+
+                            <div className="p-3 bg-amber-50/60 border border-amber-200/60 rounded-xl text-[11px] text-amber-800 space-y-1">
+                                <div className="font-bold flex items-center gap-1.5">
+                                    <span>💡 Automatic 5-Star Filter</span>
+                                </div>
+                                <p className="text-[10px] text-amber-700 leading-relaxed">
+                                    When you sync, only verified 5-star customer reviews from Google Maps will be imported and displayed on your landing page.
+                                </p>
+                            </div>
+
+                            <div className="flex items-center justify-end gap-3 pt-4 border-t border-stone-100">
+                                <button
+                                    type="button"
+                                    onClick={() => setIsGoogleSettingsOpen(false)}
+                                    className="px-4 py-2 rounded-xl text-xs font-semibold text-stone-600 hover:bg-stone-100 transition-colors cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={syncingGoogle}
+                                    className="px-5 py-2.5 rounded-xl text-xs font-bold bg-primary text-white hover:bg-black transition-all shadow-2xs cursor-pointer disabled:opacity-50 flex items-center gap-2"
+                                >
+                                    <RefreshCw size={13} className={syncingGoogle ? 'animate-spin' : ''} />
+                                    <span>{syncingGoogle ? 'Saving & Syncing...' : 'Save & Sync Reviews'}</span>
                                 </button>
                             </div>
                         </form>
