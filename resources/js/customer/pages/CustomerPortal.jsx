@@ -309,10 +309,18 @@ export default function CustomerPortal() {
         } catch (err) { console.error(err); }
     };
 
-    /* ─── Profile edit actions ─── */
-
     const startEdit = () => {
-        setEditForm({ first_name: profile?.first_name || '', last_name: profile?.last_name || '', phone: profile?.phone || '' });
+        const defaultAddr = profile?.addresses?.find(a => a.is_default) || profile?.addresses?.[0] || {};
+        setEditForm({
+            first_name: profile?.first_name || '',
+            last_name: profile?.last_name || '',
+            email: profile?.email || '',
+            phone: profile?.phone || '',
+            address_line_1: defaultAddr?.address_line_1 || profile?.address_line_1 || '',
+            address_line_2: defaultAddr?.address_line_2 || profile?.address_line_2 || '',
+            city: defaultAddr?.city || profile?.city || 'London',
+            postcode: defaultAddr?.postcode || profile?.postcode || '',
+        });
         setIsEditing(true);
     };
 
@@ -327,12 +335,13 @@ export default function CustomerPortal() {
                 body: JSON.stringify(editForm),
             });
             const data = await res.json();
-            if (data.success) {
+            if (res.ok && data.success) {
                 setProfile(data.data);
                 setIsEditing(false);
                 toast.success('Profile updated successfully!');
             } else {
-                toast.error(data.message || 'Could not save changes.');
+                const firstError = data.errors ? Object.values(data.errors).flat()[0] : null;
+                toast.error(firstError || data.message || 'Could not save changes.');
             }
         } catch (err) {
             toast.error('Network error. Please try again.');
@@ -1296,15 +1305,25 @@ export default function CustomerPortal() {
                                                 )}
                                             </div>
 
-                                            {/* Email (Read only) */}
+                                            {/* Email Address */}
                                             <div className="flex flex-col gap-1.5">
                                                 <div className="flex items-center justify-between">
                                                     <label className="text-xs font-bold text-neutral-700">Email Address</label>
-                                                    <span className="text-[10px] text-neutral-400 font-medium">Primary Login</span>
+                                                    <span className="text-[10px] text-neutral-400 font-medium">Login & Receipts</span>
                                                 </div>
-                                                <div className="h-11 bg-neutral-100/70 border border-neutral-200/50 rounded-xl px-3.5 flex items-center text-xs sm:text-sm text-neutral-500 font-medium select-none">
-                                                    {profile?.email || '—'}
-                                                </div>
+                                                {isEditing ? (
+                                                    <input
+                                                        type="email"
+                                                        value={editForm.email}
+                                                        onChange={e => setEditForm(f => ({ ...f, email: e.target.value }))}
+                                                        placeholder="e.g. customer@example.com"
+                                                        className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                    />
+                                                ) : (
+                                                    <div className="h-11 bg-neutral-50/60 border border-neutral-200/70 rounded-xl px-3.5 flex items-center text-xs sm:text-sm font-semibold text-neutral-800">
+                                                        {profile?.email || '—'}
+                                                    </div>
+                                                )}
                                             </div>
 
                                             {/* Phone */}
@@ -1323,6 +1342,88 @@ export default function CustomerPortal() {
                                                         {profile?.phone || '—'}
                                                     </div>
                                                 )}
+                                            </div>
+                                        </div>
+
+                                        {/* Billing & Delivery Address Sub-section */}
+                                        <div className="mt-6 pt-5 border-t border-neutral-100">
+                                            <div className="flex items-center gap-2 mb-4">
+                                                <MapPin size={16} className="text-[#8e5233]" />
+                                                <h4 className="text-xs font-black uppercase tracking-wider text-neutral-700">Default Address & Billing Details</h4>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">
+                                                {/* Street and number */}
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-xs font-bold text-neutral-700">Street & Number</label>
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editForm.address_line_1}
+                                                            onChange={e => setEditForm(f => ({ ...f, address_line_1: e.target.value }))}
+                                                            placeholder="e.g. 10 Soho Square"
+                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-11 bg-neutral-50/60 border border-neutral-200/70 rounded-xl px-3.5 flex items-center text-xs sm:text-sm font-semibold text-neutral-800">
+                                                            {profile?.address_line_1 || profile?.addresses?.[0]?.address_line_1 || '—'}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Flat / Suite */}
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-xs font-bold text-neutral-700">Flat, Suite, Unit (Optional)</label>
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editForm.address_line_2}
+                                                            onChange={e => setEditForm(f => ({ ...f, address_line_2: e.target.value }))}
+                                                            placeholder="e.g. Flat 4B"
+                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-11 bg-neutral-50/60 border border-neutral-200/70 rounded-xl px-3.5 flex items-center text-xs sm:text-sm font-semibold text-neutral-800">
+                                                            {profile?.address_line_2 || profile?.addresses?.[0]?.address_line_2 || '—'}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* City */}
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-xs font-bold text-neutral-700">Town / City</label>
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editForm.city}
+                                                            onChange={e => setEditForm(f => ({ ...f, city: e.target.value }))}
+                                                            placeholder="e.g. London"
+                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-11 bg-neutral-50/60 border border-neutral-200/70 rounded-xl px-3.5 flex items-center text-xs sm:text-sm font-semibold text-neutral-800">
+                                                            {profile?.city || profile?.addresses?.[0]?.city || 'London'}
+                                                        </div>
+                                                    )}
+                                                </div>
+
+                                                {/* Postcode */}
+                                                <div className="flex flex-col gap-1.5">
+                                                    <label className="text-xs font-bold text-neutral-700">Postcode / Zip Code</label>
+                                                    {isEditing ? (
+                                                        <input
+                                                            type="text"
+                                                            value={editForm.postcode}
+                                                            onChange={e => setEditForm(f => ({ ...f, postcode: e.target.value.toUpperCase() }))}
+                                                            placeholder="e.g. W1D 1AN"
+                                                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm font-mono uppercase text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                                                        />
+                                                    ) : (
+                                                        <div className="h-11 bg-neutral-50/60 border border-neutral-200/70 rounded-xl px-3.5 flex items-center text-xs sm:text-sm font-mono uppercase font-semibold text-neutral-800">
+                                                            {profile?.postcode || profile?.addresses?.[0]?.postcode || '—'}
+                                                        </div>
+                                                    )}
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

@@ -11,6 +11,7 @@ use App\Services\CustomerService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 
 class CustomerAuthController extends Controller
 {
@@ -130,12 +131,66 @@ class CustomerAuthController extends Controller
         }
 
         $validated = $request->validate([
-            'first_name' => 'sometimes|required|string|max:100',
-            'last_name'  => 'sometimes|required|string|max:100',
-            'phone'      => 'sometimes|nullable|string|max:30',
+            'first_name'     => 'sometimes|required|string|max:100',
+            'last_name'      => 'sometimes|required|string|max:100',
+            'email'          => [
+                'sometimes',
+                'nullable',
+                'email',
+                'max:255',
+                Rule::unique('customers', 'email')->ignore($user->id),
+            ],
+            'phone'          => [
+                'sometimes',
+                'nullable',
+                'string',
+                'max:30',
+                Rule::unique('customers', 'phone')->ignore($user->id),
+            ],
+            'address_line_1' => 'sometimes|nullable|string|max:255',
+            'address_line_2' => 'sometimes|nullable|string|max:255',
+            'city'           => 'sometimes|nullable|string|max:100',
+            'postcode'       => 'sometimes|nullable|string|max:20',
+        ], [
+            'email.unique' => 'This email address is already associated with another customer account.',
+            'phone.unique' => 'This phone number is already associated with another customer account.',
         ]);
 
-        $user->update($validated);
+        $profileUpdates = [];
+        if (array_key_exists('first_name', $validated)) {
+            $profileUpdates['first_name'] = $validated['first_name'];
+        }
+        if (array_key_exists('last_name', $validated)) {
+            $profileUpdates['last_name'] = $validated['last_name'];
+        }
+        if (array_key_exists('email', $validated)) {
+            $profileUpdates['email'] = $validated['email'] ? strtolower(trim($validated['email'])) : null;
+        }
+        if (array_key_exists('phone', $validated)) {
+            $profileUpdates['phone'] = $validated['phone'] ? trim($validated['phone']) : null;
+        }
+
+        if (!empty($profileUpdates)) {
+            $user->update($profileUpdates);
+        }
+
+        if (!empty($validated['address_line_1']) || !empty($validated['postcode'])) {
+            $address = $user->addresses()->where('is_default', true)->first() ?? $user->addresses()->first();
+            $addressData = [
+                'address_line_1' => $validated['address_line_1'] ?? ($address?->address_line_1 ?? ''),
+                'address_line_2' => $validated['address_line_2'] ?? ($address?->address_line_2 ?? null),
+                'city'           => $validated['city'] ?? ($address?->city ?? 'London'),
+                'postcode'       => $validated['postcode'] ?? ($address?->postcode ?? ''),
+                'type'           => 'billing',
+                'is_default'     => true,
+            ];
+
+            if ($address) {
+                $address->update($addressData);
+            } else {
+                $user->addresses()->create($addressData);
+            }
+        }
 
         return response()->json([
             'success' => true,

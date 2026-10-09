@@ -268,13 +268,14 @@ class GlobalPayService
         }
 
         if ($order->customer) {
-            $payload['customer'] = [
+            $customerPayload = [
                 'id' => (string) $order->customer->id,
                 'first_name' => $order->customer->first_name,
                 'last_name' => $order->customer->last_name,
                 'email' => $order->customer->email,
                 'phone' => $order->customer->phone,
             ];
+            $payload['customer'] = array_filter($customerPayload, fn ($v) => !empty($v));
         }
 
         $url = "{$this->getBaseUrl()}/links";

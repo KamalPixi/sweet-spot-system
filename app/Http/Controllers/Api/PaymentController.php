@@ -55,6 +55,7 @@ class PaymentController extends Controller
                     'is_configured' => $this->globalPayService->isConfigured(),
                     'app_id' => $this->globalPayService->getAppId(),
                     'environment' => $this->globalPayService->getEnvironment(),
+                    'checkout_mode' => $this->storeConfigService->get('globalpay_checkout_mode', 'hosted'),
                 ],
             ],
         ]);
@@ -126,14 +127,19 @@ class PaymentController extends Controller
                     'entry_mode' => 'ECOM',
                 ];
             } elseif (!empty($validated['card_number'])) {
-                $cleanCardNumber = preg_replace('/\D/', '', $validated['card_number']);
+                $cleanCardNumber = preg_replace('/\D/', '', (string) $validated['card_number']);
+                $cleanMonth = str_pad(preg_replace('/\D/', '', (string) ($validated['expiry_month'] ?? '')), 2, '0', STR_PAD_LEFT);
+                $rawYear = preg_replace('/\D/', '', (string) ($validated['expiry_year'] ?? ''));
+                $cleanYear = strlen($rawYear) > 2 ? substr($rawYear, -2) : str_pad($rawYear, 2, '0', STR_PAD_LEFT);
+                $cleanCvv = preg_replace('/\D/', '', (string) ($validated['cvv'] ?? ''));
+
                 $paymentMethodData = [
                     'entry_mode' => 'ECOM',
                     'card' => [
                         'number' => $cleanCardNumber,
-                        'expiry_month' => str_pad($validated['expiry_month'], 2, '0', STR_PAD_LEFT),
-                        'expiry_year' => strlen($validated['expiry_year']) === 2 ? '20' . $validated['expiry_year'] : $validated['expiry_year'],
-                        'cvv' => $validated['cvv'],
+                        'expiry_month' => $cleanMonth,
+                        'expiry_year' => $cleanYear,
+                        'cvv' => $cleanCvv,
                         'cardholder_name' => $validated['cardholder_name'] ?? ($order->customer ? $order->customer->first_name . ' ' . $order->customer->last_name : 'Valued Customer'),
                     ],
                 ];

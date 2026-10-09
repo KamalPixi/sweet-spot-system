@@ -27,17 +27,20 @@ class OrderController extends Controller
     protected RealtimeBroadcastService $realtimeBroadcastService;
     protected CloudPrntService $cloudPrntService;
     protected \App\Services\GlobalPayService $globalPayService;
+    protected \App\Services\StoreConfigService $storeConfigService;
 
     public function __construct(
         OrderService $orderService,
         RealtimeBroadcastService $realtimeBroadcastService,
         CloudPrntService $cloudPrntService,
-        \App\Services\GlobalPayService $globalPayService
+        \App\Services\GlobalPayService $globalPayService,
+        \App\Services\StoreConfigService $storeConfigService
     ) {
         $this->orderService = $orderService;
         $this->realtimeBroadcastService = $realtimeBroadcastService;
         $this->cloudPrntService = $cloudPrntService;
         $this->globalPayService = $globalPayService;
+        $this->storeConfigService = $storeConfigService;
     }
 
     /**
@@ -88,22 +91,25 @@ class OrderController extends Controller
                     $clientSecret = $intent->client_secret;
                 }
             } elseif ($order->payment_method === 'globalpay') {
-                if (app()->environment('testing')) {
-                    $globalPayUrl = 'https://pay.sandbox.globalpay.com/test/' . $order->order_number;
-                } else {
-                    if (!$this->globalPayService->isConfigured()) {
-                        throw new Exception('Global Payments is currently unavailable because it has not been configured by the store.');
-                    }
+                $checkoutMode = $this->storeConfigService->get('globalpay_checkout_mode', 'hosted');
+                if ($checkoutMode === 'hosted') {
+                    if (app()->environment('testing')) {
+                        $globalPayUrl = 'https://pay.sandbox.globalpay.com/test/' . $order->order_number;
+                    } else {
+                        if (!$this->globalPayService->isConfigured()) {
+                            throw new Exception('Global Payments is currently unavailable because it has not been configured by the store.');
+                        }
 
-                    $returnUrl = url('/payment/success?order=' . $order->order_number . '&provider=globalpay');
-                    if ($order->customer?->phone) {
-                        $returnUrl .= '&phone=' . urlencode($order->customer->phone);
-                    } elseif ($order->customer?->email) {
-                        $returnUrl .= '&email=' . urlencode($order->customer->email);
-                    }
-                    $cancelUrl = url('/checkout?order=' . $order->order_number . '&cancelled=1');
+                        $returnUrl = url('/payment/success?order=' . $order->order_number . '&provider=globalpay');
+                        if ($order->customer?->phone) {
+                            $returnUrl .= '&phone=' . urlencode($order->customer->phone);
+                        } elseif ($order->customer?->email) {
+                            $returnUrl .= '&email=' . urlencode($order->customer->email);
+                        }
+                        $cancelUrl = url('/checkout?order=' . $order->order_number . '&cancelled=1');
 
-                    $globalPayUrl = $this->globalPayService->createHostedPaymentLink($order, $returnUrl, $cancelUrl);
+                        $globalPayUrl = $this->globalPayService->createHostedPaymentLink($order, $returnUrl, $cancelUrl);
+                    }
                 }
             }
 

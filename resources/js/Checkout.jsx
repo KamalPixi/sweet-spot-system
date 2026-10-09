@@ -189,11 +189,102 @@ function StripePaymentForm({ orderNumber, phone, email, onClose }) {
     );
 }
 
-// Global Payments (GP-API) Hosted Payment Page Redirect Component
-function GlobalPayPaymentForm({ orderNumber, total, phone, email, onClose }) {
+// Global Payments (GP-API) Payment Form Component (Supports Hosted Redirect & In-Page Embedded Card Modes)
+function GlobalPayPaymentForm({ orderNumber, total, phone, email, customerName, mode = 'hosted', onClose }) {
     const [paymentLoading, setPaymentLoading] = useState(false);
     const [paymentError, setPaymentError] = useState(null);
     const [redirectUrl, setRedirectUrl] = useState(null);
+
+    // In-page embedded card fields state
+    const [cardholderName, setCardholderName] = useState(customerName || '');
+    const [cardNumber, setCardNumber] = useState('');
+    const [expiry, setExpiry] = useState('');
+    const [cvv, setCvv] = useState('');
+
+    const formatCardNumber = (value) => {
+        const digits = value.replace(/\D/g, '').slice(0, 16);
+        return digits.replace(/(\d{4})(?=\d)/g, '$1 ');
+    };
+
+    const formatExpiry = (value) => {
+        const digits = value.replace(/\D/g, '').slice(0, 4);
+        if (digits.length > 2) {
+            return `${digits.slice(0, 2)} / ${digits.slice(2)}`;
+        }
+        return digits;
+    };
+
+    const handleEmbeddedPaymentSubmit = async (e) => {
+        e.preventDefault();
+        setPaymentLoading(true);
+        setPaymentError(null);
+
+        const cleanCard = cardNumber.replace(/\D/g, '');
+        if (cleanCard.length < 13) {
+            setPaymentError('Please enter a valid card number.');
+            setPaymentLoading(false);
+            return;
+        }
+
+        const expiryClean = expiry.replace(/\D/g, '');
+        if (expiryClean.length < 4) {
+            setPaymentError('Please enter a valid expiry date (MM / YY).');
+            setPaymentLoading(false);
+            return;
+        }
+
+        const expMonth = expiryClean.slice(0, 2);
+        const expYear = expiryClean.slice(2, 4);
+
+        if (parseInt(expMonth, 10) < 1 || parseInt(expMonth, 10) > 12) {
+            setPaymentError('Invalid expiry month. Must be between 01 and 12.');
+            setPaymentLoading(false);
+            return;
+        }
+
+        if (cvv.length < 3) {
+            setPaymentError('Please enter a 3 or 4-digit security code (CVV).');
+            setPaymentLoading(false);
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/payment/globalpay/process', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({
+                    order_number: orderNumber,
+                    card_number: cleanCard,
+                    expiry_month: expMonth,
+                    expiry_year: expYear,
+                    cvv: cvv,
+                    cardholder_name: cardholderName || 'Valued Customer',
+                }),
+            });
+
+            const data = await res.json();
+
+            if (res.ok && data.success) {
+                const verificationQuery = phone 
+                    ? `&phone=${encodeURIComponent(phone)}` 
+                    : email 
+                        ? `&email=${encodeURIComponent(email)}` 
+                        : '';
+                sessionStorage.removeItem('pl_checkout_details');
+                window.location.href = `${window.location.origin}/payment/success?order=${encodeURIComponent(orderNumber)}${verificationQuery}&provider=globalpay`;
+            } else {
+                setPaymentError(data.message || 'Payment was declined by card issuer. Please check your card details and try again.');
+                setPaymentLoading(false);
+            }
+        } catch (err) {
+            console.error('Global Payments Direct error:', err);
+            setPaymentError('Connection error while processing card. Please try again.');
+            setPaymentLoading(false);
+        }
+    };
 
     const fetchAndRedirect = async () => {
         setPaymentLoading(true);
@@ -225,7 +316,6 @@ function GlobalPayPaymentForm({ orderNumber, total, phone, email, onClose }) {
             const data = await res.json();
             if (data.success && data.hpp_url) {
                 setRedirectUrl(data.hpp_url);
-                // Clear basket session and redirect to official Global Payments hosted checkout URL
                 sessionStorage.removeItem('pl_checkout_details');
                 window.location.href = data.hpp_url;
             } else {
@@ -240,10 +330,142 @@ function GlobalPayPaymentForm({ orderNumber, total, phone, email, onClose }) {
     };
 
     useEffect(() => {
-        // Auto initialize hosted payment link redirect
-        fetchAndRedirect();
-    }, [orderNumber]);
+        if (mode === 'hosted') {
+            fetchAndRedirect();
+        }
+    }, [orderNumber, mode]);
 
+    if (mode === 'embedded') {
+        return (
+            <form onSubmit={handleEmbeddedPaymentSubmit} className="space-y-4 text-left animate-fadeIn">
+                {/* Security Guarantee Banner */}
+                <div className="bg-gradient-to-b from-neutral-50 to-[#fdfaf5] border border-neutral-200/80 rounded-2xl p-4 text-left space-y-2 shadow-xs">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
+                            <ShieldCheck size={16} />
+                        </div>
+                        <div>
+                            <h4 className="text-xs font-bold text-[#24161b]">Direct Global Payments Gateway</h4>
+                            <p className="text-[10px] text-neutral-500">Bank-grade 256-Bit SSL Encrypted Processing</p>
+                        </div>
+                    </div>
+                </div>
+
+                {paymentError && (
+                    <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-left animate-fadeIn">
+                        <AlertCircle size={16} className="shrink-0" />
+                        <span>{paymentError}</span>
+                    </div>
+                )}
+
+                <div className="space-y-3 bg-white p-4 rounded-2xl border border-neutral-200/80 shadow-xs">
+                    <div>
+                        <label className="block text-[11px] font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
+                            Cardholder Name
+                        </label>
+                        <input
+                            type="text"
+                            value={cardholderName}
+                            onChange={(e) => setCardholderName(e.target.value)}
+                            placeholder="Name as printed on card"
+                            required
+                            className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400"
+                        />
+                    </div>
+
+                    <div>
+                        <label className="block text-[11px] font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
+                            Card Number
+                        </label>
+                        <div className="relative">
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                value={cardNumber}
+                                onChange={(e) => setCardNumber(formatCardNumber(e.target.value))}
+                                placeholder="1234 5678 9012 3456"
+                                required
+                                maxLength={19}
+                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 pr-10 text-xs sm:text-sm font-mono text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400 tracking-wider"
+                            />
+                            <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+                                <CreditCard size={18} />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-[11px] font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
+                                Expiry (MM / YY)
+                            </label>
+                            <input
+                                type="text"
+                                inputMode="numeric"
+                                value={expiry}
+                                onChange={(e) => setExpiry(formatExpiry(e.target.value))}
+                                placeholder="MM / YY"
+                                required
+                                maxLength={7}
+                                className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm font-mono text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400 text-center"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-[11px] font-bold text-neutral-700 uppercase tracking-wider mb-1.5">
+                                CVC / CVV
+                            </label>
+                            <div className="relative">
+                                <input
+                                    type="password"
+                                    inputMode="numeric"
+                                    value={cvv}
+                                    onChange={(e) => setCvv(e.target.value.replace(/\D/g, '').slice(0, 4))}
+                                    placeholder="•••"
+                                    required
+                                    maxLength={4}
+                                    className="w-full h-11 bg-neutral-50/70 border border-neutral-200/80 focus:bg-white focus:border-[#24161b] focus:ring-1 focus:ring-[#24161b]/20 rounded-xl px-3.5 text-xs sm:text-sm font-mono text-neutral-900 focus:outline-none transition-all placeholder:text-neutral-400 text-center tracking-widest"
+                                />
+                                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+                                    <Lock size={14} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        disabled={paymentLoading}
+                        className="w-full sm:flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 font-semibold rounded-full py-3.5 px-5 text-xs transition-colors cursor-pointer whitespace-nowrap"
+                    >
+                        Cancel
+                    </button>
+                    <button
+                        type="submit"
+                        disabled={paymentLoading}
+                        className="w-full sm:flex-[2] bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-600/60 text-white font-bold rounded-full py-3.5 px-5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/15 transition-all cursor-pointer whitespace-nowrap"
+                    >
+                        {paymentLoading ? (
+                            <>
+                                <Loader2 size={14} className="animate-spin shrink-0" />
+                                <span>Authorizing Card...</span>
+                            </>
+                        ) : (
+                            <>
+                                <Lock size={13} className="text-emerald-100 shrink-0" strokeWidth={2.5} />
+                                <span>Pay £{Number(total || 0).toFixed(2)} Securely</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            </form>
+        );
+    }
+
+    // Default: Hosted Mode
     return (
         <div className="space-y-5 text-center py-2 animate-fadeIn">
             {/* Security Guarantee Banner */}
@@ -411,6 +633,18 @@ export default function Checkout() {
         setPhone(profile.phone || '');
         setEmail(profile.email || '');
         setCreateAccount(false);
+
+        const savedAddr = profile.addresses?.find(a => a.is_default) || profile.addresses?.[0];
+        const addrLine1 = profile.address_line_1 || savedAddr?.address_line_1;
+        if (addrLine1 && (!deliveryInfo || !deliveryInfo.address_line_1)) {
+            setDeliveryInfo({
+                address_line_1: addrLine1,
+                address_line_2: profile.address_line_2 || savedAddr?.address_line_2 || '',
+                city: profile.city || savedAddr?.city || 'London',
+                postcode: profile.postcode || savedAddr?.postcode || '',
+                type: savedAddr?.type || 'home'
+            });
+        }
     };
 
     const continueToCheckoutForm = () => {
@@ -606,11 +840,7 @@ export default function Checkout() {
     // Autofill if logged in, or restore smart remembered guest contact details
     useEffect(() => {
         if (user) {
-            setFirstName(user.first_name || user.name?.split(' ')[0] || '');
-            setLastName(user.last_name || user.name?.split(' ')[1] || '');
-            setPhone(user.phone || '');
-            setEmail(user.email || '');
-            setCreateAccount(false);
+            fillCheckoutContactFromUser(user);
             setHasRememberedGuest(false);
         } else {
             try {
@@ -1128,6 +1358,8 @@ export default function Checkout() {
                                             total={cartTotal}
                                             phone={phone}
                                             email={email}
+                                            customerName={`${firstName || ''} ${lastName || ''}`.trim()}
+                                            mode={configs?.globalpay_checkout_mode || 'hosted'}
                                             onClose={() => { 
                                                 setIsGlobalPayActive(false); 
                                                 setActiveOrderNumber(''); 

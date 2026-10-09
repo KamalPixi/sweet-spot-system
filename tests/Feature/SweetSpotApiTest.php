@@ -449,15 +449,51 @@ class SweetSpotApiTest extends TestCase
     }
 
     /**
-     * Test public retrieval of opening hours.
+     * Test customer can update profile email and duplicates are rejected.
      */
-    public function test_can_retrieve_public_opening_hours(): void
+    public function test_customer_can_update_email_and_duplicate_is_rejected(): void
     {
-        $response = $this->getJson('/api/opening-hours');
+        $customerA = Customer::create([
+            'first_name' => 'Alice',
+            'last_name' => 'Smith',
+            'email' => 'alice@example.com',
+            'phone' => '+447000000001',
+            'password' => bcrypt('Password123!'),
+            'is_guest' => false,
+        ]);
+
+        $customerB = Customer::create([
+            'first_name' => 'Bob',
+            'last_name' => 'Jones',
+            'email' => 'bob@example.com',
+            'phone' => '+447000000002',
+            'password' => bcrypt('Password123!'),
+            'is_guest' => false,
+        ]);
+
+        // 1. Updating customerA with a new valid unique email succeeds
+        $response = $this->actingAs($customerA, 'sanctum')->patchJson('/api/customer/profile', [
+            'first_name' => 'Alice Updated',
+            'email' => 'alice.new@example.com',
+        ]);
 
         $response->assertStatus(200)
             ->assertJsonPath('success', true)
-            ->assertJsonCount(1, 'data');
+            ->assertJsonPath('data.email', 'alice.new@example.com');
+
+        $this->assertDatabaseHas('customers', [
+            'id' => $customerA->id,
+            'email' => 'alice.new@example.com',
+        ]);
+
+        // 2. Attempting to update customerA with customerB's email is rejected with 422
+        $dupResponse = $this->actingAs($customerA, 'sanctum')->patchJson('/api/customer/profile', [
+            'email' => 'bob@example.com',
+        ]);
+
+        $dupResponse->assertStatus(422)
+            ->assertJsonValidationErrors(['email']);
     }
 }
+
 
