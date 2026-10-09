@@ -9,6 +9,7 @@ use App\Services\GlobalPayService;
 use App\Services\StoreConfigService;
 use App\Services\RealtimeBroadcastService;
 use App\Services\CloudPrntService;
+use App\Services\OrderStatusAutomationService;
 use App\Notifications\NewOrderPlacedNotification;
 use App\Notifications\CustomerOrderConfirmationNotification;
 use App\Notifications\PaymentDisputeAlertNotification;
@@ -23,17 +24,20 @@ class PaymentController extends Controller
     protected StoreConfigService $storeConfigService;
     protected RealtimeBroadcastService $realtimeBroadcastService;
     protected CloudPrntService $cloudPrntService;
+    protected OrderStatusAutomationService $orderStatusAutomationService;
 
     public function __construct(
         GlobalPayService $globalPayService,
         StoreConfigService $storeConfigService,
         RealtimeBroadcastService $realtimeBroadcastService,
-        CloudPrntService $cloudPrntService
+        CloudPrntService $cloudPrntService,
+        OrderStatusAutomationService $orderStatusAutomationService
     ) {
         $this->globalPayService = $globalPayService;
         $this->storeConfigService = $storeConfigService;
         $this->realtimeBroadcastService = $realtimeBroadcastService;
         $this->cloudPrntService = $cloudPrntService;
+        $this->orderStatusAutomationService = $orderStatusAutomationService;
     }
 
     /**
@@ -181,26 +185,28 @@ class PaymentController extends Controller
             $result = $this->globalPayService->processSale($order, $paymentMethodData);
 
             if ($result['success']) {
-                $previousStatus = $order->status;
                 $order->update([
                     'payment_status' => 'paid',
                     'payment_method' => 'globalpay',
                     'payment_transaction_id' => $result['transaction_id'] ?? 'gp_txn_' . \Illuminate\Support\Str::random(10),
-                    'status' => 'pending',
                 ]);
 
-                // Trigger notifications and printing on successful payment
-                User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
-                if ($order->customer) {
-                    $order->customer->notify(new CustomerOrderConfirmationNotification($order));
-                }
-                $this->realtimeBroadcastService->broadcastOrderCreated($order);
-
+                // Auto-queue receipt printing via Star CloudPRNT
                 try {
                     $this->cloudPrntService->queueOrderReceipt($order);
                 } catch (Exception $e) {
                     logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
                 }
+
+                // Automatically transition order to 'preparing' upon confirmed payment & print queue
+                $this->orderStatusAutomationService->markAsPreparing($order);
+
+                // Trigger notifications
+                User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
+                if ($order->customer) {
+                    $order->customer->notify(new CustomerOrderConfirmationNotification($order));
+                }
+                $this->realtimeBroadcastService->broadcastOrderCreated($order);
 
                 return response()->json([
                     'success' => true,
@@ -209,6 +215,7 @@ class PaymentController extends Controller
                     'order_number' => $order->order_number,
                 ]);
             } else {
+                $this->orderStatusAutomationService->markAsCancelled($order, $result['message'] ?? 'Payment was declined by issuer');
                 return response()->json([
                     'success' => false,
                     'message' => 'Payment was not approved: ' . ($result['message'] ?? 'Declined by issuer'),
@@ -399,11 +406,7 @@ class PaymentController extends Controller
         $isDecline = str_contains($event, 'failed') || str_contains($event, 'declined') || str_contains($event, 'cancelled') || str_contains($event, 'expired');
         if ($isDecline) {
             if ($order->payment_status !== 'paid') {
-                $order->update([
-                    'payment_status' => 'failed',
-                    'status' => 'cancelled',
-                ]);
-                $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+                $this->orderStatusAutomationService->markAsCancelled($order, 'Gateway webhook cancellation/decline: ' . $event);
             }
             return response()->json(['success' => true, 'message' => 'Payment failure/cancellation recorded']);
         }
@@ -414,9 +417,18 @@ class PaymentController extends Controller
             if ($order->payment_status !== 'paid') {
                 $order->update([
                     'payment_status' => 'paid',
-                    'status' => 'pending',
                     'payment_transaction_id' => $transactionId ?: $order->payment_transaction_id,
                 ]);
+
+                // Auto-queue receipt printing via Star CloudPRNT
+                try {
+                    $this->cloudPrntService->queueOrderReceipt($order);
+                } catch (Exception $e) {
+                    Log::error("Global Payments Webhook: Failed auto-queuing print job for #{$order->order_number}: " . $e->getMessage());
+                }
+
+                // Automatically transition order to 'preparing' upon confirmed payment & print queue
+                $this->orderStatusAutomationService->markAsPreparing($order);
 
                 // Notify admin and customer
                 User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
@@ -425,13 +437,6 @@ class PaymentController extends Controller
                 }
 
                 $this->realtimeBroadcastService->broadcastOrderCreated($order);
-
-                // Auto-queue receipt printing via Star CloudPRNT
-                try {
-                    $this->cloudPrntService->queueOrderReceipt($order);
-                } catch (Exception $e) {
-                    Log::error("Global Payments Webhook: Failed auto-queuing print job for #{$order->order_number}: " . $e->getMessage());
-                }
             }
             return response()->json(['success' => true, 'message' => 'Payment capture confirmed']);
         }

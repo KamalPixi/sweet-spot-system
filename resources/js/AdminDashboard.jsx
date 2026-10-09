@@ -20,7 +20,7 @@ import {
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
     Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart,
-    FileText, Download, CreditCard, ShieldCheck, KeyRound
+    FileText, Download, CreditCard, ShieldCheck, KeyRound, Timer, Zap
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
 import { SOCIAL_PLATFORMS, SocialIcon, getPlatformInfo } from './components/SocialIcons';
@@ -4750,6 +4750,142 @@ export default function AdminDashboard() {
                                                     className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                                                 >
                                                     {savingSection === 'Payment Gateway Settings' ? 'Saving...' : 'Save Payment Gateways'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Card: Automated Order Status Progression & Timers */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="border-b border-neutral-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                <div>
+                                                    <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                        <Timer size={18} className="text-amber-500" /> Automated Order Status Progression & Timers
+                                                    </h2>
+                                                    <p className="text-xs text-neutral-500 mt-1">
+                                                        Hands-free automatic workflow. Orders advance based on payment status, receipt printing, and customizable time limits.
+                                                    </p>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                                                        (settingsForm.auto_status_transition_enabled ?? '1') === '1'
+                                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                                            : 'bg-neutral-100 text-neutral-500 border-neutral-200'
+                                                    }`}>
+                                                        {(settingsForm.auto_status_transition_enabled ?? '1') === '1' ? '⚡ Automation Active' : '⏸️ Automation Paused'}
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            {/* Visual Flow Pipeline */}
+                                            <div className="p-4 rounded-xl border border-neutral-200/80 bg-neutral-50/70">
+                                                <label className="block text-neutral-400 text-[9px] font-bold uppercase tracking-wider mb-2.5">
+                                                    Automated Lifecycle Pipeline
+                                                </label>
+                                                <div className="grid grid-cols-1 sm:grid-cols-4 gap-2.5 text-xs">
+                                                    <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs">
+                                                        <div className="flex items-center justify-between font-bold text-neutral-800 mb-1">
+                                                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-amber-400"></span> 1. Pending</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-neutral-500">Placed by customer, awaiting payment clearance</p>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs">
+                                                        <div className="flex items-center justify-between font-bold text-neutral-800 mb-1">
+                                                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-blue-500"></span> 2. Preparing</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-neutral-500">Payment clears & receipt prints automatically</p>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs">
+                                                        <div className="flex items-center justify-between font-bold text-neutral-800 mb-1">
+                                                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-indigo-500"></span> 3. Ready</span>
+                                                            <span className="text-[10px] bg-indigo-50 text-indigo-700 font-bold px-1.5 py-0.5 rounded">+{settingsForm.auto_status_preparing_minutes ?? 15}m</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-neutral-500">Auto-ready for collection / courier dispatch</p>
+                                                    </div>
+                                                    <div className="bg-white p-3 rounded-lg border border-neutral-200 shadow-2xs">
+                                                        <div className="flex items-center justify-between font-bold text-neutral-800 mb-1">
+                                                            <span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500"></span> 4. Completed</span>
+                                                            <span className="text-[10px] bg-emerald-50 text-emerald-700 font-bold px-1.5 py-0.5 rounded">+{settingsForm.auto_status_ready_minutes ?? 5}m</span>
+                                                        </div>
+                                                        <p className="text-[11px] text-neutral-500">Order fulfilled & closed. (*Declines &rarr; Cancelled)</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Form Controls */}
+                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                                                <div className="space-y-2">
+                                                    <label className="block text-neutral-600 text-[11px] font-bold uppercase tracking-wider">
+                                                        Enable Auto-Progression
+                                                    </label>
+                                                    <select
+                                                        value={settingsForm.auto_status_transition_enabled ?? '1'}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, auto_status_transition_enabled: e.target.value })}
+                                                        className="w-full bg-white border border-neutral-200 px-3.5 py-2.5 text-xs font-semibold text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-xl cursor-pointer"
+                                                    >
+                                                        <option value="1">Enabled (Hands-free Automatic Progression)</option>
+                                                        <option value="0">Disabled (Manual Staff Status Control Only)</option>
+                                                    </select>
+                                                    <p className="text-[11px] text-neutral-400">
+                                                        When enabled, the system automatically advances orders through the timeline.
+                                                    </p>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="block text-neutral-600 text-[11px] font-bold uppercase tracking-wider">
+                                                        Preparing &rarr; Ready Time (Minutes) *
+                                                    </label>
+                                                    <div className="relative">
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            max="180"
+                                                            value={settingsForm.auto_status_preparing_minutes ?? 15}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, auto_status_preparing_minutes: e.target.value })}
+                                                            className="w-full bg-white border border-neutral-200 px-3.5 py-2.5 text-xs font-semibold text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-xl font-mono"
+                                                            placeholder="15"
+                                                        />
+                                                        <span className="absolute right-3 top-2.5 text-xs text-neutral-400 font-medium pointer-events-none">mins</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-neutral-400">
+                                                        Duration in Preparing before moving to Ready (Default: 15 mins).
+                                                    </p>
+                                                </div>
+
+                                                <div className="space-y-2">
+                                                    <label className="block text-neutral-600 text-[11px] font-bold uppercase tracking-wider">
+                                                        Ready &rarr; Completed Time (Minutes) *
+                                                    </label>
+                                                    <div className="relative">
+                                                        <input
+                                                            type="number"
+                                                            min="1"
+                                                            max="120"
+                                                            value={settingsForm.auto_status_ready_minutes ?? 5}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, auto_status_ready_minutes: e.target.value })}
+                                                            className="w-full bg-white border border-neutral-200 px-3.5 py-2.5 text-xs font-semibold text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-xl font-mono"
+                                                            placeholder="5"
+                                                        />
+                                                        <span className="absolute right-3 top-2.5 text-xs text-neutral-400 font-medium pointer-events-none">mins</span>
+                                                    </div>
+                                                    <p className="text-[11px] text-neutral-400">
+                                                        Duration in Ready before moving to Completed (Default: 5 mins).
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Save Button */}
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection([
+                                                        'auto_status_transition_enabled',
+                                                        'auto_status_preparing_minutes',
+                                                        'auto_status_ready_minutes'
+                                                    ], 'Order Automation Settings')}
+                                                    disabled={savingSection === 'Order Automation Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Order Automation Settings' ? 'Saving...' : 'Save Order Automation Timers'}
                                                 </button>
                                             </div>
                                         </div>

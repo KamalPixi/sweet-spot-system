@@ -11,6 +11,7 @@ use App\Http\Resources\OrderResource;
 use App\Services\OrderService;
 use App\Services\RealtimeBroadcastService;
 use App\Services\CloudPrntService;
+use App\Services\OrderStatusAutomationService;
 use App\Models\Order;
 use App\Models\User;
 use App\Notifications\NewOrderPlacedNotification;
@@ -26,6 +27,7 @@ class OrderController extends Controller
     protected OrderService $orderService;
     protected RealtimeBroadcastService $realtimeBroadcastService;
     protected CloudPrntService $cloudPrntService;
+    protected OrderStatusAutomationService $orderStatusAutomationService;
     protected \App\Services\GlobalPayService $globalPayService;
     protected \App\Services\StoreConfigService $storeConfigService;
 
@@ -33,12 +35,14 @@ class OrderController extends Controller
         OrderService $orderService,
         RealtimeBroadcastService $realtimeBroadcastService,
         CloudPrntService $cloudPrntService,
+        OrderStatusAutomationService $orderStatusAutomationService,
         \App\Services\GlobalPayService $globalPayService,
         \App\Services\StoreConfigService $storeConfigService
     ) {
         $this->orderService = $orderService;
         $this->realtimeBroadcastService = $realtimeBroadcastService;
         $this->cloudPrntService = $cloudPrntService;
+        $this->orderStatusAutomationService = $orderStatusAutomationService;
         $this->globalPayService = $globalPayService;
         $this->storeConfigService = $storeConfigService;
     }
@@ -164,6 +168,9 @@ class OrderController extends Controller
             ], 401);
         }
 
+        // Auto-advance eligible orders based on configured timers
+        $this->orderStatusAutomationService->autoAdvanceEligibleOrders();
+
         $baseQuery = Order::where('customer_id', $customer->id);
         $statusFilter = $request->query('status');
         $perPage = min(max((int) $request->query('per_page', 5), 1), 25);
@@ -208,6 +215,9 @@ class OrderController extends Controller
      */
     public function show(string $orderNumber, Request $request): JsonResponse
     {
+        // Auto-advance eligible orders based on configured timers
+        $this->orderStatusAutomationService->autoAdvanceEligibleOrders();
+
         $order = Order::where('order_number', $orderNumber)
             ->with(['items', 'customer', 'deliveryAddress'])
             ->firstOrFail();
@@ -223,18 +233,7 @@ class OrderController extends Controller
                         $previousStatus = $order->status;
                         $order->update([
                             'payment_status' => 'paid',
-                            'status' => 'pending'
                         ]);
-
-                        if ($previousStatus === 'awaiting_payment') {
-                            User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
-                            if ($order->customer) {
-                                $order->customer->notify(new \App\Notifications\CustomerOrderConfirmationNotification($order));
-                            }
-                            $this->realtimeBroadcastService->broadcastOrderCreated($order);
-                        } else {
-                            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
-                        }
 
                         // Always queue receipt print upon confirmed payment (deduplicated by CloudPrntService)
                         try {
@@ -242,13 +241,19 @@ class OrderController extends Controller
                         } catch (Exception $e) {
                             logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
                         }
+
+                        // Automatically advance order to 'preparing' upon payment cleared & receipt queued
+                        $this->orderStatusAutomationService->markAsPreparing($order);
+
+                        if ($previousStatus === 'awaiting_payment') {
+                            User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
+                            if ($order->customer) {
+                                $order->customer->notify(new \App\Notifications\CustomerOrderConfirmationNotification($order));
+                            }
+                            $this->realtimeBroadcastService->broadcastOrderCreated($order);
+                        }
                     } elseif ($intent->status === 'requires_payment_method' || $intent->status === 'canceled') {
-                        $previousStatus = $order->status;
-                        $order->update([
-                            'payment_status' => 'failed',
-                            'status' => 'cancelled'
-                        ]);
-                        $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+                        $this->orderStatusAutomationService->markAsCancelled($order, 'Payment declined or cancelled');
                     }
                 } catch (Exception $e) {
                     logger()->error('Stripe Payment retrieval failed: ' . $e->getMessage());
@@ -271,6 +276,9 @@ class OrderController extends Controller
      */
     public function adminOrders(AdminOrderFilterRequest $request): JsonResponse
     {
+        // Auto-advance eligible orders based on configured timers
+        $this->orderStatusAutomationService->autoAdvanceEligibleOrders();
+
         $query = Order::with(['items.product.category', 'customer', 'deliveryAddress'])->orderBy('created_at', 'desc');
 
         $statusFilter = $request->input('status', 'all');
@@ -316,6 +324,9 @@ class OrderController extends Controller
             ], 403);
         }
 
+        // Auto-advance eligible orders based on configured timers
+        $this->orderStatusAutomationService->autoAdvanceEligibleOrders();
+
         $order = Order::where('order_number', $orderNumber)
             ->with(['items.product.category', 'customer', 'deliveryAddress'])
             ->firstOrFail();
@@ -335,7 +346,18 @@ class OrderController extends Controller
         $previousStatus = $order->status;
 
         if ($request->has('status')) {
-            $order->status = $request->input('status');
+            $newStatus = $request->input('status');
+            $order->status = $newStatus;
+
+            if ($newStatus === 'preparing' && !$order->preparing_at) {
+                $order->preparing_at = now();
+            } elseif ($newStatus === 'ready' && !$order->ready_at) {
+                $order->ready_at = now();
+            } elseif ($newStatus === 'completed' && !$order->completed_at) {
+                $order->completed_at = now();
+            } elseif ($newStatus === 'cancelled' && !$order->cancelled_at) {
+                $order->cancelled_at = now();
+            }
         }
 
         if ($request->has('payment_status')) {
@@ -660,8 +682,18 @@ class OrderController extends Controller
             $previousStatus = $order->status;
             $order->update([
                 'payment_status' => 'paid',
-                'status' => 'pending',
             ]);
+
+            // Always queue receipt print upon successful payment
+            try {
+                $this->cloudPrntService->queueOrderReceipt($order);
+            } catch (Exception $e) {
+                logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
+            }
+
+            // Automatically transition order to 'preparing' upon confirmed payment & print queue
+            $this->orderStatusAutomationService->markAsPreparing($order);
+
             // Now that payment is confirmed, notify admin and broadcast
             if ($previousStatus === 'awaiting_payment') {
                 User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
@@ -669,15 +701,6 @@ class OrderController extends Controller
                     $order->customer->notify(new \App\Notifications\CustomerOrderConfirmationNotification($order));
                 }
                 $this->realtimeBroadcastService->broadcastOrderCreated($order);
-
-                // Always queue receipt print upon successful payment
-                try {
-                    $this->cloudPrntService->queueOrderReceipt($order);
-                } catch (Exception $e) {
-                    logger()->error("Failed auto-queuing print job for order #{$order->order_number}: " . $e->getMessage());
-                }
-            } else {
-                $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
             }
         }
     }
@@ -686,12 +709,7 @@ class OrderController extends Controller
     {
         $order = Order::where('payment_transaction_id', $paymentIntent->id)->first();
         if ($order && $order->payment_status !== 'paid') {
-            $previousStatus = $order->status;
-            $order->update([
-                'payment_status' => 'failed',
-                'status' => 'cancelled'
-            ]);
-            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+            $this->orderStatusAutomationService->markAsCancelled($order, 'Stripe payment failed via webhook');
         }
     }
 }

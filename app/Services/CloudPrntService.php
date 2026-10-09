@@ -136,10 +136,17 @@ class CloudPrntService
         ]);
 
         if ($job->order) {
-            $job->order->update([
+            $orderUpdates = [
                 'printed_at' => now(),
                 'print_count' => $job->order->print_count + 1,
-            ]);
+            ];
+
+            if ($job->order->payment_status === 'paid' && in_array($job->order->status, ['pending', 'awaiting_payment'])) {
+                $orderUpdates['status'] = 'preparing';
+                $orderUpdates['preparing_at'] = $job->order->preparing_at ?? now();
+            }
+
+            $job->order->update($orderUpdates);
         }
 
         return true;

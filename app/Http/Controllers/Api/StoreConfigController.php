@@ -45,6 +45,9 @@ class StoreConfigController extends Controller
         $configs['globalpay_webhook_secret'] = $this->storeConfigService->get('globalpay_webhook_secret', '');
         $configs['has_globalpay_configured'] = $this->globalPayService->isConfigured();
         $configs['has_stripe_configured'] = !empty($stripeKey) && !str_starts_with($stripeKey, '${');
+        $configs['auto_status_transition_enabled'] = $this->storeConfigService->get('auto_status_transition_enabled', '1');
+        $configs['auto_status_preparing_minutes'] = $this->storeConfigService->get('auto_status_preparing_minutes', '15');
+        $configs['auto_status_ready_minutes'] = $this->storeConfigService->get('auto_status_ready_minutes', '5');
 
         return response()->json([
             'success' => true,

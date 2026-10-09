@@ -159,7 +159,7 @@ class GlobalPayIntegrationTest extends TestCase
 
         $order->refresh();
         $this->assertEquals('paid', $order->payment_status);
-        $this->assertEquals('pending', $order->status);
+        $this->assertEquals('preparing', $order->status);
         $this->assertNotEmpty($order->payment_transaction_id);
     }
 
