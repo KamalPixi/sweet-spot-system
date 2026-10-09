@@ -4629,13 +4629,13 @@ export default function AdminDashboard() {
                                                         onChange={(e) => setSettingsForm({ ...settingsForm, globalpay_checkout_mode: e.target.value })}
                                                         className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors cursor-pointer font-medium"
                                                     >
+                                                        <option value="embedded">Official Provider Drop-In UI (In-Page Global Payments Component)</option>
                                                         <option value="hosted">Official Bank Portal (Pay by Link Redirection)</option>
-                                                        <option value="embedded">Direct In-Page Card Fields (Embedded Checkout)</option>
                                                     </select>
                                                     <p className="text-[11px] text-neutral-400 mt-1.5">
                                                         {settingsForm.globalpay_checkout_mode === 'embedded'
-                                                            ? '✨ Direct In-Page Mode: Customers enter their card details seamlessly on the Sweet Spot checkout page without being redirected away.'
-                                                            : '🔗 Bank Portal Mode: Customers are redirected to the official Global Payments hosted platform to complete payment.'}
+                                                            ? '✨ Official Drop-In UI: Renders Global Payments official secure iframe fields directly on the checkout page with full bank badges & 3D Secure.'
+                                                            : '🔗 Bank Portal Mode: Customers are redirected to the official Global Payments hosted platform (pay.globalpay.com) to complete payment.'}
                                                     </p>
                                                 </div>
                                             </div>

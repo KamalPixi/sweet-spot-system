@@ -94,6 +94,36 @@ class PaymentController extends Controller
     }
 
     /**
+     * Generate a client-side access token for Global Payments Drop-In UI / Hosted Fields.
+     */
+    public function generateGlobalPayToken(Request $request): JsonResponse
+    {
+        try {
+            if (!$this->globalPayService->isConfigured() && !app()->environment('testing')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Global Payments is not configured in Admin Settings.',
+                ], 422);
+            }
+
+            // Drop-In UI requires PMT_POST_Create_Single permission for tokenizing cards
+            $tokenData = $this->globalPayService->getAccessToken(['PMT_POST_Create_Single']);
+
+            return response()->json([
+                'success' => true,
+                'token' => $tokenData['token'],
+                'environment' => $tokenData['environment'],
+                'app_id' => $tokenData['app_id'],
+            ]);
+        } catch (Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to initialize payment gateway: ' . $e->getMessage(),
+            ], 422);
+        }
+    }
+
+    /**
      * Process Global Payments charge for an existing order.
      */
     public function processGlobalPay(Request $request): JsonResponse

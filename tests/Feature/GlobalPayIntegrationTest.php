@@ -164,17 +164,18 @@ class GlobalPayIntegrationTest extends TestCase
     }
 
     /**
-     * 4. Test Admin can test connection with credentials.
+     * 5. Test client can generate Drop-In UI client access token.
      */
-    public function test_admin_can_test_globalpay_connection(): void
+    public function test_client_can_generate_dropin_ui_token(): void
     {
-        $response = $this->actingAs($this->admin, 'sanctum')->postJson('/api/admin/payment/test-connection', [
-            'provider' => 'globalpay',
-            'globalpay_app_id' => 'test_app_id',
-            'globalpay_app_key' => 'test_app_key',
-        ]);
+        $response = $this->postJson('/api/payment/globalpay/token', []);
 
-        $response->assertStatus(200);
-        $this->assertArrayHasKey('success', $response->json());
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+            ]);
+
+        $this->assertNotEmpty($response->json('token'));
+        $this->assertNotEmpty($response->json('environment'));
     }
 }

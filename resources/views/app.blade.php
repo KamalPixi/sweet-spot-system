@@ -44,6 +44,9 @@
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         
+        <!-- Global Payments JS SDK -->
+        <script src="https://js.globalpay.com/4.1.3/globalpayments.js"></script>
+
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/app.jsx'])
     </head>
