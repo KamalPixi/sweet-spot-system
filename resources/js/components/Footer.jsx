@@ -1,25 +1,49 @@
 import React from 'react';
 import { useApp } from '../AppContext';
+import { SocialIcon, getPlatformInfo } from './SocialIcons';
 
 export default function Footer({ onCategoryClick, navigate }) {
     const { configs, catalog } = useApp();
     
-    // Get categories dynamically from catalog, limit to max 4. No hardcoded fallback array.
+    // Get categories dynamically from catalog, limit to max 4.
     const categoriesList = (catalog && catalog.length > 0 ? catalog : []).slice(0, 4);
 
-    // Real dynamic info from settings. No hardcoded fallbacks.
+    // Real dynamic info from settings.
     const address = configs.store_address || '';
     const postcode = configs.store_postcode || '';
     const email = configs.store_email || '';
     const phone = configs.store_phone || '';
 
-    // Social links from settings
-    const instagram = configs.social_instagram || '';
-    const tiktok = configs.social_tiktok || '';
-    const facebook = configs.social_facebook || '';
-    const twitter = configs.social_twitter || '';
+    // Parse dynamic social links array from configs
+    let parsedSocialLinks = [];
+    if (configs?.social_links) {
+        try {
+            const raw = typeof configs.social_links === 'string' ? JSON.parse(configs.social_links) : configs.social_links;
+            if (Array.isArray(raw)) {
+                parsedSocialLinks = raw.filter(item => item && item.url && item.url.trim() !== '');
+            }
+        } catch (e) {
+            console.warn("Error parsing social_links config:", e);
+        }
+    }
 
-    const hasSocialLinks = instagram || tiktok || facebook || twitter;
+    // If dynamic array is empty, fall back to legacy individual keys
+    if (parsedSocialLinks.length === 0) {
+        if (configs.social_instagram) parsedSocialLinks.push({ platform: 'instagram', url: configs.social_instagram, label: 'Instagram' });
+        if (configs.social_tiktok) parsedSocialLinks.push({ platform: 'tiktok', url: configs.social_tiktok, label: 'TikTok' });
+        if (configs.social_facebook) parsedSocialLinks.push({ platform: 'facebook', url: configs.social_facebook, label: 'Facebook' });
+        if (configs.social_twitter) parsedSocialLinks.push({ platform: 'twitter', url: configs.social_twitter, label: 'Twitter' });
+    }
+
+    // Default fallback list if nothing has been set yet
+    if (parsedSocialLinks.length === 0) {
+        parsedSocialLinks = [
+            { platform: 'instagram', url: 'https://instagram.com', label: 'Instagram' },
+            { platform: 'tiktok', url: 'https://tiktok.com', label: 'TikTok' },
+            { platform: 'facebook', url: 'https://facebook.com', label: 'Facebook' },
+            { platform: 'twitter', url: 'https://x.com', label: 'Twitter / X' },
+        ];
+    }
 
     const handleCategoryClick = (cat) => {
         if (onCategoryClick) {
@@ -31,9 +55,6 @@ export default function Footer({ onCategoryClick, navigate }) {
         }
     };
 
-    // Brand logo: Always prioritize /logo-white-sweetspot.png, or store_logo_white if explicitly uploaded
-    const brandLogo = "/logo-white-sweetspot.png";
-
     // Products: either categories or curated fallback matching design
     const defaultProducts = ['Cakes', 'Coffee', 'French Pastries', 'Drinks'];
     const displayProducts = categoriesList.length > 0 
@@ -41,7 +62,7 @@ export default function Footer({ onCategoryClick, navigate }) {
         : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
 
     // Helper to format social links cleanly with http/https fallback
-    const formatExternalUrl = (url, fallback) => {
+    const formatExternalUrl = (url, fallback = '#') => {
         if (!url || !url.trim()) return fallback;
         const trimmed = url.trim();
         if (/^https?:\/\//i.test(trimmed)) {
@@ -125,44 +146,36 @@ export default function Footer({ onCategoryClick, navigate }) {
                     </div>
                 </div>
 
-                {/* Column 4: Follow Us */}
+                {/* Column 4: Follow Us (With Dynamic Brand Icons & Multiple Accounts) */}
                 <div className="col-span-12 sm:col-span-4 md:col-span-2 space-y-3.5">
                     <h4 className="text-white font-medium text-sm sm:text-base tracking-normal">
                         Follow Us
                     </h4>
-                    <div className="space-y-2 text-white/60 text-xs sm:text-[13px] font-light flex flex-col">
-                        <a 
-                            href={formatExternalUrl(instagram, 'https://instagram.com')} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="hover:text-white transition-colors"
-                        >
-                            Instagram
-                        </a>
-                        <a 
-                            href={formatExternalUrl(tiktok, 'https://tiktok.com')} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="hover:text-white transition-colors"
-                        >
-                            Tiktok
-                        </a>
-                        <a 
-                            href={formatExternalUrl(facebook, 'https://facebook.com')} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="hover:text-white transition-colors"
-                        >
-                            Facebook
-                        </a>
-                        <a 
-                            href={formatExternalUrl(twitter, 'https://twitter.com')} 
-                            target="_blank" 
-                            rel="noreferrer" 
-                            className="hover:text-white transition-colors"
-                        >
-                            Twitter
-                        </a>
+                    <div className="space-y-2 text-white/60 text-xs sm:text-[13px] font-light flex flex-col items-start">
+                        {parsedSocialLinks.map((link, idx) => {
+                            const platformInfo = getPlatformInfo(link.platform);
+                            const displayName = link.label && link.label.trim() !== '' 
+                                ? link.label.trim() 
+                                : platformInfo.defaultLabel;
+
+                            return (
+                                <a 
+                                    key={idx}
+                                    href={formatExternalUrl(link.url)} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer" 
+                                    className="group inline-flex items-center gap-2.5 text-white/60 hover:text-white transition-all text-xs sm:text-[13px] font-light py-0.5"
+                                    title={`${platformInfo.name}: ${displayName}`}
+                                >
+                                    <span className="w-5 h-5 rounded-md bg-white/10 group-hover:bg-white/25 flex items-center justify-center transition-all text-white/80 group-hover:text-white shrink-0 group-hover:scale-105">
+                                        <SocialIcon platform={link.platform} className="w-3.5 h-3.5" size={14} />
+                                    </span>
+                                    <span className="truncate group-hover:translate-x-0.5 transition-transform">
+                                        {displayName}
+                                    </span>
+                                </a>
+                            );
+                        })}
                     </div>
                 </div>
             </div>

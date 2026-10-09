@@ -23,6 +23,7 @@ import {
     FileText, Download, CreditCard, ShieldCheck, KeyRound
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
+import { SOCIAL_PLATFORMS, SocialIcon, getPlatformInfo } from './components/SocialIcons';
 
 const getImageUrl = (item) => {
     if (!item) return '/images/placeholder.svg';
@@ -4753,62 +4754,214 @@ export default function AdminDashboard() {
                                             </div>
                                         </div>
 
-                                        {/* Card 4: Social Links */}
+                                        {/* Card 4: Social Links (Dynamic Multiple Platforms & Accounts) */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="border-b border-neutral-100 pb-3">
-                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-                                                    <Users size={18} className="text-neutral-500" /> Social Links
-                                                </h2>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div className="border-b border-neutral-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                 <div>
-                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Instagram URL</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={settingsForm.social_instagram || ''}
-                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_instagram: e.target.value })}
-                                                        placeholder="https://instagram.com/yourbrand"
-                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                    />
+                                                    <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                        <Users size={18} className="text-neutral-500" /> Social Links & Channels
+                                                    </h2>
+                                                    <p className="text-xs text-neutral-500 mt-0.5">
+                                                        Add multiple social accounts across any platform. These will automatically appear with their official logos in the website footer.
+                                                    </p>
                                                 </div>
-                                                <div>
-                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">TikTok URL</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={settingsForm.social_tiktok || ''}
-                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_tiktok: e.target.value })}
-                                                        placeholder="https://tiktok.com/@yourbrand"
-                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                    />
-                                                </div>
-                                            </div>
-                                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                                <div>
-                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Facebook URL</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={settingsForm.social_facebook || ''}
-                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_facebook: e.target.value })}
-                                                        placeholder="https://facebook.com/yourbrand"
-                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Twitter / X URL</label>
-                                                    <input 
-                                                        type="text" 
-                                                        value={settingsForm.social_twitter || ''}
-                                                        onChange={(e) => setSettingsForm({ ...settingsForm, social_twitter: e.target.value })}
-                                                        placeholder="https://twitter.com/yourbrand"
-                                                        className="w-full bg-neutral-50 border border-neutral-200 px-4 py-3 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="pt-2 flex justify-start">
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleSaveSection(['social_instagram', 'social_tiktok', 'social_facebook', 'social_twitter'], 'Social Links')}
+                                                    onClick={() => {
+                                                        let list = [];
+                                                        if (settingsForm.social_links) {
+                                                            try {
+                                                                const p = typeof settingsForm.social_links === 'string' ? JSON.parse(settingsForm.social_links) : settingsForm.social_links;
+                                                                if (Array.isArray(p)) list = p;
+                                                            } catch (e) {}
+                                                        }
+                                                        if (list.length === 0) {
+                                                            if (settingsForm.social_instagram) list.push({ platform: 'instagram', url: settingsForm.social_instagram, label: 'Instagram' });
+                                                            if (settingsForm.social_tiktok) list.push({ platform: 'tiktok', url: settingsForm.social_tiktok, label: 'TikTok' });
+                                                            if (settingsForm.social_facebook) list.push({ platform: 'facebook', url: settingsForm.social_facebook, label: 'Facebook' });
+                                                            if (settingsForm.social_twitter) list.push({ platform: 'twitter', url: settingsForm.social_twitter, label: 'Twitter / X' });
+                                                        }
+                                                        const updated = [...list, { platform: 'instagram', url: '', label: '' }];
+                                                        setSettingsForm({ ...settingsForm, social_links: JSON.stringify(updated) });
+                                                    }}
+                                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-bold bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors cursor-pointer shrink-0"
+                                                >
+                                                    <Plus size={14} />
+                                                    <span>Add Social Link</span>
+                                                </button>
+                                            </div>
+
+                                            {/* Social Links Rows */}
+                                            {(() => {
+                                                let list = [];
+                                                if (settingsForm.social_links) {
+                                                    try {
+                                                        const p = typeof settingsForm.social_links === 'string' ? JSON.parse(settingsForm.social_links) : settingsForm.social_links;
+                                                        if (Array.isArray(p)) list = p;
+                                                    } catch (e) {}
+                                                }
+                                                if (list.length === 0) {
+                                                    if (settingsForm.social_instagram) list.push({ platform: 'instagram', url: settingsForm.social_instagram, label: 'Instagram' });
+                                                    if (settingsForm.social_tiktok) list.push({ platform: 'tiktok', url: settingsForm.social_tiktok, label: 'TikTok' });
+                                                    if (settingsForm.social_facebook) list.push({ platform: 'facebook', url: settingsForm.social_facebook, label: 'Facebook' });
+                                                    if (settingsForm.social_twitter) list.push({ platform: 'twitter', url: settingsForm.social_twitter, label: 'Twitter / X' });
+                                                }
+                                                if (list.length === 0) {
+                                                    list = [
+                                                        { platform: 'instagram', url: '', label: '' },
+                                                        { platform: 'tiktok', url: '', label: '' },
+                                                    ];
+                                                }
+
+                                                return (
+                                                    <div className="space-y-3">
+                                                        {list.map((item, idx) => {
+                                                            const platformInfo = getPlatformInfo(item.platform);
+
+                                                            return (
+                                                                <div key={idx} className="bg-neutral-50/70 border border-neutral-200/80 p-3.5 sm:p-4 rounded-xl flex flex-col md:flex-row items-stretch md:items-center gap-3 transition-all hover:border-neutral-300">
+                                                                    {/* Platform Icon Badge & Select */}
+                                                                    <div className="flex items-center gap-2.5 min-w-[200px] shrink-0">
+                                                                        <div className="w-9 h-9 rounded-lg bg-white border border-neutral-200 flex items-center justify-center text-neutral-800 shadow-2xs shrink-0">
+                                                                            <SocialIcon platform={item.platform} className="w-4 h-4" size={16} />
+                                                                        </div>
+                                                                        <div className="flex-1">
+                                                                            <label className="block text-neutral-400 text-[9px] font-bold uppercase tracking-wider mb-0.5">Platform</label>
+                                                                            <select
+                                                                                value={item.platform || 'instagram'}
+                                                                                onChange={(e) => {
+                                                                                    const updated = [...list];
+                                                                                    updated[idx] = { ...updated[idx], platform: e.target.value };
+                                                                                    setSettingsForm({ ...settingsForm, social_links: JSON.stringify(updated) });
+                                                                                }}
+                                                                                className="w-full bg-white border border-neutral-200 px-2.5 py-1.5 text-xs text-neutral-800 font-medium focus:bg-white focus:border-neutral-950 focus:outline-none rounded-lg cursor-pointer"
+                                                                            >
+                                                                                {SOCIAL_PLATFORMS.map(p => (
+                                                                                    <option key={p.id} value={p.id}>{p.name}</option>
+                                                                                ))}
+                                                                            </select>
+                                                                        </div>
+                                                                    </div>
+
+                                                                    {/* Custom Label / Handle */}
+                                                                    <div className="w-full md:w-56 shrink-0">
+                                                                        <label className="block text-neutral-400 text-[9px] font-bold uppercase tracking-wider mb-0.5">
+                                                                            Label / Handle (Optional)
+                                                                        </label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={item.label || ''}
+                                                                            onChange={(e) => {
+                                                                                const updated = [...list];
+                                                                                updated[idx] = { ...updated[idx], label: e.target.value };
+                                                                                setSettingsForm({ ...settingsForm, social_links: JSON.stringify(updated) });
+                                                                            }}
+                                                                            placeholder={platformInfo.defaultLabel}
+                                                                            className="w-full bg-white border border-neutral-200 px-3 py-1.5 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none rounded-lg"
+                                                                        />
+                                                                    </div>
+
+                                                                    {/* URL Link */}
+                                                                    <div className="flex-1">
+                                                                        <label className="block text-neutral-400 text-[9px] font-bold uppercase tracking-wider mb-0.5">
+                                                                            Profile / Channel URL
+                                                                        </label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={item.url || ''}
+                                                                            onChange={(e) => {
+                                                                                const updated = [...list];
+                                                                                updated[idx] = { ...updated[idx], url: e.target.value };
+                                                                                setSettingsForm({ ...settingsForm, social_links: JSON.stringify(updated) });
+                                                                            }}
+                                                                            placeholder={platformInfo.defaultPlaceholder}
+                                                                            className="w-full bg-white border border-neutral-200 px-3 py-1.5 text-xs text-neutral-800 focus:bg-white focus:border-neutral-950 focus:outline-none rounded-lg font-mono text-[11px]"
+                                                                        />
+                                                                    </div>
+
+                                                                    {/* Actions (Delete button) */}
+                                                                    <div className="flex items-end justify-end md:self-end pt-1 md:pt-0">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                const updated = list.filter((_, i) => i !== idx);
+                                                                                setSettingsForm({ ...settingsForm, social_links: JSON.stringify(updated) });
+                                                                            }}
+                                                                            className="w-8 h-8 rounded-lg text-neutral-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors cursor-pointer"
+                                                                            title="Delete social link"
+                                                                        >
+                                                                            <Trash2 size={15} />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                );
+                                            })()}
+
+                                            {/* Bottom Actions */}
+                                            <div className="pt-2 flex items-center justify-between border-t border-neutral-100">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        let list = [];
+                                                        if (settingsForm.social_links) {
+                                                            try {
+                                                                const p = typeof settingsForm.social_links === 'string' ? JSON.parse(settingsForm.social_links) : settingsForm.social_links;
+                                                                if (Array.isArray(p)) list = p;
+                                                            } catch (e) {}
+                                                        }
+                                                        if (list.length === 0) {
+                                                            if (settingsForm.social_instagram) list.push({ platform: 'instagram', url: settingsForm.social_instagram, label: 'Instagram' });
+                                                            if (settingsForm.social_tiktok) list.push({ platform: 'tiktok', url: settingsForm.social_tiktok, label: 'TikTok' });
+                                                            if (settingsForm.social_facebook) list.push({ platform: 'facebook', url: settingsForm.social_facebook, label: 'Facebook' });
+                                                            if (settingsForm.social_twitter) list.push({ platform: 'twitter', url: settingsForm.social_twitter, label: 'Twitter / X' });
+                                                        }
+                                                        const updated = [...list, { platform: 'instagram', url: '', label: '' }];
+                                                        setSettingsForm({ ...settingsForm, social_links: JSON.stringify(updated) });
+                                                    }}
+                                                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-100 hover:bg-neutral-200 text-neutral-800 transition-colors cursor-pointer"
+                                                >
+                                                    <Plus size={14} />
+                                                    <span>Add Another Social Account</span>
+                                                </button>
+
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        let list = [];
+                                                        if (settingsForm.social_links) {
+                                                            try {
+                                                                const p = typeof settingsForm.social_links === 'string' ? JSON.parse(settingsForm.social_links) : settingsForm.social_links;
+                                                                if (Array.isArray(p)) list = p;
+                                                            } catch (e) {}
+                                                        }
+                                                        if (list.length === 0) {
+                                                            if (settingsForm.social_instagram) list.push({ platform: 'instagram', url: settingsForm.social_instagram, label: 'Instagram' });
+                                                            if (settingsForm.social_tiktok) list.push({ platform: 'tiktok', url: settingsForm.social_tiktok, label: 'TikTok' });
+                                                            if (settingsForm.social_facebook) list.push({ platform: 'facebook', url: settingsForm.social_facebook, label: 'Facebook' });
+                                                            if (settingsForm.social_twitter) list.push({ platform: 'twitter', url: settingsForm.social_twitter, label: 'Twitter / X' });
+                                                        }
+
+                                                        const ig = list.find(l => l.platform === 'instagram')?.url || '';
+                                                        const tt = list.find(l => l.platform === 'tiktok')?.url || '';
+                                                        const fb = list.find(l => l.platform === 'facebook')?.url || '';
+                                                        const tw = list.find(l => l.platform === 'twitter')?.url || '';
+
+                                                        const jsonStr = JSON.stringify(list);
+                                                        const updated = {
+                                                            ...settingsForm,
+                                                            social_links: jsonStr,
+                                                            social_instagram: ig,
+                                                            social_tiktok: tt,
+                                                            social_facebook: fb,
+                                                            social_twitter: tw,
+                                                        };
+                                                        setSettingsForm(updated);
+
+                                                        handleSaveSection(['social_links', 'social_instagram', 'social_tiktok', 'social_facebook', 'social_twitter'], 'Social Links');
+                                                    }}
                                                     disabled={savingSection === 'Social Links'}
                                                     className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                                                 >
