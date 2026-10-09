@@ -4929,28 +4929,30 @@ export default function AdminDashboard() {
                                                                 <p className="text-xs font-bold text-neutral-900">
                                                                     {menuPdfFile 
                                                                         ? menuPdfFile.name 
-                                                                        : (settingsForm.menu_pdf ? 'Custom PDF Menu Uploaded' : 'Default Menu PDF Active (/Sweet-Spot-Menu.pdf)')
+                                                                        : (settingsForm.menu_pdf ? 'Custom PDF Menu Uploaded' : 'No PDF Menu Uploaded')
                                                                     }
                                                                 </p>
                                                                 <p className="text-[10px] text-neutral-400">
                                                                     {settingsForm.menu_pdf 
                                                                         ? `Active file: ${settingsForm.menu_pdf}` 
-                                                                        : 'Using bundled fallback menu.'
+                                                                        : 'Upload a PDF menu to make it viewable on /menu.'
                                                                     }
                                                                 </p>
                                                             </div>
                                                         </div>
 
                                                         <div className="flex items-center gap-2">
-                                                            <a
-                                                                href={menuPdfFile ? URL.createObjectURL(menuPdfFile) : (settingsForm.menu_pdf || '/Sweet-Spot-Menu.pdf')}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className="px-3 py-1.5 bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-700 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
-                                                            >
-                                                                <Download size={13} />
-                                                                <span>Preview PDF</span>
-                                                            </a>
+                                                            {(menuPdfFile || settingsForm.menu_pdf) && (
+                                                                <a
+                                                                    href={menuPdfFile ? URL.createObjectURL(menuPdfFile) : settingsForm.menu_pdf}
+                                                                    target="_blank"
+                                                                    rel="noopener noreferrer"
+                                                                    className="px-3 py-1.5 bg-white border border-neutral-200 hover:border-neutral-400 text-neutral-700 text-xs font-medium rounded-lg transition-colors flex items-center gap-1.5 shadow-2xs cursor-pointer"
+                                                                >
+                                                                    <Download size={13} />
+                                                                    <span>Preview PDF</span>
+                                                                </a>
+                                                            )}
                                                             {settingsForm.menu_pdf && (
                                                                 <button
                                                                     type="button"
@@ -4958,10 +4960,10 @@ export default function AdminDashboard() {
                                                                         setSettingsForm({ ...settingsForm, menu_pdf: '' });
                                                                         setMenuPdfFile(null);
                                                                     }}
-                                                                    className="px-3 py-1.5 bg-neutral-100 hover:bg-neutral-200 text-neutral-600 text-xs font-medium rounded-lg transition-colors cursor-pointer"
-                                                                    title="Reset to default menu PDF"
+                                                                    className="px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 text-xs font-medium rounded-lg transition-colors cursor-pointer"
+                                                                    title="Remove uploaded PDF menu"
                                                                 >
-                                                                    Reset to Default
+                                                                    Remove PDF
                                                                 </button>
                                                             )}
                                                         </div>
