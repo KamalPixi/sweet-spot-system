@@ -394,68 +394,46 @@ function GlobalPayPaymentForm({ orderNumber, total, phone, email, customerName, 
 
     if (mode === 'embedded') {
         return (
-            <div id="gp-embedded-payment-form" className="space-y-4 text-left animate-fadeIn">
+            <div id="gp-embedded-payment-form" className="space-y-3 text-left animate-fadeIn">
                 {paymentError && (
-                    <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-left animate-fadeIn">
-                        <AlertCircle size={16} className="shrink-0" />
+                    <div className="flex items-center gap-2 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-2.5 text-xs text-left animate-fadeIn">
+                        <AlertCircle size={15} className="shrink-0" />
                         <span>{paymentError}</span>
                     </div>
                 )}
 
-                {/* Distinct Bank-Grade Secure Payment Card / Frame */}
-                <div className="bg-white rounded-2xl border-2 border-neutral-200 shadow-sm overflow-hidden">
-                    {/* Official Provider Header Bar */}
-                    <div className="bg-neutral-900 text-white px-4 py-3 flex items-center justify-between border-b border-neutral-800">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
-                                <Lock size={12} strokeWidth={2.5} />
+                {/* Bank-Grade Secure Payment Card / Frame */}
+                <div className="bg-white rounded-xl border border-neutral-200/90 shadow-2xs overflow-hidden">
+                    {/* Compact Provider Header Bar */}
+                    <div className="bg-neutral-900 text-white px-3.5 py-2 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-md bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <Lock size={11} strokeWidth={2.5} />
                             </div>
-                            <div>
-                                <h4 className="text-xs font-bold tracking-wide">Global Payments Secure Terminal</h4>
-                                <p className="text-[10px] text-neutral-400">Official Encrypted Checkout</p>
-                            </div>
+                            <h4 className="text-xs font-bold tracking-wide">Global Payments Secure Terminal</h4>
                         </div>
-                        <div className="flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-600/40 px-2.5 py-1 rounded-full text-emerald-300 text-[10px] font-bold">
-                            <ShieldCheck size={12} className="text-emerald-400" />
-                            <span>PCI-DSS SAQ A</span>
-                        </div>
-                    </div>
-
-                    {/* Total Summary Strip inside provider box */}
-                    <div className="bg-neutral-50 px-4 py-2.5 border-b border-neutral-100 flex items-center justify-between text-xs">
-                        <span className="text-neutral-500 font-medium">Payment for Order <strong className="text-neutral-800 font-mono">#{orderNumber}</strong></span>
-                        <span className="font-bold text-neutral-900 text-sm">£{Number(total || 0).toFixed(2)}</span>
+                        <span className="flex items-center gap-1 text-[10px] font-bold text-emerald-300 bg-emerald-950/80 border border-emerald-600/40 px-2 py-0.5 rounded-full">
+                            <ShieldCheck size={11} /> PCI-DSS SAQ A
+                        </span>
                     </div>
 
                     {/* Official Drop-In UI Container */}
-                    <div className="p-4 sm:p-5 relative">
+                    <div className="p-3 sm:p-4 relative">
                         {sdkLoading && (
-                            <div className="flex flex-col items-center justify-center py-12 space-y-3">
-                                <Loader2 className="animate-spin text-emerald-700" size={28} />
+                            <div className="flex flex-col items-center justify-center py-8 space-y-2">
+                                <Loader2 className="animate-spin text-emerald-700" size={24} />
                                 <span className="text-xs font-semibold text-neutral-600">Loading Official Bank Form...</span>
                             </div>
                         )}
                         {paymentLoading && (
-                            <div className="absolute inset-0 bg-white/90 backdrop-blur-xs flex flex-col items-center justify-center z-10 space-y-3">
-                                <Loader2 className="animate-spin text-emerald-700" size={32} />
-                                <span className="text-xs font-bold text-neutral-800">Processing &amp; Authorizing Card with Bank...</span>
-                                <span className="text-[10px] text-neutral-500">Please do not refresh or close this window</span>
+                            <div className="absolute inset-0 bg-white/90 backdrop-blur-xs flex flex-col items-center justify-center z-10 space-y-2">
+                                <Loader2 className="animate-spin text-emerald-700" size={28} />
+                                <span className="text-xs font-bold text-neutral-800">Authorizing Card with Bank...</span>
+                                <span className="text-[10px] text-neutral-500">Please do not refresh</span>
                             </div>
                         )}
-                        <div id="gp-dropin-ui-container" className={sdkLoading ? 'hidden' : 'block min-h-[160px]'}></div>
+                        <div id="gp-dropin-ui-container" className={sdkLoading ? 'hidden' : 'block min-h-[140px]'}></div>
                     </div>
-                </div>
-
-                {/* Single Cancel Button */}
-                <div className="pt-1">
-                    <button
-                        type="button"
-                        onClick={onClose}
-                        disabled={paymentLoading}
-                        className="w-full bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 font-semibold rounded-full py-3 px-5 text-xs transition-colors cursor-pointer text-center"
-                    >
-                        Cancel &amp; Return to Checkout
-                    </button>
                 </div>
             </div>
         );
@@ -1262,33 +1240,40 @@ export default function Checkout() {
                                 STEP 2: PAYMENT (Global Payments, Stripe, or Simulated)
                             ═══════════════════════════════════════ */}
                             {(stripeClientSecret || isGlobalPayActive || checkoutStep === 'payment') ? (
-                                <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xs p-5 sm:p-7 space-y-6 animate-fadeIn">
-                                    <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
-                                        <div className="flex items-center gap-3">
-                                            <div className="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center shrink-0 border border-emerald-100">
-                                                <Lock size={18} strokeWidth={2.2} />
+                                <div className="bg-white rounded-2xl border border-neutral-200/80 shadow-xs p-4 sm:p-5 space-y-3.5 animate-fadeIn">
+                                    <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
+                                        <div className="flex items-center gap-2.5">
+                                            <div className="w-8 h-8 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center shrink-0 border border-emerald-100">
+                                                <Lock size={15} strokeWidth={2.2} />
                                             </div>
                                             <div>
-                                                <h2 className="text-[#24161b] font-serif text-xl font-bold">Secure Payment</h2>
-                                                <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center gap-1.5 mt-0.5">
+                                                <h2 className="text-[#24161b] font-serif text-base sm:text-lg font-bold">Secure Payment</h2>
+                                                <p className="text-[10px] text-emerald-700 font-bold uppercase tracking-wider flex items-center gap-1 mt-0.5">
                                                     <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
                                                     Bank-Grade 256-Bit SSL Encrypted
                                                 </p>
                                             </div>
                                         </div>
 
-                                        <button
-                                            type="button"
-                                            onClick={() => {
-                                                setStripeClientSecret(null);
-                                                setIsGlobalPayActive(false);
-                                                setActiveOrderNumber('');
-                                                setCheckoutStep('details');
-                                            }}
-                                            className="text-xs font-semibold text-neutral-500 hover:text-[#24161b] underline cursor-pointer"
-                                        >
-                                            Edit Details
-                                        </button>
+                                        <div className="flex items-center gap-2">
+                                            {activeOrderNumber && (
+                                                <span className="font-mono font-bold text-[#24161b] bg-neutral-100/80 px-2 py-0.5 rounded-lg border border-neutral-200/80 text-[11px]">
+                                                    #{activeOrderNumber}
+                                                </span>
+                                            )}
+                                            <button
+                                                type="button"
+                                                onClick={() => {
+                                                    setStripeClientSecret(null);
+                                                    setIsGlobalPayActive(false);
+                                                    setActiveOrderNumber('');
+                                                    setCheckoutStep('details');
+                                                }}
+                                                className="text-xs font-semibold text-neutral-500 hover:text-[#24161b] underline cursor-pointer"
+                                            >
+                                                Edit Details
+                                            </button>
+                                        </div>
                                     </div>
 
                                     {/* Multi-provider switcher if both are enabled */}
@@ -1297,7 +1282,7 @@ export default function Checkout() {
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedGateway('globalpay')}
-                                                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                                     selectedGateway === 'globalpay'
                                                         ? 'bg-white text-[#24161b] shadow-2xs border border-neutral-200/60'
                                                         : 'text-neutral-500 hover:text-neutral-800'
@@ -1309,7 +1294,7 @@ export default function Checkout() {
                                             <button
                                                 type="button"
                                                 onClick={() => setSelectedGateway('stripe')}
-                                                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                                className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                                                     selectedGateway === 'stripe'
                                                         ? 'bg-white text-[#24161b] shadow-2xs border border-neutral-200/60'
                                                         : 'text-neutral-500 hover:text-neutral-800'
@@ -1320,32 +1305,6 @@ export default function Checkout() {
                                             </button>
                                         </div>
                                     )}
-
-                                    {/* Order Reference & Total Header */}
-                                    <div className="bg-[#fdfaf5] rounded-2xl p-4 text-xs space-y-2.5 border border-neutral-200/80">
-                                        {activeOrderNumber && (
-                                            <div className="flex justify-between items-center">
-                                                <span className="text-neutral-500">Order Reference</span>
-                                                <span className="font-mono font-bold text-[#24161b] bg-white px-2.5 py-1 rounded-lg border border-neutral-200 text-xs">
-                                                    {activeOrderNumber}
-                                                </span>
-                                            </div>
-                                        )}
-                                        <div className="flex justify-between items-center text-neutral-600">
-                                            <span>Fulfillment</span>
-                                            <span className="font-bold text-[#24161b] capitalize">
-                                                {orderType === 'dine_in' 
-                                                    ? `Dine-In Table #${tableNumber || '?'}` 
-                                                    : orderType === 'delivery' 
-                                                        ? 'Home Delivery' 
-                                                        : 'Counter Collection'}
-                                            </span>
-                                        </div>
-                                        <div className="flex justify-between items-baseline pt-2 border-t border-neutral-200/60">
-                                            <span className="text-neutral-600 font-medium">Total Payable</span>
-                                            <span className="font-serif font-black text-[#24161b] text-lg">£{cartTotal.toFixed(2)}</span>
-                                        </div>
-                                    </div>
 
                                     {/* Global Payments Gateway Form */}
                                     {isGlobalPayActive || (selectedGateway === 'globalpay' && activeOrderNumber) ? (
