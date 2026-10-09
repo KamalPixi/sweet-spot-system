@@ -178,4 +178,145 @@ class GlobalPayIntegrationTest extends TestCase
         $this->assertNotEmpty($response->json('token'));
         $this->assertNotEmpty($response->json('environment'));
     }
+
+    /**
+     * 6. Test Webhook: Dispute / Chargeback marks order as disputed and notifies admin.
+     */
+    public function test_webhook_dispute_event_marks_order_as_disputed_and_notifies_admin(): void
+    {
+        \Illuminate\Support\Facades\Notification::fake();
+
+        $customer = \App\Models\Customer::create([
+            'first_name' => 'John',
+            'last_name' => 'Doe',
+            'phone' => '+447000111333',
+            'is_guest' => true,
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'SS-DISPUTE01',
+            'customer_id' => $customer->id,
+            'type' => 'delivery',
+            'status' => 'completed',
+            'subtotal' => 30.00,
+            'delivery_fee' => 2.50,
+            'total' => 32.50,
+            'payment_status' => 'paid',
+            'payment_method' => 'globalpay',
+            'payment_transaction_id' => 'trn_dispute_123',
+        ]);
+
+        $payload = [
+            'event' => 'dispute.created',
+            'data' => [
+                'id' => 'trn_dispute_123',
+                'reference' => 'SS-DISPUTE01',
+                'dispute_id' => 'disp_998877',
+                'reason' => 'Fraudulent transaction reported by cardholder bank',
+                'amount' => '3250',
+            ],
+        ];
+
+        $response = $this->postJson('/api/webhooks/globalpay', $payload);
+
+        $response->assertStatus(200);
+
+        $order->refresh();
+        $this->assertEquals('disputed', $order->payment_status);
+        $this->assertStringContainsString('PAYMENT DISPUTED / CHARGEBACK', $order->notes);
+        $this->assertStringContainsString('disp_998877', $order->notes);
+
+        \Illuminate\Support\Facades\Notification::assertSentTo(
+            $this->admin,
+            \App\Notifications\PaymentDisputeAlertNotification::class
+        );
+    }
+
+    /**
+     * 7. Test Webhook: Fraud / Risk alert marks order and notifies admin.
+     */
+    public function test_webhook_fraud_alert_marks_order_and_notifies_admin(): void
+    {
+        \Illuminate\Support\Facades\Notification::fake();
+
+        $customer = \App\Models\Customer::create([
+            'first_name' => 'Alice',
+            'last_name' => 'Smith',
+            'phone' => '+447000111444',
+            'is_guest' => true,
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'SS-FRAUD01',
+            'customer_id' => $customer->id,
+            'type' => 'collection',
+            'status' => 'pending',
+            'subtotal' => 20.00,
+            'delivery_fee' => 0.00,
+            'total' => 20.00,
+            'payment_status' => 'paid',
+            'payment_method' => 'globalpay',
+            'payment_transaction_id' => 'trn_fraud_456',
+        ]);
+
+        $payload = [
+            'event' => 'fraud.alert',
+            'data' => [
+                'reference' => 'SS-FRAUD01',
+                'reason' => 'Stolen card credential match in global database',
+            ],
+        ];
+
+        $response = $this->postJson('/api/webhooks/globalpay', $payload);
+        $response->assertStatus(200);
+
+        $order->refresh();
+        $this->assertEquals('disputed', $order->payment_status);
+        $this->assertStringContainsString('FRAUD ALERT', $order->notes);
+
+        \Illuminate\Support\Facades\Notification::assertSentTo(
+            $this->admin,
+            \App\Notifications\PaymentDisputeAlertNotification::class
+        );
+    }
+
+    /**
+     * 8. Test Webhook: Refund / Reversal cancels order and marks payment as refunded.
+     */
+    public function test_webhook_refund_marks_order_as_refunded(): void
+    {
+        $customer = \App\Models\Customer::create([
+            'first_name' => 'Bob',
+            'last_name' => 'Jones',
+            'phone' => '+447000111555',
+            'is_guest' => true,
+        ]);
+
+        $order = Order::create([
+            'order_number' => 'SS-REFUND01',
+            'customer_id' => $customer->id,
+            'type' => 'collection',
+            'status' => 'pending',
+            'subtotal' => 18.00,
+            'delivery_fee' => 0.00,
+            'total' => 18.00,
+            'payment_status' => 'paid',
+            'payment_method' => 'globalpay',
+            'payment_transaction_id' => 'trn_refund_789',
+        ]);
+
+        $payload = [
+            'event' => 'transaction.refunded',
+            'data' => [
+                'reference' => 'SS-REFUND01',
+            ],
+        ];
+
+        $response = $this->postJson('/api/webhooks/globalpay', $payload);
+        $response->assertStatus(200);
+
+        $order->refresh();
+        $this->assertEquals('refunded', $order->payment_status);
+        $this->assertEquals('cancelled', $order->status);
+    }
 }

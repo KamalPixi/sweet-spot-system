@@ -1641,6 +1641,9 @@ export default function AdminDashboard() {
         unpaid: { label: 'Unpaid', classes: 'bg-amber-50 text-amber-700 border-amber-100' },
         paid: { label: 'Paid', classes: 'bg-emerald-50 text-emerald-700 border-emerald-100' },
         failed: { label: 'Failed', classes: 'bg-red-50 text-red-600 border-red-100' },
+        disputed: { label: 'Disputed / Chargeback', classes: 'bg-rose-100 text-rose-800 border-rose-300 font-bold' },
+        refunded: { label: 'Refunded', classes: 'bg-purple-50 text-purple-700 border-purple-100' },
+        chargeback: { label: 'Chargeback', classes: 'bg-red-100 text-red-800 border-red-200' },
     };
     const filteredOrders = orders.filter(order => {
         const customerName = `${order.customer?.first_name || ''} ${order.customer?.last_name || ''}`.trim();
@@ -4638,6 +4641,45 @@ export default function AdminDashboard() {
                                                             : '🔗 Bank Portal Mode: Customers are redirected to the official Global Payments hosted platform (pay.globalpay.com) to complete payment.'}
                                                     </p>
                                                 </div>
+
+                                                {/* Global Payments Webhook & Dispute Monitoring */}
+                                                <div className="pt-2 border-t border-neutral-200/60 space-y-3">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            Webhook Secret Key (Optional - for signature verification)
+                                                        </label>
+                                                        <input 
+                                                            type="password" 
+                                                            value={settingsForm.globalpay_webhook_secret || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, globalpay_webhook_secret: e.target.value })}
+                                                            placeholder={settingsForm.globalpay_webhook_secret ? '••••••••••••••••' : 'Enter Webhook Secret from Global Payments Portal'}
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors font-mono"
+                                                        />
+                                                    </div>
+
+                                                    <div className="p-3 bg-white border border-neutral-200/80 rounded-xl space-y-2">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[11px] font-bold text-neutral-700">Global Payments Webhook Endpoint URL</span>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const url = `${window.location.origin}/api/webhooks/globalpay`;
+                                                                    navigator.clipboard.writeText(url);
+                                                                    toast.success('Webhook URL copied to clipboard!');
+                                                                }}
+                                                                className="text-[10px] font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-md transition-colors cursor-pointer"
+                                                            >
+                                                                Copy URL
+                                                            </button>
+                                                        </div>
+                                                        <p className="text-[11px] font-mono text-neutral-600 select-all break-all bg-neutral-50 p-2 rounded-lg border border-neutral-100">
+                                                            {typeof window !== 'undefined' ? `${window.location.origin}/api/webhooks/globalpay` : '/api/webhooks/globalpay'}
+                                                        </p>
+                                                        <p className="text-[10px] text-neutral-400 leading-relaxed">
+                                                            Paste this Webhook URL in your Global Payments Merchant Portal. Handles disputes, chargebacks, fraud flags, reversals, and real-time payment confirmations.
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
 
                                             {/* Stripe Configuration */}
@@ -4698,6 +4740,7 @@ export default function AdminDashboard() {
                                                         'globalpay_account_id',
                                                         'globalpay_environment',
                                                         'globalpay_checkout_mode',
+                                                        'globalpay_webhook_secret',
                                                         'stripe_publishable_key',
                                                         'stripe_secret_key',
                                                         'stripe_webhook_secret'

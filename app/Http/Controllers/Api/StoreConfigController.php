@@ -42,6 +42,7 @@ class StoreConfigController extends Controller
         $configs['globalpay_app_id'] = $this->globalPayService->getAppId();
         $configs['globalpay_environment'] = $this->globalPayService->getEnvironment();
         $configs['globalpay_checkout_mode'] = $this->storeConfigService->get('globalpay_checkout_mode', 'hosted');
+        $configs['globalpay_webhook_secret'] = $this->storeConfigService->get('globalpay_webhook_secret', '');
         $configs['has_globalpay_configured'] = $this->globalPayService->isConfigured();
         $configs['has_stripe_configured'] = !empty($stripeKey) && !str_starts_with($stripeKey, '${');
 

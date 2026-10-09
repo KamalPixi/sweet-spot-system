@@ -11,6 +11,7 @@ use App\Services\RealtimeBroadcastService;
 use App\Services\CloudPrntService;
 use App\Notifications\NewOrderPlacedNotification;
 use App\Notifications\CustomerOrderConfirmationNotification;
+use App\Notifications\PaymentDisputeAlertNotification;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Log;
@@ -270,29 +271,171 @@ class PaymentController extends Controller
 
     /**
      * Global Payments Webhook endpoint.
+     * Handles payment captures, chargebacks, disputes, fraud reviews, cancellations, and refunds.
      */
     public function webhook(Request $request): JsonResponse
     {
+        $rawContent = $request->getContent();
         $payload = $request->all();
-        Log::info('Global Payments Webhook received:', $payload);
 
-        // Handle transaction notifications
-        $event = $payload['event'] ?? $payload['type'] ?? null;
-        $reference = $payload['data']['reference'] ?? $payload['reference'] ?? null;
+        Log::info('Global Payments Webhook received:', [
+            'headers' => $request->headers->all(),
+            'payload' => $payload,
+        ]);
 
-        if ($reference) {
-            $order = Order::where('order_number', $reference)->first();
-            if ($order && $order->payment_status !== 'paid') {
-                if (in_array(strtoupper($event ?? ''), ['TRANSACTION_SUCCESS', 'SALE_SUCCESS', 'CAPTURED'])) {
-                    $order->update([
-                        'payment_status' => 'paid',
-                        'status' => 'pending',
-                    ]);
-                    $this->realtimeBroadcastService->broadcastOrderCreated($order);
-                }
+        // 1. Signature Verification (if secret configured)
+        $configuredSecret = $this->storeConfigService->get('globalpay_webhook_secret') 
+            ?: $this->globalPayService->getAppKey();
+        $receivedSignature = $request->header('X-GP-Signature') 
+            ?: $request->header('X-Webhook-Signature') 
+            ?: $request->header('Signature');
+
+        if (!empty($configuredSecret) && !empty($receivedSignature) && !app()->environment('testing')) {
+            $expectedSignature = hash_hmac('sha256', $rawContent, $configuredSecret);
+            $expectedBase64 = base64_encode(hash_hmac('sha256', $rawContent, $configuredSecret, true));
+
+            if (!hash_equals($expectedSignature, $receivedSignature) && !hash_equals($expectedBase64, $receivedSignature)) {
+                Log::warning('Global Payments Webhook: Invalid signature detected.');
+                return response()->json(['error' => 'Invalid signature verification'], 401);
             }
         }
 
-        return response()->json(['success' => true]);
+        // 2. Resolve Event Name & Normalized Type
+        $event = strtolower(trim((string) ($payload['event'] ?? $payload['type'] ?? $payload['action'] ?? '')));
+        
+        // 3. Resolve Order Reference or Transaction ID
+        $reference = $payload['data']['reference'] 
+            ?? $payload['reference'] 
+            ?? $payload['data']['order']['id'] 
+            ?? $payload['order_id'] 
+            ?? null;
+
+        $transactionId = $payload['data']['id'] 
+            ?? $payload['id'] 
+            ?? $payload['data']['transaction_id'] 
+            ?? null;
+
+        $order = null;
+        if (!empty($reference)) {
+            $order = Order::where('order_number', $reference)->first();
+        }
+        if (!$order && !empty($transactionId)) {
+            $order = Order::where('payment_transaction_id', $transactionId)->first();
+        }
+
+        if (!$order) {
+            Log::info("Global Payments Webhook: No matching order found for reference: {$reference}, transaction: {$transactionId}");
+            return response()->json(['success' => true, 'message' => 'Event logged, order not found']);
+        }
+
+        $previousStatus = $order->status;
+        $previousPaymentStatus = $order->payment_status;
+
+        // 4. Handle Specific Event Types
+        
+        // A. DISPUTES & CHARGEBACKS (Fraudulent / Customer Bank Disputes)
+        $isDispute = str_contains($event, 'dispute') || str_contains($event, 'chargeback');
+        if ($isDispute) {
+            $disputeId = $payload['data']['dispute_id'] ?? $payload['dispute_id'] ?? $payload['data']['id'] ?? 'N/A';
+            $reason = $payload['data']['reason'] ?? $payload['reason'] ?? $payload['data']['dispute_reason'] ?? 'Bank chargeback or fraud dispute initiated by cardholder';
+
+            $noteEntry = "\n[Global Payments Alert " . now()->toDateTimeString() . "] PAYMENT DISPUTED / CHARGEBACK: Event={$event}, Dispute ID={$disputeId}, Reason={$reason}";
+
+            $order->update([
+                'payment_status' => 'disputed',
+                'notes' => trim(($order->notes ?? '') . $noteEntry),
+            ]);
+
+            // Notify all Admins immediately with high-priority dispute alert
+            User::query()->each(fn (User $admin) => $admin->notify(
+                new PaymentDisputeAlertNotification($order, $event, (string) $disputeId, (string) $reason)
+            ));
+
+            // Realtime update to admin live dashboard
+            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+
+            Log::warning("Global Payments Dispute processed for order #{$order->order_number}: {$reason}");
+            return response()->json(['success' => true, 'message' => 'Dispute event processed and alert dispatched']);
+        }
+
+        // B. FRAUD & RISK ALERTS
+        $isFraud = str_contains($event, 'fraud') || str_contains($event, 'risk');
+        if ($isFraud) {
+            $reason = $payload['data']['reason'] ?? $payload['reason'] ?? 'High risk / fraudulent activity flag from Global Payments risk engine';
+            $noteEntry = "\n[Global Payments Alert " . now()->toDateTimeString() . "] FRAUD ALERT: Event={$event}, Reason={$reason}";
+
+            $order->update([
+                'payment_status' => 'disputed',
+                'notes' => trim(($order->notes ?? '') . $noteEntry),
+            ]);
+
+            User::query()->each(fn (User $admin) => $admin->notify(
+                new PaymentDisputeAlertNotification($order, $event, null, (string) $reason)
+            ));
+
+            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+            return response()->json(['success' => true, 'message' => 'Fraud alert processed']);
+        }
+
+        // C. REFUNDS & REVERSALS
+        $isRefund = str_contains($event, 'refund') || str_contains($event, 'reversed');
+        if ($isRefund) {
+            $noteEntry = "\n[Global Payments " . now()->toDateTimeString() . "] Payment refunded/reversed via gateway.";
+            $updateData = [
+                'payment_status' => 'refunded',
+                'notes' => trim(($order->notes ?? '') . $noteEntry),
+            ];
+
+            if ($order->status !== 'completed') {
+                $updateData['status'] = 'cancelled';
+            }
+
+            $order->update($updateData);
+            $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+            return response()->json(['success' => true, 'message' => 'Refund processed']);
+        }
+
+        // D. CANCELLATIONS & PAYMENT DECLINES
+        $isDecline = str_contains($event, 'failed') || str_contains($event, 'declined') || str_contains($event, 'cancelled') || str_contains($event, 'expired');
+        if ($isDecline) {
+            if ($order->payment_status !== 'paid') {
+                $order->update([
+                    'payment_status' => 'failed',
+                    'status' => 'cancelled',
+                ]);
+                $this->realtimeBroadcastService->broadcastOrderUpdated($order, $previousStatus);
+            }
+            return response()->json(['success' => true, 'message' => 'Payment failure/cancellation recorded']);
+        }
+
+        // E. PAYMENT SUCCESSFUL / CAPTURED (Asynchronous Webhook Confirmation)
+        $isSuccess = str_contains($event, 'success') || str_contains($event, 'captured') || str_contains($event, 'paid') || in_array($event, ['sale', 'payment.success']);
+        if ($isSuccess) {
+            if ($order->payment_status !== 'paid') {
+                $order->update([
+                    'payment_status' => 'paid',
+                    'status' => 'pending',
+                    'payment_transaction_id' => $transactionId ?: $order->payment_transaction_id,
+                ]);
+
+                // Notify admin and customer
+                User::query()->each(fn (User $admin) => $admin->notify(new NewOrderPlacedNotification($order)));
+                if ($order->customer) {
+                    $order->customer->notify(new CustomerOrderConfirmationNotification($order));
+                }
+
+                $this->realtimeBroadcastService->broadcastOrderCreated($order);
+
+                // Auto-queue receipt printing via Star CloudPRNT
+                try {
+                    $this->cloudPrntService->queueOrderReceipt($order);
+                } catch (Exception $e) {
+                    Log::error("Global Payments Webhook: Failed auto-queuing print job for #{$order->order_number}: " . $e->getMessage());
+                }
+            }
+            return response()->json(['success' => true, 'message' => 'Payment capture confirmed']);
+        }
+
+        return response()->json(['success' => true, 'message' => 'Webhook received']);
     }
 }
