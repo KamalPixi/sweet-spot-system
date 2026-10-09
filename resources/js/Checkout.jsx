@@ -394,25 +394,7 @@ function GlobalPayPaymentForm({ orderNumber, total, phone, email, customerName, 
 
     if (mode === 'embedded') {
         return (
-            <form id="gp-embedded-payment-form" onSubmit={handleFormSubmit} className="space-y-4 text-left animate-fadeIn">
-                {/* Official Provider Header */}
-                <div className="bg-gradient-to-r from-emerald-50/70 via-neutral-50 to-[#fdfaf5] border border-emerald-200/60 rounded-2xl p-4 text-left space-y-1 shadow-xs">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2.5">
-                            <div className="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
-                                <ShieldCheck size={16} />
-                            </div>
-                            <div>
-                                <h4 className="text-xs font-bold text-[#24161b]">Official Global Payments Gateway</h4>
-                                <p className="text-[10px] text-neutral-500">Bank-grade Secure Tokenization &amp; 3D Secure 2.0</p>
-                            </div>
-                        </div>
-                        <span className="hidden sm:inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100/70 px-2.5 py-1 rounded-full">
-                            <Lock size={10} /> Bank Encrypted
-                        </span>
-                    </div>
-                </div>
-
+            <div id="gp-embedded-payment-form" className="space-y-4 text-left animate-fadeIn">
                 {paymentError && (
                     <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-left animate-fadeIn">
                         <AlertCircle size={16} className="shrink-0" />
@@ -420,45 +402,62 @@ function GlobalPayPaymentForm({ orderNumber, total, phone, email, customerName, 
                     </div>
                 )}
 
-                {/* Drop-In UI Container provided by Global Payments SDK */}
-                <div className="bg-white p-4 sm:p-5 rounded-2xl border border-neutral-200/80 shadow-xs relative">
-                    {sdkLoading && (
-                        <div className="flex flex-col items-center justify-center py-10 space-y-3">
-                            <Loader2 className="animate-spin text-emerald-700" size={26} />
-                            <span className="text-xs font-semibold text-neutral-500">Initializing Official Payment Component...</span>
+                {/* Distinct Bank-Grade Secure Payment Card / Frame */}
+                <div className="bg-white rounded-2xl border-2 border-neutral-200 shadow-sm overflow-hidden">
+                    {/* Official Provider Header Bar */}
+                    <div className="bg-neutral-900 text-white px-4 py-3 flex items-center justify-between border-b border-neutral-800">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-6 h-6 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/30">
+                                <Lock size={12} strokeWidth={2.5} />
+                            </div>
+                            <div>
+                                <h4 className="text-xs font-bold tracking-wide">Global Payments Secure Terminal</h4>
+                                <p className="text-[10px] text-neutral-400">Official Encrypted Checkout</p>
+                            </div>
                         </div>
-                    )}
-                    <div id="gp-dropin-ui-container" className={sdkLoading ? 'hidden' : 'block min-h-[160px]'}></div>
+                        <div className="flex items-center gap-1.5 bg-emerald-950/80 border border-emerald-600/40 px-2.5 py-1 rounded-full text-emerald-300 text-[10px] font-bold">
+                            <ShieldCheck size={12} className="text-emerald-400" />
+                            <span>PCI-DSS SAQ A</span>
+                        </div>
+                    </div>
+
+                    {/* Total Summary Strip inside provider box */}
+                    <div className="bg-neutral-50 px-4 py-2.5 border-b border-neutral-100 flex items-center justify-between text-xs">
+                        <span className="text-neutral-500 font-medium">Payment for Order <strong className="text-neutral-800 font-mono">#{orderNumber}</strong></span>
+                        <span className="font-bold text-neutral-900 text-sm">£{Number(total || 0).toFixed(2)}</span>
+                    </div>
+
+                    {/* Official Drop-In UI Container */}
+                    <div className="p-4 sm:p-5 relative">
+                        {sdkLoading && (
+                            <div className="flex flex-col items-center justify-center py-12 space-y-3">
+                                <Loader2 className="animate-spin text-emerald-700" size={28} />
+                                <span className="text-xs font-semibold text-neutral-600">Loading Official Bank Form...</span>
+                            </div>
+                        )}
+                        {paymentLoading && (
+                            <div className="absolute inset-0 bg-white/90 backdrop-blur-xs flex flex-col items-center justify-center z-10 space-y-3">
+                                <Loader2 className="animate-spin text-emerald-700" size={32} />
+                                <span className="text-xs font-bold text-neutral-800">Processing &amp; Authorizing Card with Bank...</span>
+                                <span className="text-[10px] text-neutral-500">Please do not refresh or close this window</span>
+                            </div>
+                        )}
+                        <div id="gp-dropin-ui-container" className={sdkLoading ? 'hidden' : 'block min-h-[160px]'}></div>
+                    </div>
                 </div>
 
-                <div className="flex flex-col-reverse sm:flex-row gap-3 pt-2">
+                {/* Single Cancel Button */}
+                <div className="pt-1">
                     <button
                         type="button"
                         onClick={onClose}
                         disabled={paymentLoading}
-                        className="w-full sm:flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 font-semibold rounded-full py-3.5 px-5 text-xs transition-colors cursor-pointer whitespace-nowrap"
+                        className="w-full bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 font-semibold rounded-full py-3 px-5 text-xs transition-colors cursor-pointer text-center"
                     >
-                        Cancel
-                    </button>
-                    <button
-                        type="submit"
-                        disabled={paymentLoading || sdkLoading}
-                        className="w-full sm:flex-[2] bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-600/60 text-white font-bold rounded-full py-3.5 px-5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/15 transition-all cursor-pointer whitespace-nowrap"
-                    >
-                        {paymentLoading ? (
-                            <>
-                                <Loader2 size={14} className="animate-spin shrink-0" />
-                                <span>Processing Payment...</span>
-                            </>
-                        ) : (
-                            <>
-                                <Lock size={13} className="text-emerald-100 shrink-0" strokeWidth={2.5} />
-                                <span>Pay £{Number(total || 0).toFixed(2)} Securely</span>
-                            </>
-                        )}
+                        Cancel &amp; Return to Checkout
                     </button>
                 </div>
-            </form>
+            </div>
         );
     }
 
