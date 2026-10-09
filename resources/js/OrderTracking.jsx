@@ -869,7 +869,13 @@ export default function OrderTracking() {
                                     <span>Payment Authenticated</span>
                                 </div>
                                 <span className="font-mono text-[10px] uppercase font-bold text-emerald-800">
-                                    Stripe SSL
+                                    {order.payment_method === 'globalpay'
+                                        ? 'Global Payments SSL'
+                                        : order.payment_method === 'stripe'
+                                            ? 'Stripe SSL'
+                                            : order.payment_method === 'cash_in_store'
+                                                ? 'In-Store Cash'
+                                                : 'Verified SSL'}
                                 </span>
                             </div>
                         </div>
