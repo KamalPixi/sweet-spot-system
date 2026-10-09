@@ -15,11 +15,16 @@ class StoreConfigController extends Controller
 {
     protected StoreConfigService $storeConfigService;
     protected GeocodingService $geocodingService;
+    protected \App\Services\GlobalPayService $globalPayService;
 
-    public function __construct(StoreConfigService $storeConfigService, GeocodingService $geocodingService)
-    {
+    public function __construct(
+        StoreConfigService $storeConfigService, 
+        GeocodingService $geocodingService,
+        \App\Services\GlobalPayService $globalPayService
+    ) {
         $this->storeConfigService = $storeConfigService;
         $this->geocodingService = $geocodingService;
+        $this->globalPayService = $globalPayService;
     }
 
     /**
@@ -32,6 +37,12 @@ class StoreConfigController extends Controller
         if ($stripeKey && !str_starts_with($stripeKey, '${')) {
             $configs['stripe_publishable_key'] = $stripeKey;
         }
+
+        $configs['payment_gateway'] = $this->storeConfigService->get('payment_gateway', 'stripe');
+        $configs['globalpay_app_id'] = $this->globalPayService->getAppId();
+        $configs['globalpay_environment'] = $this->globalPayService->getEnvironment();
+        $configs['has_globalpay_configured'] = $this->globalPayService->isConfigured();
+        $configs['has_stripe_configured'] = !empty($stripeKey) && !str_starts_with($stripeKey, '${');
 
         return response()->json([
             'success' => true,

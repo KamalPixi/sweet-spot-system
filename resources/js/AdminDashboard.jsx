@@ -20,7 +20,7 @@ import {
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
     Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart,
-    FileText, Download
+    FileText, Download, CreditCard, ShieldCheck, KeyRound
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
 
@@ -1243,6 +1243,42 @@ export default function AdminDashboard() {
             toast.error(`Error saving ${sectionName}`);
         } finally {
             setSavingSection(null);
+        }
+    };
+
+    const [testingPaymentProvider, setTestingPaymentProvider] = useState(null);
+
+    const handleTestPaymentConnection = async (provider) => {
+        setTestingPaymentProvider(provider);
+        try {
+            const body = { provider };
+            if (provider === 'globalpay') {
+                body.globalpay_app_id = settingsForm.globalpay_app_id;
+                body.globalpay_app_key = settingsForm.globalpay_app_key;
+            } else if (provider === 'stripe') {
+                body.stripe_secret_key = settingsForm.stripe_secret_key;
+            }
+
+            const res = await fetch('/api/admin/payment/test-connection', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify(body),
+            });
+            const data = await res.json();
+            if (data.success) {
+                toast.success(data.message || `Successfully connected to ${provider === 'globalpay' ? 'Global Payments' : 'Stripe'}!`);
+            } else {
+                toast.error(data.message || `Failed to connect to ${provider === 'globalpay' ? 'Global Payments' : 'Stripe'}`);
+            }
+        } catch (err) {
+            console.error('Error testing payment connection:', err);
+            toast.error('Connection test failed');
+        } finally {
+            setTestingPaymentProvider(null);
         }
     };
 
@@ -4455,6 +4491,201 @@ export default function AdminDashboard() {
                                                     className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                                                 >
                                                     {savingSection === 'Delivery Parameters' ? 'Saving...' : 'Save Delivery'}
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        {/* Card: Payment Gateways & Providers (Stripe & Global Payments) */}
+                                        <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
+                                            <div className="border-b border-neutral-100 pb-3 flex items-center justify-between">
+                                                <div>
+                                                    <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                        <CreditCard size={18} className="text-rose-500" /> Payment Gateways & Providers
+                                                    </h2>
+                                                    <p className="text-xs text-neutral-500 mt-1">
+                                                        Select your active payment gateway and configure API credentials for Stripe and Global Payments.
+                                                    </p>
+                                                </div>
+                                            </div>
+
+                                            {/* Active Gateway Selector */}
+                                            <div className="space-y-3">
+                                                <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider">
+                                                    Active Payment Gateway for Storefront *
+                                                </label>
+                                                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                                    {[
+                                                        { id: 'stripe', title: 'Stripe', sub: 'Standard card checkout', badge: 'Popular' },
+                                                        { id: 'globalpay', title: 'Global Payments', sub: 'developer.globalpay.com', badge: 'GP-API' },
+                                                        { id: 'both', title: 'Both Providers', sub: 'Customer chooses at checkout', badge: 'Multi' }
+                                                    ].map((gw) => {
+                                                        const isSelected = (settingsForm.payment_gateway || 'stripe') === gw.id;
+                                                        return (
+                                                            <div
+                                                                key={gw.id}
+                                                                onClick={() => setSettingsForm({ ...settingsForm, payment_gateway: gw.id })}
+                                                                className={`p-4 rounded-xl border-2 transition-all cursor-pointer flex flex-col justify-between ${
+                                                                    isSelected
+                                                                        ? 'border-primary bg-stone-50/60 shadow-2xs'
+                                                                        : 'border-neutral-200/90 hover:border-neutral-300 bg-white'
+                                                                }`}
+                                                            >
+                                                                <div className="flex items-center justify-between mb-1">
+                                                                    <span className="text-xs font-bold text-neutral-900">{gw.title}</span>
+                                                                    <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded ${
+                                                                        isSelected ? 'bg-primary text-white' : 'bg-neutral-100 text-neutral-600'
+                                                                    }`}>
+                                                                        {gw.badge}
+                                                                    </span>
+                                                                </div>
+                                                                <span className="text-[11px] text-neutral-500">{gw.sub}</span>
+                                                            </div>
+                                                        );
+                                                    })}
+                                                </div>
+                                            </div>
+
+                                            {/* Global Payments Configuration */}
+                                            <div className="p-5 rounded-xl border border-neutral-200/90 bg-neutral-50/50 space-y-4">
+                                                <div className="flex items-center justify-between border-b border-neutral-200/60 pb-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <ShieldCheck size={16} className="text-emerald-600" />
+                                                        <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
+                                                            Global Payments Settings (GP-API)
+                                                        </h3>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTestPaymentConnection('globalpay')}
+                                                        disabled={testingPaymentProvider === 'globalpay'}
+                                                        className="text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-100 text-neutral-700 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                                    >
+                                                        <RefreshCw size={12} className={testingPaymentProvider === 'globalpay' ? 'animate-spin' : ''} />
+                                                        <span>{testingPaymentProvider === 'globalpay' ? 'Testing...' : 'Test Connection'}</span>
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            App ID *
+                                                        </label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.globalpay_app_id || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, globalpay_app_id: e.target.value })}
+                                                            placeholder="e.g. app_..."
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors font-mono"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            App Key / Secret *
+                                                        </label>
+                                                        <input 
+                                                            type="password" 
+                                                            value={settingsForm.globalpay_app_key || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, globalpay_app_key: e.target.value })}
+                                                            placeholder={settingsForm.globalpay_app_key ? '••••••••••••••••' : 'Enter Global Payments App Key'}
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors font-mono"
+                                                        />
+                                                    </div>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            Account ID / Merchant ID (Optional)
+                                                        </label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.globalpay_account_id || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, globalpay_account_id: e.target.value })}
+                                                            placeholder="e.g. acct_..."
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors font-mono"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            Environment
+                                                        </label>
+                                                        <select
+                                                            value={settingsForm.globalpay_environment || 'sandbox'}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, globalpay_environment: e.target.value })}
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors cursor-pointer"
+                                                        >
+                                                            <option value="sandbox">Sandbox (Test Mode - apis.sandbox.globalpay.com)</option>
+                                                            <option value="production">Production (Live - apis.globalpay.com)</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Stripe Configuration */}
+                                            <div className="p-5 rounded-xl border border-neutral-200/90 bg-neutral-50/50 space-y-4">
+                                                <div className="flex items-center justify-between border-b border-neutral-200/60 pb-3">
+                                                    <div className="flex items-center gap-2">
+                                                        <CreditCard size={16} className="text-indigo-600" />
+                                                        <h3 className="text-xs font-bold text-neutral-900 uppercase tracking-wide">
+                                                            Stripe Gateway Settings
+                                                        </h3>
+                                                    </div>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleTestPaymentConnection('stripe')}
+                                                        disabled={testingPaymentProvider === 'stripe'}
+                                                        className="text-[11px] font-semibold px-3 py-1.5 rounded-lg border border-neutral-300 bg-white hover:bg-neutral-100 text-neutral-700 transition-colors flex items-center gap-1.5 cursor-pointer disabled:opacity-50"
+                                                    >
+                                                        <RefreshCw size={12} className={testingPaymentProvider === 'stripe' ? 'animate-spin' : ''} />
+                                                        <span>{testingPaymentProvider === 'stripe' ? 'Testing...' : 'Test Connection'}</span>
+                                                    </button>
+                                                </div>
+
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            Stripe Publishable Key
+                                                        </label>
+                                                        <input 
+                                                            type="text" 
+                                                            value={settingsForm.stripe_publishable_key || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, stripe_publishable_key: e.target.value })}
+                                                            placeholder="pk_live_... or pk_test_..."
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors font-mono"
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">
+                                                            Stripe Secret Key
+                                                        </label>
+                                                        <input 
+                                                            type="password" 
+                                                            value={settingsForm.stripe_secret_key || ''}
+                                                            onChange={(e) => setSettingsForm({ ...settingsForm, stripe_secret_key: e.target.value })}
+                                                            placeholder={settingsForm.stripe_secret_key ? '••••••••••••••••' : 'sk_live_... or sk_test_...'}
+                                                            className="w-full bg-white border border-neutral-200 px-4 py-2.5 text-xs text-neutral-800 focus:border-neutral-950 focus:outline-none rounded-lg transition-colors font-mono"
+                                                        />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div className="pt-2 flex justify-start">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleSaveSection([
+                                                        'payment_gateway',
+                                                        'globalpay_app_id',
+                                                        'globalpay_app_key',
+                                                        'globalpay_account_id',
+                                                        'globalpay_environment',
+                                                        'stripe_publishable_key',
+                                                        'stripe_secret_key',
+                                                        'stripe_webhook_secret'
+                                                    ], 'Payment Gateway Settings')}
+                                                    disabled={savingSection === 'Payment Gateway Settings'}
+                                                    className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
+                                                >
+                                                    {savingSection === 'Payment Gateway Settings' ? 'Saving...' : 'Save Payment Gateways'}
                                                 </button>
                                             </div>
                                         </div>

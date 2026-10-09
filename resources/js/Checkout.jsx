@@ -10,7 +10,8 @@ import { Elements, PaymentElement, useStripe, useElements } from '@stripe/react-
 import { 
     AlertCircle, Loader2, Lock, ChevronLeft, ChevronRight, 
     Minus, Plus, Trash2, CheckCircle, Eye, EyeOff, 
-    LogOut, MapPin, Clock, ArrowRight, ShoppingBag, UtensilsCrossed 
+    LogOut, MapPin, Clock, ArrowRight, ShoppingBag, UtensilsCrossed,
+    CreditCard, ShieldCheck, Check
 } from 'lucide-react';
 import OrderPopover from './landing/OrderPopover';
 import { CartBagIcon } from './components/HeaderIcons';
@@ -185,6 +186,129 @@ function StripePaymentForm({ orderNumber, phone, email, onClose }) {
                 </div>
             )}
         </form>
+    );
+}
+
+// Global Payments (GP-API) Hosted Payment Page Redirect Component
+function GlobalPayPaymentForm({ orderNumber, total, phone, email, onClose }) {
+    const [paymentLoading, setPaymentLoading] = useState(false);
+    const [paymentError, setPaymentError] = useState(null);
+    const [redirectUrl, setRedirectUrl] = useState(null);
+
+    const fetchAndRedirect = async () => {
+        setPaymentLoading(true);
+        setPaymentError(null);
+
+        try {
+            const verificationQuery = phone 
+                ? `&phone=${encodeURIComponent(phone)}` 
+                : email 
+                    ? `&email=${encodeURIComponent(email)}` 
+                    : '';
+
+            const returnUrl = `${window.location.origin}/payment/success?order=${encodeURIComponent(orderNumber)}${verificationQuery}&provider=globalpay`;
+            const cancelUrl = `${window.location.origin}/checkout?order=${encodeURIComponent(orderNumber)}&cancelled=1`;
+
+            const res = await fetch('/api/payment/globalpay/create-link', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json', 
+                    'Accept': 'application/json' 
+                },
+                body: JSON.stringify({
+                    order_number: orderNumber,
+                    return_url: returnUrl,
+                    cancel_url: cancelUrl,
+                }),
+            });
+
+            const data = await res.json();
+            if (data.success && data.hpp_url) {
+                setRedirectUrl(data.hpp_url);
+                // Clear basket session and redirect to official Global Payments hosted checkout URL
+                sessionStorage.removeItem('pl_checkout_details');
+                window.location.href = data.hpp_url;
+            } else {
+                setPaymentError(data.message || 'Could not initialize Global Payments checkout link.');
+                setPaymentLoading(false);
+            }
+        } catch (err) {
+            console.error('Global Payments redirect error:', err);
+            setPaymentError('Connection error. Please try again.');
+            setPaymentLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        // Auto initialize hosted payment link redirect
+        fetchAndRedirect();
+    }, [orderNumber]);
+
+    return (
+        <div className="space-y-5 text-center py-2 animate-fadeIn">
+            {/* Security Guarantee Banner */}
+            <div className="bg-gradient-to-b from-neutral-50 to-[#fdfaf5] border border-neutral-200/80 rounded-2xl p-5 text-left space-y-3 shadow-xs">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center shrink-0 border border-emerald-200">
+                        <ShieldCheck size={20} />
+                    </div>
+                    <div>
+                        <h4 className="text-xs font-bold text-[#24161b]">Official Global Payments Hosted Platform</h4>
+                        <p className="text-[11px] text-neutral-500">Redirecting to secure bank-grade payment portal</p>
+                    </div>
+                </div>
+
+                <div className="text-[11px] text-neutral-600 bg-white/80 border border-neutral-100 rounded-xl p-3 leading-relaxed">
+                    For your security and privacy, all card details are processed directly on <strong>Global Payments'</strong> official PCI-DSS Level 1 compliant platform. No card numbers are entered or stored on our servers.
+                </div>
+
+                <div className="flex flex-wrap items-center gap-3 pt-1 text-[10px] text-neutral-500 font-medium">
+                    <span className="flex items-center gap-1">
+                        <Lock size={11} className="text-emerald-600" /> 256-Bit SSL Encrypted
+                    </span>
+                    <span className="text-neutral-300">•</span>
+                    <span>3D Secure 2.0</span>
+                    <span className="text-neutral-300">•</span>
+                    <span>Visa & Mastercard Verified</span>
+                </div>
+            </div>
+
+            {paymentError && (
+                <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-xl p-3.5 text-xs text-left animate-fadeIn">
+                    <AlertCircle size={16} className="shrink-0" />
+                    <span>{paymentError}</span>
+                </div>
+            )}
+
+            <div className="flex flex-col-reverse sm:flex-row gap-3 pt-1">
+                <button
+                    type="button"
+                    onClick={onClose}
+                    disabled={paymentLoading}
+                    className="w-full sm:flex-1 bg-white border border-neutral-200 hover:bg-neutral-50 text-neutral-600 font-semibold rounded-full py-3.5 px-5 text-xs transition-colors cursor-pointer whitespace-nowrap"
+                >
+                    Cancel
+                </button>
+                <button
+                    type="button"
+                    onClick={fetchAndRedirect}
+                    disabled={paymentLoading}
+                    className="w-full sm:flex-[2] bg-emerald-600 hover:bg-emerald-700 disabled:bg-emerald-600/60 text-white font-bold rounded-full py-3.5 px-5 text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/15 transition-all cursor-pointer whitespace-nowrap"
+                >
+                    {paymentLoading ? (
+                        <>
+                            <Loader2 size={14} className="animate-spin shrink-0" />
+                            <span>Redirecting to Global Payments...</span>
+                        </>
+                    ) : (
+                        <>
+                            <Lock size={13} className="text-emerald-100 shrink-0" strokeWidth={2.5} />
+                            <span>Proceed to Global Payments Platform (£{Number(total || 0).toFixed(2)})</span>
+                        </>
+                    )}
+                </button>
+            </div>
+        </div>
     );
 }
 
@@ -400,9 +524,22 @@ export default function Checkout() {
     const [cvc, setCvc] = useState('');
     const [cardName, setCardName] = useState('');
 
-    // Stripe checkout overlays
+    // Payment Gateway configuration & state
+    const configuredGateway = configs?.payment_gateway || 'stripe'; // 'stripe', 'globalpay', or 'both'
+    const [selectedGateway, setSelectedGateway] = useState('stripe');
+    const [isGlobalPayActive, setIsGlobalPayActive] = useState(false);
     const [stripeClientSecret, setStripeClientSecret] = useState(null);
     const [activeOrderNumber, setActiveOrderNumber] = useState('');
+
+    useEffect(() => {
+        if (configuredGateway === 'globalpay') {
+            setSelectedGateway('globalpay');
+        } else if (configuredGateway === 'stripe') {
+            setSelectedGateway('stripe');
+        } else if (configuredGateway === 'both') {
+            setSelectedGateway(configs?.has_globalpay_configured ? 'globalpay' : 'stripe');
+        }
+    }, [configuredGateway, configs?.has_globalpay_configured]);
 
     // Guest contact method choice ('email' or 'phone')
     const [guestContactMethod, setGuestContactMethod] = useState('phone');
@@ -584,8 +721,8 @@ export default function Checkout() {
 
         if (!validateStep1()) return;
 
-        // If real Stripe is configured, automatically initialize payment intent by placing draft/pending order
-        if (isRealStripeConfigured) {
+        // If real payment gateway is configured (Stripe or Global Payments), initialize order
+        if (isRealStripeConfigured || selectedGateway === 'globalpay') {
             await handlePlaceOrder(e);
         } else {
             setCheckoutStep('payment');
@@ -594,7 +731,7 @@ export default function Checkout() {
     };
 
     const handlePlaceOrder = async (e) => {
-        e.preventDefault();
+        if (e && e.preventDefault) e.preventDefault();
         setLoading(true);
         setError(null);
 
@@ -642,12 +779,17 @@ export default function Checkout() {
             }
         }
 
-        // Validate credit card inputs only if Stripe is NOT configured
-        if (!isRealStripeConfigured) {
-            if (!cardNumber || !expDate || !cvc || !cardName) {
-                failCheckoutValidation('Please complete all payment card details.');
-                return;
-            }
+        const isGlobalPayMode = (selectedGateway === 'globalpay');
+        const chosenPaymentMethod = isGlobalPayMode ? 'globalpay' : 'stripe';
+
+        if (isGlobalPayMode && !configs?.has_globalpay_configured) {
+            failCheckoutValidation('Global Payments is currently not configured by the store. Please select another payment method.');
+            return;
+        }
+
+        if (!isGlobalPayMode && !isRealStripeConfigured) {
+            failCheckoutValidation('Stripe payment is currently not configured by the store. Please select another payment method.');
+            return;
         }
 
         // If registering account
@@ -697,7 +839,7 @@ export default function Checkout() {
         const payload = {
             type: orderType,
             notes: notes || null,
-            payment_method: isRealStripeConfigured ? 'stripe' : 'mock_stripe',
+            payment_method: chosenPaymentMethod,
             items: cart.map(item => ({
                 product_id: item.product_id,
                 product_variation_id: item.product_variation_id,
@@ -762,7 +904,20 @@ export default function Checkout() {
 
             const createdOrder = data.data;
 
-            if (createdOrder.client_secret && !createdOrder.client_secret.startsWith('mock_secret_')) {
+            if (chosenPaymentMethod === 'globalpay') {
+                if (createdOrder.globalpay_url) {
+                    sessionStorage.removeItem('pl_checkout_details');
+                    sessionStorage.setItem('pl_last_order', JSON.stringify(createdOrder));
+                    clearCart();
+                    window.location.href = createdOrder.globalpay_url;
+                    return;
+                }
+                // Fallback: Show Global Payments Hosted Portal redirection screen
+                setActiveOrderNumber(createdOrder.order_number);
+                setIsGlobalPayActive(true);
+                setCheckoutStep('payment');
+                setLoading(false);
+            } else if (createdOrder.client_secret && !createdOrder.client_secret.startsWith('mock_secret_')) {
                 // Real Stripe Payment Intent generated. Show Payment Element modal
                 setActiveOrderNumber(createdOrder.order_number);
                 setStripeClientSecret(createdOrder.client_secret);
@@ -819,8 +974,9 @@ export default function Checkout() {
                         <button 
                             type="button"
                             onClick={() => {
-                                if (stripeClientSecret) {
+                                if (stripeClientSecret || isGlobalPayActive) {
                                     setStripeClientSecret(null);
+                                    setIsGlobalPayActive(false);
                                     setActiveOrderNumber('');
                                     setCheckoutStep('details');
                                 } else if (checkoutStep === 'payment') {
@@ -833,20 +989,20 @@ export default function Checkout() {
                             }}
                             className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white border border-neutral-200 shadow-xs text-xs font-bold uppercase tracking-wider text-neutral-600 hover:text-[#24161b] hover:border-neutral-300 transition-all cursor-pointer w-fit"
                         >
-                            <ChevronLeft size={14} /> <span>{checkoutStep === 'payment' || stripeClientSecret ? 'Back to Details' : 'Back'}</span>
+                            <ChevronLeft size={14} /> <span>{checkoutStep === 'payment' || stripeClientSecret || isGlobalPayActive ? 'Back to Details' : 'Back'}</span>
                         </button>
 
                         {/* Top Stepper Breadcrumb */}
                         <div className="flex items-center bg-white border border-neutral-200/80 px-3.5 py-1.5 rounded-full shadow-xs text-xs">
                             <div className="flex items-center gap-2">
                                 <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
-                                    (checkoutStep === 'payment' || stripeClientSecret)
+                                    (checkoutStep === 'payment' || stripeClientSecret || isGlobalPayActive)
                                         ? 'bg-emerald-600 text-white' 
                                         : 'bg-[#24161b] text-[#e5b582]'
                                 }`}>
-                                    {(checkoutStep === 'payment' || stripeClientSecret) ? '✓' : '1'}
+                                    {(checkoutStep === 'payment' || stripeClientSecret || isGlobalPayActive) ? '✓' : '1'}
                                 </span>
-                                <span className={`font-semibold ${checkoutStep === 'details' && !stripeClientSecret ? 'text-[#24161b]' : 'text-neutral-500'}`}>
+                                <span className={`font-semibold ${checkoutStep === 'details' && !stripeClientSecret && !isGlobalPayActive ? 'text-[#24161b]' : 'text-neutral-500'}`}>
                                     Details & Fulfillment
                                 </span>
                             </div>
@@ -855,13 +1011,13 @@ export default function Checkout() {
 
                             <div className="flex items-center gap-2">
                                 <span className={`w-5 h-5 rounded-full text-[10px] font-bold flex items-center justify-center ${
-                                    (checkoutStep === 'payment' || stripeClientSecret)
+                                    (checkoutStep === 'payment' || stripeClientSecret || isGlobalPayActive)
                                         ? 'bg-[#24161b] text-[#e5b582]'
                                         : 'bg-neutral-100 text-neutral-400'
                                 }`}>
                                     2
                                 </span>
-                                <span className={`font-semibold ${(checkoutStep === 'payment' || stripeClientSecret) ? 'text-[#24161b]' : 'text-neutral-400'}`}>
+                                <span className={`font-semibold ${(checkoutStep === 'payment' || stripeClientSecret || isGlobalPayActive) ? 'text-[#24161b]' : 'text-neutral-400'}`}>
                                     Payment
                                 </span>
                             </div>
@@ -877,9 +1033,9 @@ export default function Checkout() {
                         <div className="w-full lg:flex-1 space-y-4 pb-4 lg:pb-10">
 
                             {/* ═══════════════════════════════════════
-                                STEP 2: PAYMENT (Stripe Gateway or Simulated)
+                                STEP 2: PAYMENT (Global Payments, Stripe, or Simulated)
                             ═══════════════════════════════════════ */}
-                            {(stripeClientSecret || checkoutStep === 'payment') ? (
+                            {(stripeClientSecret || isGlobalPayActive || checkoutStep === 'payment') ? (
                                 <div className="bg-white rounded-[24px] border border-neutral-200/80 shadow-xs p-5 sm:p-7 space-y-6 animate-fadeIn">
                                     <div className="flex items-center justify-between pb-4 border-b border-neutral-100">
                                         <div className="flex items-center gap-3">
@@ -899,6 +1055,7 @@ export default function Checkout() {
                                             type="button"
                                             onClick={() => {
                                                 setStripeClientSecret(null);
+                                                setIsGlobalPayActive(false);
                                                 setActiveOrderNumber('');
                                                 setCheckoutStep('details');
                                             }}
@@ -907,6 +1064,36 @@ export default function Checkout() {
                                             Edit Details
                                         </button>
                                     </div>
+
+                                    {/* Multi-provider switcher if both are enabled */}
+                                    {configuredGateway === 'both' && !activeOrderNumber && (
+                                        <div className="flex rounded-xl p-1 bg-[#fdfaf5] border border-neutral-200/80">
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedGateway('globalpay')}
+                                                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                                    selectedGateway === 'globalpay'
+                                                        ? 'bg-white text-[#24161b] shadow-2xs border border-neutral-200/60'
+                                                        : 'text-neutral-500 hover:text-neutral-800'
+                                                }`}
+                                            >
+                                                <ShieldCheck size={14} className="text-emerald-600" />
+                                                <span>Global Payments</span>
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => setSelectedGateway('stripe')}
+                                                className={`flex-1 py-2.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                                                    selectedGateway === 'stripe'
+                                                        ? 'bg-white text-[#24161b] shadow-2xs border border-neutral-200/60'
+                                                        : 'text-neutral-500 hover:text-neutral-800'
+                                                }`}
+                                            >
+                                                <CreditCard size={14} className="text-indigo-600" />
+                                                <span>Stripe</span>
+                                            </button>
+                                        </div>
+                                    )}
 
                                     {/* Order Reference & Total Header */}
                                     <div className="bg-[#fdfaf5] rounded-2xl p-4 text-xs space-y-2.5 border border-neutral-200/80">
@@ -934,8 +1121,21 @@ export default function Checkout() {
                                         </div>
                                     </div>
 
-                                    {/* Stripe Elements Gateway */}
-                                    {stripeClientSecret ? (
+                                    {/* Global Payments Gateway Form */}
+                                    {isGlobalPayActive || (selectedGateway === 'globalpay' && activeOrderNumber) ? (
+                                        <GlobalPayPaymentForm
+                                            orderNumber={activeOrderNumber}
+                                            total={cartTotal}
+                                            phone={phone}
+                                            email={email}
+                                            onClose={() => { 
+                                                setIsGlobalPayActive(false); 
+                                                setActiveOrderNumber(''); 
+                                                setCheckoutStep('details'); 
+                                            }}
+                                        />
+                                    ) : stripeClientSecret ? (
+                                        /* Stripe Elements Gateway */
                                         <Elements stripe={stripePromise} options={{ clientSecret: stripeClientSecret, appearance: stripeAppearance }}>
                                             <StripePaymentForm
                                                 orderNumber={activeOrderNumber}
@@ -945,69 +1145,34 @@ export default function Checkout() {
                                             />
                                         </Elements>
                                     ) : (
-                                        /* Simulated Card Fallback for Local/Test environment */
-                                        <form onSubmit={handlePlaceOrder} className="space-y-4">
-                                            <div className="flex items-center justify-between">
-                                                <span className="text-xs font-bold text-[#24161b]">Card Details</span>
-                                                <span className="text-[10px] font-bold text-amber-700 bg-amber-100 border border-amber-200 px-2 py-0.5 rounded-full">
-                                                    Simulated Test Mode
-                                                </span>
+                                        /* Gateway Not Configured Notice */
+                                        <div className="bg-amber-50/80 border border-amber-200/80 rounded-2xl p-5 text-center space-y-3 animate-fadeIn">
+                                            <div className="w-10 h-10 rounded-xl bg-amber-100 text-amber-700 flex items-center justify-center mx-auto border border-amber-200">
+                                                <AlertCircle size={20} />
                                             </div>
-                                            <input 
-                                                type="text" 
-                                                value={cardNumber} 
-                                                onChange={e => setCardNumber(e.target.value)} 
-                                                placeholder="Card number"
-                                                className="w-full bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
-                                            />
-                                            <div className="grid grid-cols-3 gap-3">
-                                                <input 
-                                                    type="text" 
-                                                    value={expDate} 
-                                                    onChange={e => setExpDate(e.target.value)} 
-                                                    placeholder="MM / YY"
-                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
-                                                />
-                                                <input 
-                                                    type="text" 
-                                                    value={cvc} 
-                                                    onChange={e => setCvc(e.target.value)} 
-                                                    placeholder="CVC"
-                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-mono" 
-                                                />
-                                                <input 
-                                                    type="text" 
-                                                    value={cardName} 
-                                                    onChange={e => setCardName(e.target.value)} 
-                                                    placeholder="Name on card"
-                                                    className="bg-[#fdfaf5] border border-neutral-200 focus:border-[#24161b] focus:bg-white rounded-2xl px-4 py-3 text-xs focus:outline-none focus:ring-2 focus:ring-[#e5b582]/30 transition-all font-medium" 
-                                                />
+                                            <div>
+                                                <h4 className="text-xs font-bold text-amber-950">Payment Gateway Unavailable</h4>
+                                                <p className="text-[11px] text-amber-800 leading-relaxed mt-1">
+                                                    Online payment has not been configured in the Store Settings yet. Please contact the store or try again later.
+                                                </p>
                                             </div>
-
-                                            {error && (
-                                                <div className="flex items-center gap-2.5 text-rose-700 bg-rose-50 border border-rose-200 rounded-2xl p-4 text-xs animate-fadeIn">
-                                                    <AlertCircle size={16} className="shrink-0" />
-                                                    <span>{error}</span>
-                                                </div>
-                                            )}
-
-                                            <button 
-                                                type="submit" 
-                                                disabled={loading}
-                                                className="w-full bg-[#24161b] hover:bg-black disabled:bg-[#24161b]/60 text-[#e5b582] hover:text-white font-bold rounded-2xl py-4 flex items-center justify-center gap-2 shadow-xl shadow-[#24161b]/15 transition-all cursor-pointer text-sm tracking-wide active:scale-98"
+                                            <button
+                                                type="button"
+                                                onClick={() => { setCheckoutStep('details'); setError(null); }}
+                                                className="rounded-full bg-white border border-amber-300 px-5 py-2.5 text-xs font-bold text-amber-900 hover:bg-amber-100 transition-colors cursor-pointer shadow-xs"
                                             >
-                                                {loading ? (
-                                                    <><Loader2 size={16} className="animate-spin" /><span>Confirming Order…</span></>
-                                                ) : (
-                                                    <><Lock size={15} className="shrink-0" strokeWidth={2.2} /><span>Pay £{cartTotal.toFixed(2)} & Confirm</span></>
-                                                )}
+                                                Return to Details
                                             </button>
-                                        </form>
+                                        </div>
                                     )}
 
                                     <div className="pt-4 border-t border-neutral-100 flex items-center justify-between text-[10px] text-neutral-400 font-medium">
                                         <span className="flex items-center gap-1"><Lock size={11} /> 256-bit SSL</span>
-                                        <span className="uppercase tracking-wider">Powered by <span className="font-bold text-neutral-700">stripe</span></span>
+                                        <span className="uppercase tracking-wider">
+                                            Powered by <span className="font-bold text-neutral-700">
+                                                {selectedGateway === 'globalpay' ? 'Global Payments' : 'Stripe'}
+                                            </span>
+                                        </span>
                                     </div>
                                 </div>
                             ) : (
@@ -1877,7 +2042,7 @@ export default function Checkout() {
             />
 
             {/* Mobile Sticky Bottom CTA Bar */}
-            {!stripeClientSecret && cart.length > 0 && (
+            {!stripeClientSecret && !isGlobalPayActive && cart.length > 0 && (
                 <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-neutral-200 px-4 py-3 flex flex-col gap-2 shadow-[0_-4px_24px_rgba(0,0,0,0.08)]">
                     <div className="flex items-center justify-between w-full gap-3">
                         <div className="flex-1 min-w-0">
@@ -1888,7 +2053,7 @@ export default function Checkout() {
                             type="button" 
                             disabled={loading}
                             onClick={(e) => {
-                                if (checkoutStep === 'details' && !stripeClientSecret) {
+                                if (checkoutStep === 'details' && !stripeClientSecret && !isGlobalPayActive) {
                                     handleProceedToPayment(e);
                                 } else {
                                     document.getElementById('checkout-form')?.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
@@ -1898,17 +2063,17 @@ export default function Checkout() {
                         >
                             {loading ? (
                                 <><Loader2 size={14} className="animate-spin" /><span>Processing…</span></>
-                            ) : checkoutStep === 'details' && !stripeClientSecret ? (
+                            ) : checkoutStep === 'details' && !stripeClientSecret && !isGlobalPayActive ? (
                                 <><span>Continue to Payment</span><ArrowRight size={13} className="text-[#e5b582]" /></>
                             ) : (
-                                <><Lock size={13} strokeWidth={2.2} /><span>{isRealStripeConfigured ? 'Pay Now' : 'Confirm Order'}</span></>
+                                <><Lock size={13} strokeWidth={2.2} /><span>{isRealStripeConfigured || selectedGateway === 'globalpay' ? 'Pay Now' : 'Confirm Order'}</span></>
                             )}
                         </button>
                     </div>
-                    {isRealStripeConfigured && (
+                    {(isRealStripeConfigured || selectedGateway === 'globalpay') && (
                         <div className="flex items-center justify-center gap-1.5 text-[10px] text-neutral-400 border-t border-neutral-100 pt-1.5 w-full text-center">
                             <Lock size={10} className="text-emerald-600 shrink-0" />
-                            <span>Secure checkout powered by <strong>Stripe</strong></span>
+                            <span>Secure checkout powered by <strong>{selectedGateway === 'globalpay' ? 'Global Payments' : 'Stripe'}</strong></span>
                         </div>
                     )}
                 </div>

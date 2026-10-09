@@ -262,8 +262,8 @@ class SweetSpotApiTest extends TestCase
         $order = Order::find($orderId);
 
         $this->assertNotNull($order->payment_transaction_id);
-        $this->assertStringStartsWith('mock_txn_', $order->payment_transaction_id);
-        $this->assertStringStartsWith('mock_secret_', $response->json('data.client_secret'));
+        $this->assertStringStartsWith('test_stripe_txn_', $order->payment_transaction_id);
+        $this->assertStringStartsWith('test_stripe_secret_', $response->json('data.client_secret'));
     }
 
     /**

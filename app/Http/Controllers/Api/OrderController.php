@@ -26,15 +26,18 @@ class OrderController extends Controller
     protected OrderService $orderService;
     protected RealtimeBroadcastService $realtimeBroadcastService;
     protected CloudPrntService $cloudPrntService;
+    protected \App\Services\GlobalPayService $globalPayService;
 
     public function __construct(
         OrderService $orderService,
         RealtimeBroadcastService $realtimeBroadcastService,
-        CloudPrntService $cloudPrntService
+        CloudPrntService $cloudPrntService,
+        \App\Services\GlobalPayService $globalPayService
     ) {
         $this->orderService = $orderService;
         $this->realtimeBroadcastService = $realtimeBroadcastService;
         $this->cloudPrntService = $cloudPrntService;
+        $this->globalPayService = $globalPayService;
     }
 
     /**
@@ -52,12 +55,21 @@ class OrderController extends Controller
             $order = $this->orderService->createOrder($data, $authCustomer);
             $order->load(['items', 'customer', 'deliveryAddress']);
 
-            // Create Stripe PaymentIntent if payment method is stripe
             $clientSecret = null;
-            $stripeSecret = config('services.stripe.secret');
+            $globalPayUrl = null;
+            $stripeSecret = config('services.stripe.secret') ?: env('STRIPE_SECRET');
 
-            if ($order->payment_method === 'stripe' || $order->payment_method === 'mock_stripe') {
-                if ($stripeSecret && !str_starts_with($stripeSecret, 'sk_test_sweet_spot_placeholder')) {
+            if ($order->payment_method === 'stripe') {
+                if (app()->environment('testing')) {
+                    $clientSecret = 'test_stripe_secret_' . \Illuminate\Support\Str::random(24);
+                    $order->update([
+                        'payment_transaction_id' => 'test_stripe_txn_' . \Illuminate\Support\Str::random(12)
+                    ]);
+                } else {
+                    if (empty($stripeSecret) || str_starts_with($stripeSecret, 'sk_test_sweet_spot_placeholder') || str_starts_with($stripeSecret, '${')) {
+                        throw new Exception('Stripe payment is currently unavailable because it has not been configured by the store.');
+                    }
+
                     \Stripe\Stripe::setApiKey($stripeSecret);
                     
                     $intent = \Stripe\PaymentIntent::create([
@@ -74,12 +86,24 @@ class OrderController extends Controller
                     ]);
 
                     $clientSecret = $intent->client_secret;
+                }
+            } elseif ($order->payment_method === 'globalpay') {
+                if (app()->environment('testing')) {
+                    $globalPayUrl = 'https://pay.sandbox.globalpay.com/test/' . $order->order_number;
                 } else {
-                    // Fallback mock mode
-                    $clientSecret = 'mock_secret_' . \Illuminate\Support\Str::random(32);
-                    $order->update([
-                        'payment_transaction_id' => 'mock_txn_' . \Illuminate\Support\Str::random(9)
-                    ]);
+                    if (!$this->globalPayService->isConfigured()) {
+                        throw new Exception('Global Payments is currently unavailable because it has not been configured by the store.');
+                    }
+
+                    $returnUrl = url('/payment/success?order=' . $order->order_number . '&provider=globalpay');
+                    if ($order->customer?->phone) {
+                        $returnUrl .= '&phone=' . urlencode($order->customer->phone);
+                    } elseif ($order->customer?->email) {
+                        $returnUrl .= '&email=' . urlencode($order->customer->email);
+                    }
+                    $cancelUrl = url('/checkout?order=' . $order->order_number . '&cancelled=1');
+
+                    $globalPayUrl = $this->globalPayService->createHostedPaymentLink($order, $returnUrl, $cancelUrl);
                 }
             }
 
@@ -102,6 +126,9 @@ class OrderController extends Controller
             $responseData = (new OrderResource($order))->resolve($request);
             if ($clientSecret) {
                 $responseData['client_secret'] = $clientSecret;
+            }
+            if (isset($globalPayUrl)) {
+                $responseData['globalpay_url'] = $globalPayUrl;
             }
 
             return response()->json([

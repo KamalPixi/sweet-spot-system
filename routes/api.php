@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\FaqController;
 use App\Http\Controllers\Api\ReviewController;
 use App\Http\Controllers\Api\CloudPrntController;
 use App\Http\Controllers\Api\UberDirectController;
+use App\Http\Controllers\Api\PaymentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,13 @@ Route::middleware('throttle:global_api')->group(function () {
     Route::post('/check-postcode', [StoreConfigController::class, 'checkPostcode']);
     Route::get('/collection-slots', [CollectionSlotController::class, 'getSlots']);
     Route::get('/opening-hours', [CollectionSlotController::class, 'getOpeningHours']);
+
+    // --- Payment Providers & Global Payments ---
+    Route::get('/payment/providers', [PaymentController::class, 'getProviders']);
+    Route::post('/payment/globalpay/create-link', [PaymentController::class, 'createHostedLink']);
+    Route::post('/payment/globalpay/token', [PaymentController::class, 'generateGlobalPayToken']);
+    Route::post('/payment/globalpay/process', [PaymentController::class, 'processGlobalPay']);
+    Route::post('/webhooks/globalpay', [PaymentController::class, 'webhook']);
 
     // --- Newsletter & FAQs & Reviews ---
     Route::get('/faqs', [FaqController::class, 'index']);
@@ -128,6 +136,7 @@ Route::middleware('throttle:global_api')->group(function () {
             Route::post('/orders/{id}/advance-delivery-status', [UberDirectController::class, 'advanceDeliveryStatus']);
             Route::get('/printer/jobs', [CloudPrntController::class, 'listJobs']);
             Route::post('/printer/test', [CloudPrntController::class, 'testPrint']);
+            Route::post('/payment/test-connection', [PaymentController::class, 'testConnection']);
             Route::delete('/printer/jobs/{jobId}', [CloudPrntController::class, 'cancelPrintJob']);
             Route::delete('/orders/{id}/prints', [CloudPrntController::class, 'cancelOrderPrints']);
             

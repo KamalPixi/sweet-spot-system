@@ -186,10 +186,10 @@ class OrderService
             }
 
             $paymentMethod = $data['payment_method'] ?? 'stripe';
-            // Orders that require Stripe payment start as 'awaiting_payment' and are only
-            // promoted to 'pending' once the payment_intent.succeeded webhook fires.
+            // Orders that require online card payment start as 'awaiting_payment' and are only
+            // promoted to 'pending' once payment is confirmed (via Stripe Webhook or Global Payments confirmation).
             // This prevents abandoned / cancelled checkout sessions cluttering the admin list.
-            $initialStatus = ($paymentMethod === 'stripe') ? 'awaiting_payment' : 'pending';
+            $initialStatus = in_array($paymentMethod, ['stripe', 'globalpay']) ? 'awaiting_payment' : 'pending';
 
             $order = Order::create([
                 'order_number' => $orderNumber,
