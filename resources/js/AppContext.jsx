@@ -257,6 +257,33 @@ export function AppProvider({ children }) {
         });
     };
 
+    const addBoxToCart = ({ category, boxOption, boxItems, quantity = 1 }) => {
+        setIsCartLoading(true);
+        setIsCartOpen(true);
+        setTimeout(() => {
+            setIsCartLoading(false);
+        }, 400);
+
+        setCart(prev => {
+            const boxKey = `box-${category.id}-${boxOption.size}-${Date.now()}`;
+            const cartItem = {
+                key: boxKey,
+                is_box: true,
+                category_id: category.id,
+                category_name: category.name,
+                name: `${category.name} (${boxOption.name})`,
+                variation_name: boxOption.name,
+                box_size: boxOption.size,
+                box_items: boxItems,
+                price: parseFloat(boxOption.price || 0),
+                weight: 0,
+                image: category.image || (category.images && category.images[0] ? category.images[0].url : (boxItems[0]?.image || '/images/placeholder.svg')),
+                quantity: quantity,
+            };
+            return [...prev, cartItem];
+        });
+    };
+
     const updateCartQty = (key, qty) => {
         if (qty <= 0) {
             removeFromCart(key);
@@ -285,7 +312,7 @@ export function AppProvider({ children }) {
     return (
         <AppContext.Provider value={{
             token, user, adminToken, adminUser, login, logout, userType,
-            cart, addToCart, updateCartQty, removeFromCart, clearCart,
+            cart, addToCart, addBoxToCart, updateCartQty, removeFromCart, clearCart,
             cartSubtotal, cartDeliveryFee, flatDeliveryFee, cartTotal, cartItemCount,
             isFreeDelivery, freeDeliveryThreshold,
             orderType, setOrderType: handleSetOrderType,

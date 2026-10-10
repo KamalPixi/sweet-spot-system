@@ -337,5 +337,78 @@ class SweetSpotFeaturesTest extends TestCase
         $orderFailRes->assertStatus(422)
             ->assertJsonPath('success', false);
     }
+
+    public function test_box_of_x_package_mix_and_match_order_placement(): void
+    {
+        // 1. Create a Category with Box tiers
+        $category = Category::create([
+            'name' => 'Artisan Doughnuts',
+            'slug' => 'artisan-doughnuts',
+            'status' => true,
+            'box_options' => [
+                ['name' => 'Box of 4', 'size' => 4, 'price' => 14.00, 'status' => true],
+                ['name' => 'Box of 6', 'size' => 6, 'price' => 20.00, 'status' => true],
+            ],
+            'order' => 1,
+        ]);
+
+        $prod1 = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Lotus Biscoff Doughnut',
+            'slug' => 'lotus-biscoff-doughnut',
+            'base_price' => 3.95,
+            'status' => true,
+            'has_variations' => false,
+        ]);
+
+        $prod2 = Product::create([
+            'category_id' => $category->id,
+            'name' => 'Nutella Hazelnut Doughnut',
+            'slug' => 'nutella-hazelnut-doughnut',
+            'base_price' => 4.25,
+            'status' => true,
+            'has_variations' => false,
+        ]);
+
+        // 2. Place an order with Box of 4 (Fixed price 14.00 instead of 3.95 * 2 + 4.25 * 2 = 16.40)
+        $orderPayload = [
+            'type' => 'dine_in',
+            'table_number' => '4',
+            'payment_method' => 'cash_in_store',
+            'customer' => [
+                'first_name' => 'Box',
+                'last_name' => 'Buyer',
+                'phone' => '+447000999888',
+            ],
+            'items' => [
+                [
+                    'is_box' => true,
+                    'category_id' => $category->id,
+                    'box_size' => 4,
+                    'box_name' => 'Box of 4',
+                    'quantity' => 1,
+                    'box_items' => [
+                        ['product_id' => $prod1->id, 'product_name' => $prod1->name, 'quantity' => 2],
+                        ['product_id' => $prod2->id, 'product_name' => $prod2->name, 'quantity' => 2],
+                    ],
+                ]
+            ]
+        ];
+
+        $response = $this->postJson('/api/orders', $orderPayload);
+        $response->assertStatus(201)
+            ->assertJsonPath('success', true);
+
+        $orderData = $response->json('data');
+        $this->assertEquals(14.00, (float) $orderData['subtotal']);
+        $this->assertEquals(14.00, (float) $orderData['total']);
+
+        $item = $orderData['items'][0];
+        $this->assertTrue($item['is_box']);
+        $this->assertEquals(4, $item['box_size']);
+        $this->assertEquals('Artisan Doughnuts (Box of 4)', $item['product_name']);
+        $this->assertCount(2, $item['box_items']);
+    }
 }
+
 

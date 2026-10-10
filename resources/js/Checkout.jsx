@@ -1045,8 +1045,13 @@ export default function Checkout() {
             notes: notes || null,
             payment_method: chosenPaymentMethod,
             items: cart.map(item => ({
-                product_id: item.product_id,
-                product_variation_id: item.product_variation_id,
+                is_box: Boolean(item.is_box),
+                category_id: item.category_id || null,
+                box_size: item.box_size || null,
+                box_name: item.variation_name || item.name,
+                box_items: item.box_items || null,
+                product_id: item.product_id || null,
+                product_variation_id: item.product_variation_id || null,
                 quantity: item.quantity
             }))
         };
@@ -1396,7 +1401,16 @@ export default function Checkout() {
                                                                 </div>
                                                                 <div className="flex-grow min-w-0">
                                                                     <p className="font-bold text-[#24161b] truncate">{item.name}</p>
-                                                                    {item.variation_name && <p className="text-[10px] text-neutral-400">{item.variation_name}</p>}
+                                                                    {item.variation_name && !item.is_box && <p className="text-[10px] text-neutral-400">{item.variation_name}</p>}
+                                                                    {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
+                                                                        <div className="mt-1 flex flex-wrap gap-1">
+                                                                            {item.box_items.map((b, bi) => (
+                                                                                <span key={bi} className="inline-flex items-center text-[9px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
+                                                                                    {b.quantity}x {b.product_name || b.name}
+                                                                                </span>
+                                                                            ))}
+                                                                        </div>
+                                                                    )}
                                                                     <div className="flex items-center border border-neutral-200 bg-white rounded-full w-fit px-1 mt-1">
                                                                         <button
                                                                             type="button"
@@ -2135,8 +2149,17 @@ export default function Checkout() {
                                                     </div>
                                                     <div className="flex-grow min-w-0">
                                                         <p className="font-bold text-[#24161b] leading-tight truncate">{item.name}</p>
-                                                        {item.variation_name && (
+                                                        {item.variation_name && !item.is_box && (
                                                             <p className="text-[11px] text-neutral-400 mt-0.5">{item.variation_name}</p>
+                                                        )}
+                                                        {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
+                                                            <div className="mt-1 flex flex-wrap gap-1">
+                                                                {item.box_items.map((b, bi) => (
+                                                                    <span key={bi} className="inline-flex items-center text-[9.5px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
+                                                                        {b.quantity}x {b.product_name || b.name}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
                                                         )}
                                                         <div className="flex items-center mt-2 gap-1 border border-neutral-200 bg-[#fdfaf5] rounded-full w-fit px-1.5 py-0.5">
                                                             <button 

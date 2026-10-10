@@ -248,7 +248,7 @@ class CloudPrntService
         // Items Table
         foreach ($order->items as $item) {
             $itemName = $item->product_name;
-            if ($item->variation_name) {
+            if ($item->variation_name && !$item->is_box) {
                 $itemName .= " ({$item->variation_name})";
             }
             $qty = $item->quantity;
@@ -256,6 +256,14 @@ class CloudPrntService
 
             $lines[] = "[bold: on]{$qty}x {$itemName}[bold: off]";
             $lines[] = "[align: right]£{$lineTotal}[align: left]";
+
+            if ($item->is_box && !empty($item->box_items) && is_array($item->box_items)) {
+                foreach ($item->box_items as $bItem) {
+                    $bQty = $bItem['quantity'] ?? 1;
+                    $bName = $bItem['product_name'] ?? ($bItem['name'] ?? 'Assorted Item');
+                    $lines[] = "  └ {$bQty}x {$bName}";
+                }
+            }
         }
 
         $lines[] = "[line: count 1]";

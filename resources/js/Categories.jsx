@@ -6,8 +6,8 @@ import Sidebar from './components/Sidebar';
 import ProductCard from './components/ProductCard';
 import HeaderCartButton from './components/HeaderCartButton';
 import HeaderSearchButton from './components/HeaderSearchButton';
-import { MenuIcon, SearchIcon, UserIcon } from './components/HeaderIcons';
-import { SlidersHorizontal, ArrowUpDown, X, UtensilsCrossed } from 'lucide-react';
+import { MenuIcon, SearchIcon, UserIcon, CartBagIcon } from './components/HeaderIcons';
+import { SlidersHorizontal, ArrowUpDown, X, UtensilsCrossed, Package, Plus, Minus, Trash2, Check, Sparkles } from 'lucide-react';
 
 const CATALOG_CACHE_KEY = 'cached_menu_catalog_v2';
 
@@ -19,6 +19,7 @@ export default function Categories() {
 
     const { 
         cartItemCount,
+        addBoxToCart,
         user,
         logout,
         isSearchOpen,
@@ -42,15 +43,21 @@ export default function Categories() {
     const initialCategory = categorySlug || searchParams.get('category') || 'all';
     const [activeCategorySlug, setActiveCategorySlug] = useState(initialCategory);
 
+    // Box of (X) Mix & Match state
+    const [selectedBoxOption, setSelectedBoxOption] = useState(null);
+    const [boxTrayItems, setBoxTrayItems] = useState({}); // { [productId]: { product, count } }
+
     // Filter states
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || searchTerm || '');
     const [sortBy, setSortBy] = useState('popular');
     const [maxPrice, setMaxPrice] = useState(50);
 
-    // Sync active category slug when URL changes
+    // Sync active category slug when URL changes & reset box tray
     useEffect(() => {
         const catFromUrl = categorySlug || searchParams.get('category') || 'all';
         setActiveCategorySlug(catFromUrl);
+        setSelectedBoxOption(null);
+        setBoxTrayItems({});
     }, [categorySlug, searchParams]);
 
     // Sync global search term if updated from overlay
@@ -215,6 +222,88 @@ export default function Categories() {
 
     const hasActiveFilters = searchQuery !== '' || maxPrice < maxProductPrice || sortBy !== 'popular';
 
+    // Box Selection & Tray helpers
+    const currentBoxCount = useMemo(() => {
+        return Object.values(boxTrayItems).reduce((sum, item) => sum + item.count, 0);
+    }, [boxTrayItems]);
+
+    const isBoxFull = selectedBoxOption ? currentBoxCount >= selectedBoxOption.size : false;
+
+    const flatBoxItems = useMemo(() => {
+        const list = [];
+        Object.values(boxTrayItems).forEach(item => {
+            for (let i = 0; i < item.count; i++) {
+                list.push(item);
+            }
+        });
+        return list;
+    }, [boxTrayItems]);
+
+    const handleSelectBoxMode = (option) => {
+        setSelectedBoxOption(option);
+        setBoxTrayItems({});
+    };
+
+    const handleAddBoxItem = (product) => {
+        if (!selectedBoxOption) return;
+        if (currentBoxCount >= selectedBoxOption.size) return;
+        setBoxTrayItems(prev => {
+            const current = prev[product.id]?.count || 0;
+            return {
+                ...prev,
+                [product.id]: {
+                    product,
+                    count: current + 1
+                }
+            };
+        });
+    };
+
+    const handleRemoveBoxItem = (productId) => {
+        setBoxTrayItems(prev => {
+            const current = prev[productId]?.count || 0;
+            if (current <= 1) {
+                const next = { ...prev };
+                delete next[productId];
+                return next;
+            }
+            return {
+                ...prev,
+                [productId]: {
+                    ...prev[productId],
+                    count: current - 1
+                }
+            };
+        });
+    };
+
+    const handleAddCurrentBoxToCart = () => {
+        if (!selectedBoxOption || !activeCategory) return;
+        if (currentBoxCount !== selectedBoxOption.size) return;
+
+        const boxItems = Object.values(boxTrayItems).map(item => {
+            const p = item.product;
+            const img = p.images && p.images.length > 0
+                ? (p.images.find(i => i.is_primary)?.url || p.images[0].url)
+                : (p.image || '/images/placeholder.svg');
+            return {
+                product_id: p.id,
+                product_name: p.name,
+                quantity: item.count,
+                image: img
+            };
+        });
+
+        addBoxToCart({
+            category: activeCategory,
+            boxOption: selectedBoxOption,
+            boxItems: boxItems,
+            quantity: 1
+        });
+
+        setBoxTrayItems({});
+    };
+
     if (loading && catalog.length === 0) {
         return (
             <div className="min-h-screen bg-[#24161b] flex flex-col items-center justify-center text-white/80 font-semibold tracking-wider text-xs">
@@ -371,6 +460,77 @@ export default function Categories() {
                                     <div className="w-full h-[1px] bg-neutral-200" />
                                 </div>
 
+                                {/* Box Package / Mix & Match Option Selector */}
+                                {activeCategory?.box_options && Array.isArray(activeCategory.box_options) && activeCategory.box_options.length > 0 && (
+                                    <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[#24161b] via-[#331c26] to-[#1c1410] text-white shadow-xl border border-[#e5b582]/30 space-y-3.5">
+                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
+                                            <div className="flex items-center space-x-3">
+                                                <div className="w-9 h-9 rounded-2xl bg-[#e5b582]/20 text-[#e5b582] flex items-center justify-center shrink-0 border border-[#e5b582]/30">
+                                                    <Package size={18} />
+                                                </div>
+                                                <div>
+                                                    <div className="flex items-center gap-2">
+                                                        <h3 className="text-sm sm:text-base font-black text-white tracking-tight">
+                                                            Choose Box Size
+                                                        </h3>
+                                                        <span className="px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider bg-[#e5b582] text-[#24161b]">
+                                                            Mix & Match
+                                                        </span>
+                                                    </div>
+                                                    <p className="text-[11px] text-neutral-300 font-light">
+                                                        Pick any combination of flavors below for a fixed box price
+                                                    </p>
+                                                </div>
+                                            </div>
+                                            {selectedBoxOption && (
+                                                <div className="self-start sm:self-auto flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full border border-white/15">
+                                                    <span className="text-[11px] text-neutral-300">Box Total:</span>
+                                                    <span className="text-xs font-black text-[#e5b582]">
+                                                        £{parseFloat(selectedBoxOption.price || 0).toFixed(2)}
+                                                    </span>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        {/* Box Option Buttons */}
+                                        <div className="flex flex-wrap gap-2 pt-0.5 select-none">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleSelectBoxMode(null)}
+                                                className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer select-none ${
+                                                    selectedBoxOption === null
+                                                        ? 'bg-white text-[#24161b] shadow-md scale-100'
+                                                        : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white'
+                                                }`}
+                                            >
+                                                Single / Individual
+                                            </button>
+                                            {activeCategory.box_options.map((opt, i) => {
+                                                const isSelected = selectedBoxOption?.size === opt.size;
+                                                return (
+                                                    <button
+                                                        key={i}
+                                                        type="button"
+                                                        onClick={() => handleSelectBoxMode(opt)}
+                                                        className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 select-none ${
+                                                            isSelected
+                                                                ? 'bg-[#e5b582] text-[#24161b] shadow-md font-black ring-2 ring-white/50'
+                                                                : 'bg-white/10 text-white/85 hover:bg-white/20 hover:text-white'
+                                                        }`}
+                                                    >
+                                                        <span>{opt.name}</span>
+                                                        <span className={`px-1.5 py-0.5 rounded-md text-[10.5px] font-mono font-bold ${
+                                                            isSelected ? 'bg-[#24161b]/15 text-[#24161b]' : 'bg-black/30 text-[#e5b582]'
+                                                        }`}>
+                                                            £{parseFloat(opt.price || 0).toFixed(2)}
+                                                        </span>
+                                                    </button>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                )}
+
                                 {/* Full-Width Search Bar */}
                                 <div className="relative w-full mb-3.5">
                                     <input 
@@ -504,7 +664,15 @@ export default function Categories() {
                                 ) : (
                                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
                                         {productsToDisplay.map(product => (
-                                            <ProductCard key={product.id} product={product} />
+                                            <ProductCard 
+                                                key={product.id} 
+                                                product={product} 
+                                                boxMode={Boolean(selectedBoxOption)}
+                                                boxCount={boxTrayItems[product.id]?.count || 0}
+                                                onAddBoxItem={() => handleAddBoxItem(product)}
+                                                onRemoveBoxItem={() => handleRemoveBoxItem(product.id)}
+                                                isBoxFull={isBoxFull}
+                                            />
                                         ))}
                                     </div>
                                 )}
@@ -516,6 +684,86 @@ export default function Categories() {
                 </div>
             </div>
 
+            {/* Floating Sticky Box Tray Bar (Active during Box Mode) */}
+            {selectedBoxOption && (
+                <div className="fixed bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4 animate-auth-switch select-none">
+                    <div className="bg-[#24161b] text-white border-2 border-[#e5b582] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-lg">
+                        <div className="flex items-center justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-2">
+                                <span className="w-2.5 h-2.5 rounded-full bg-[#e5b582] inline-block animate-pulse"></span>
+                                <span className="font-black text-sm sm:text-base text-white">
+                                    {selectedBoxOption.name}
+                                </span>
+                                <span className="text-xs text-[#e5b582] font-extrabold bg-white/10 px-2.5 py-0.5 rounded-full">
+                                    {currentBoxCount} / {selectedBoxOption.size} items
+                                </span>
+                            </div>
+                            <div className="text-right">
+                                <span className="text-xs text-neutral-400 block -mb-0.5">Fixed Price</span>
+                                <span className="text-sm sm:text-base font-black text-[#e5b582]">
+                                    £{parseFloat(selectedBoxOption.price || 0).toFixed(2)}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Visual Tray Slots */}
+                        <div className="flex items-center gap-1.5 mb-3.5 overflow-x-auto pb-1 scrollbar-none">
+                            {Array.from({ length: selectedBoxOption.size }).map((_, slotIdx) => {
+                                const filledItem = flatBoxItems[slotIdx];
+                                return (
+                                    <div 
+                                        key={slotIdx}
+                                        className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center overflow-hidden shrink-0 transition-all ${
+                                            filledItem 
+                                                ? 'bg-white border-[#e5b582] shadow-xs' 
+                                                : 'bg-white/5 border-dashed border-white/20 text-white/40 text-[11px] font-mono font-bold'
+                                        }`}
+                                        title={filledItem ? filledItem.product.name : `Slot ${slotIdx + 1}`}
+                                    >
+                                        {filledItem ? (
+                                            <img 
+                                                src={filledItem.product.image || (filledItem.product.images && filledItem.product.images[0] ? filledItem.product.images[0].url : '/images/placeholder.svg')} 
+                                                alt={filledItem.product.name} 
+                                                className="w-full h-full object-cover" 
+                                            />
+                                        ) : (
+                                            slotIdx + 1
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="flex items-center gap-2.5">
+                            {currentBoxCount > 0 && (
+                                <button
+                                    type="button"
+                                    onClick={() => setBoxTrayItems({})}
+                                    className="px-3.5 py-2.5 text-xs font-bold text-neutral-400 hover:text-white bg-white/5 hover:bg-white/10 rounded-full transition-colors cursor-pointer"
+                                >
+                                    Clear
+                                </button>
+                            )}
+                            <button
+                                type="button"
+                                disabled={currentBoxCount !== selectedBoxOption.size}
+                                onClick={handleAddCurrentBoxToCart}
+                                className={`flex-1 py-3 px-5 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg ${
+                                    currentBoxCount === selectedBoxOption.size
+                                        ? 'bg-[#e5b582] text-[#24161b] hover:bg-white hover:scale-[1.01] active:scale-98'
+                                        : 'bg-white/15 text-white/40 cursor-not-allowed'
+                                }`}
+                            >
+                                <CartBagIcon className="w-4 h-4" strokeWidth={2} />
+                                {currentBoxCount === selectedBoxOption.size 
+                                    ? `Add ${selectedBoxOption.name} to Basket • £${parseFloat(selectedBoxOption.price || 0).toFixed(2)}`
+                                    : `Pick ${selectedBoxOption.size - currentBoxCount} more ${selectedBoxOption.size - currentBoxCount === 1 ? 'flavor' : 'flavors'} to complete box`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
             {/* 3. Global Dark Footer */}
             <Footer />
 

@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 
-#[Fillable(['name', 'slug', 'icon', 'status', 'show_in_footer', 'available_days', 'order'])]
+#[Fillable(['name', 'slug', 'icon', 'status', 'show_in_footer', 'available_days', 'box_options', 'order'])]
 class Category extends Model
 {
     use SoftDeletes;
@@ -22,6 +22,7 @@ class Category extends Model
             'status' => 'boolean',
             'show_in_footer' => 'boolean',
             'available_days' => 'array',
+            'box_options' => 'array',
             'order'  => 'integer',
         ];
     }

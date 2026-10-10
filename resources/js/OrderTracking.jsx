@@ -813,20 +813,35 @@ export default function OrderTracking() {
                             <div className="space-y-3 divide-y divide-neutral-100">
                                 {order.items?.map(item => (
                                     <div key={item.id} className="pt-3 first:pt-0 flex items-start justify-between gap-3 text-xs">
-                                        <div className="space-y-1">
-                                            <div className="flex items-center gap-2">
+                                        <div className="space-y-1 min-w-0 flex-1">
+                                            <div className="flex items-center gap-2 flex-wrap">
                                                 <span className="w-5 h-5 rounded-md bg-[#24161b] text-[#e5b582] text-[10px] font-bold flex items-center justify-center shrink-0">
                                                     {item.quantity}x
                                                 </span>
                                                 <span className="font-bold text-[#24161b] text-xs">{item.product_name}</span>
+                                                {item.is_box && (
+                                                    <span className="px-2 py-0.5 rounded-full bg-[#fdfaf5] text-[#24161b] border border-[#e5b582]/50 text-[10px] font-black uppercase tracking-wider">
+                                                        Box of {item.box_size}
+                                                    </span>
+                                                )}
                                             </div>
                                             {item.variation_name && (
                                                 <span className="inline-block text-[10px] font-semibold text-neutral-500 bg-white border border-neutral-200/70 px-2 py-0.5 rounded-md ml-7">
                                                     {item.variation_name}
                                                 </span>
                                             )}
+                                            {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
+                                                <div className="ml-7 mt-1.5 pl-2.5 border-l-2 border-[#e5b582]/60 space-y-0.5">
+                                                    {item.box_items.map((bi, bIdx) => (
+                                                        <div key={bIdx} className="text-[11px] text-neutral-600 flex items-center gap-1.5">
+                                                            <span className="font-bold text-[#24161b]">{bi.quantity}x</span>
+                                                            <span>{bi.product_name || bi.name}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
-                                        <span className="font-bold text-[#24161b] text-xs shrink-0">
+                                        <span className="font-bold text-[#24161b] text-xs shrink-0 whitespace-nowrap">
                                             £{parseFloat(item.total).toFixed(2)}
                                         </span>
                                     </div>

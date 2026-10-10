@@ -177,6 +177,7 @@ export default function AdminDashboard() {
     const [catStatus, setCatStatus] = useState(true);
     const [catShowInFooter, setCatShowInFooter] = useState(false);
     const [catAvailableDays, setCatAvailableDays] = useState([]);
+    const [catBoxOptions, setCatBoxOptions] = useState([]);
     const [catOrder, setCatOrder] = useState(0);
 
     // Image Cropper States
@@ -861,6 +862,7 @@ export default function AdminDashboard() {
         payload.append('status', catStatus ? '1' : '0');
         payload.append('show_in_footer', catShowInFooter ? '1' : '0');
         payload.append('available_days', JSON.stringify(catAvailableDays || []));
+        payload.append('box_options', JSON.stringify(catBoxOptions || []));
         payload.append('order', parseInt(catOrder || 0));
         if (catImageFile) {
             payload.append('image', catImageFile);
@@ -895,6 +897,7 @@ export default function AdminDashboard() {
                 setCatStatus(true);
                 setCatShowInFooter(false);
                 setCatAvailableDays([]);
+                setCatBoxOptions([]);
                 setCatOrder(0);
                 fetchData();
             } else {
@@ -916,6 +919,7 @@ export default function AdminDashboard() {
         setCatStatus(cat.status);
         setCatShowInFooter(Boolean(cat.show_in_footer));
         setCatAvailableDays(Array.isArray(cat.available_days) ? cat.available_days : []);
+        setCatBoxOptions(Array.isArray(cat.box_options) ? cat.box_options : []);
         setCatOrder(cat.order);
         setCatIcon(cat.icon || '');
         setCatFormOpen(true);
@@ -3050,6 +3054,136 @@ export default function AdminDashboard() {
                                                         </span>
                                                     </div>
                                                 </div>
+
+                                                {/* Box Assortment Options (Mix & Match) */}
+                                                <div className="p-4 bg-neutral-50/80 border border-neutral-200/90 rounded-2xl space-y-3">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                        <div className="flex items-center space-x-2">
+                                                            <Package size={16} className="text-neutral-700 shrink-0" />
+                                                            <div>
+                                                                <label className="block text-neutral-800 text-xs font-extrabold uppercase tracking-wider">
+                                                                    Box Assortment Options (Mix & Match)
+                                                                </label>
+                                                                <p className="text-[10.5px] text-neutral-400">
+                                                                    Allow customers to pick any mix of items from this category for a fixed package price (e.g. Box of 4, Box of 6, Box of 12).
+                                                                </p>
+                                                            </div>
+                                                        </div>
+                                                        <div className="flex items-center space-x-1.5 self-start sm:self-auto">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    const nextSize = catBoxOptions.length === 0 ? 4 : (catBoxOptions.length === 1 ? 6 : (catBoxOptions.length === 2 ? 12 : (catBoxOptions[catBoxOptions.length - 1].size + 2)));
+                                                                    setCatBoxOptions(prev => [
+                                                                        ...prev,
+                                                                        { name: `Box of ${nextSize}`, size: nextSize, price: '', status: true }
+                                                                    ]);
+                                                                }}
+                                                                className="bg-white border border-neutral-200 hover:bg-neutral-100 text-neutral-700 px-2.5 py-1 rounded-lg text-[10.5px] font-bold flex items-center gap-1 transition-colors cursor-pointer shadow-2xs"
+                                                            >
+                                                                <Plus size={12} /> Add Box Size
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    {catBoxOptions.length === 0 ? (
+                                                        <div className="p-3.5 bg-white border border-dashed border-neutral-200 rounded-xl text-center">
+                                                            <p className="text-xs text-neutral-500 font-medium">No box tiers configured (standard single item purchasing only).</p>
+                                                            <div className="flex flex-wrap items-center justify-center gap-2 mt-2.5">
+                                                                {[4, 6, 12].map(size => (
+                                                                    <button
+                                                                        key={size}
+                                                                        type="button"
+                                                                        onClick={() => {
+                                                                            setCatBoxOptions(prev => [
+                                                                                ...prev,
+                                                                                { name: `Box of ${size}`, size: size, price: '', status: true }
+                                                                            ]);
+                                                                        }}
+                                                                        className="text-[10.5px] font-bold text-neutral-700 bg-neutral-100 hover:bg-neutral-200 px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                                                                    >
+                                                                        + Add Box of {size}
+                                                                    </button>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="space-y-2">
+                                                            {catBoxOptions.map((opt, idx) => (
+                                                                <div key={idx} className="p-3 bg-white border border-neutral-200/90 rounded-xl flex flex-wrap sm:flex-nowrap items-center gap-3 shadow-2xs">
+                                                                    <div className="flex-1 min-w-[120px]">
+                                                                        <label className="block text-[9.5px] uppercase font-bold text-neutral-400 mb-1">Display Name</label>
+                                                                        <input
+                                                                            type="text"
+                                                                            value={opt.name}
+                                                                            onChange={(e) => {
+                                                                                const updated = [...catBoxOptions];
+                                                                                updated[idx] = { ...updated[idx], name: e.target.value };
+                                                                                setCatBoxOptions(updated);
+                                                                            }}
+                                                                            placeholder="e.g. Box of 6"
+                                                                            className="w-full bg-neutral-50/50 border border-neutral-200 px-2.5 py-1.5 text-xs text-neutral-850 font-bold rounded-lg focus:border-neutral-950 focus:outline-none"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="w-24 shrink-0">
+                                                                        <label className="block text-[9.5px] uppercase font-bold text-neutral-400 mb-1">Capacity (Qty)</label>
+                                                                        <input
+                                                                            type="number"
+                                                                            min="1"
+                                                                            value={opt.size}
+                                                                            onChange={(e) => {
+                                                                                const val = parseInt(e.target.value) || 1;
+                                                                                const updated = [...catBoxOptions];
+                                                                                updated[idx] = { 
+                                                                                    ...updated[idx], 
+                                                                                    size: val,
+                                                                                    name: updated[idx].name.startsWith('Box of ') ? `Box of ${val}` : updated[idx].name
+                                                                                };
+                                                                                setCatBoxOptions(updated);
+                                                                            }}
+                                                                            className="w-full bg-neutral-50/50 border border-neutral-200 px-2.5 py-1.5 text-xs text-neutral-850 font-bold rounded-lg focus:border-neutral-950 focus:outline-none text-center"
+                                                                        />
+                                                                    </div>
+                                                                    <div className="w-32 shrink-0">
+                                                                        <label className="block text-[9.5px] uppercase font-bold text-neutral-400 mb-1">Fixed Box Price (£)</label>
+                                                                        <div className="relative">
+                                                                            <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-neutral-400 font-bold text-xs">£</span>
+                                                                            <input
+                                                                                type="number"
+                                                                                step="0.01"
+                                                                                min="0"
+                                                                                value={opt.price}
+                                                                                onChange={(e) => {
+                                                                                    const updated = [...catBoxOptions];
+                                                                                    updated[idx] = { ...updated[idx], price: e.target.value };
+                                                                                    setCatBoxOptions(updated);
+                                                                                }}
+                                                                                placeholder="0.00"
+                                                                                className="w-full bg-neutral-50/50 border border-neutral-200 pl-6 pr-2.5 py-1.5 text-xs text-neutral-850 font-bold rounded-lg focus:border-neutral-950 focus:outline-none"
+                                                                            />
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="flex items-center pt-4 sm:pt-0 self-end sm:self-center">
+                                                                        <button
+                                                                            type="button"
+                                                                            onClick={() => {
+                                                                                setCatBoxOptions(catBoxOptions.filter((_, i) => i !== idx));
+                                                                            }}
+                                                                            className="p-1.5 text-neutral-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer"
+                                                                            title="Remove this box size"
+                                                                        >
+                                                                            <Trash2 size={14} />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                            ))}
+                                                            <div className="flex items-center justify-between text-[10.5px] text-neutral-400 px-1 pt-1">
+                                                                <span>Configured box tiers: <strong className="text-neutral-700 font-bold">{catBoxOptions.length}</strong></span>
+                                                                <span>Single / individual items remain available alongside box options.</span>
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                                                     <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl">
                                                         <label className="block text-neutral-500 text-[11px] font-bold uppercase tracking-wider mb-1.5">Visibility Status</label>
@@ -3111,6 +3245,11 @@ export default function AdminDashboard() {
                                                                     {catShowInFooter && (
                                                                         <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-amber-500 text-white shadow-xs">
                                                                             In Footer
+                                                                        </span>
+                                                                    )}
+                                                                    {catBoxOptions && catBoxOptions.length > 0 && (
+                                                                        <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-purple-50 text-purple-700 border border-purple-200">
+                                                                            Boxes: {catBoxOptions.map(b => b.size).join(', ')}
                                                                         </span>
                                                                     )}
                                                                     <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
@@ -3289,6 +3428,24 @@ export default function AdminDashboard() {
                                                                 <span className="text-[11px] font-bold">
                                                                     {count} {count === 1 ? 'item' : 'items'}
                                                                 </span>
+                                                            </div>
+                                                        );
+                                                    }
+                                                },
+                                                {
+                                                    header: "Box Tiers",
+                                                    render: (cat) => {
+                                                        const boxes = Array.isArray(cat.box_options) ? cat.box_options : [];
+                                                        if (boxes.length === 0) {
+                                                            return <span className="text-[10px] text-stone-400 font-medium">Single Only</span>;
+                                                        }
+                                                        return (
+                                                            <div className="flex flex-wrap items-center gap-1">
+                                                                {boxes.map((b, i) => (
+                                                                    <span key={i} className="px-2 py-0.5 text-[9px] font-bold rounded-md bg-purple-50 text-purple-800 border border-purple-200/80">
+                                                                        Box {b.size} (£{parseFloat(b.price || 0).toFixed(2)})
+                                                                    </span>
+                                                                ))}
                                                             </div>
                                                         );
                                                     }

@@ -96,6 +96,34 @@ class ProductService
             }
         }
 
+        $boxOptions = null;
+        if (isset($data['box_options'])) {
+            if (is_string($data['box_options'])) {
+                $decoded = json_decode($data['box_options'], true);
+                $boxOptions = is_array($decoded) ? $decoded : null;
+            } elseif (is_array($data['box_options'])) {
+                $boxOptions = $data['box_options'];
+            }
+            if (is_array($boxOptions)) {
+                $boxOptions = array_values(array_filter(array_map(function ($opt) {
+                    if (!is_array($opt)) return null;
+                    $size = (int) ($opt['size'] ?? 0);
+                    $price = (float) ($opt['price'] ?? 0);
+                    $name = trim((string) ($opt['name'] ?? ($size > 0 ? "Box of {$size}" : '')));
+                    if ($size <= 0 || $price < 0 || empty($name)) return null;
+                    return [
+                        'name' => $name,
+                        'size' => $size,
+                        'price' => round($price, 2),
+                        'status' => filter_var($opt['status'] ?? true, FILTER_VALIDATE_BOOLEAN),
+                    ];
+                }, $boxOptions)));
+                if (empty($boxOptions)) {
+                    $boxOptions = null;
+                }
+            }
+        }
+
         $categoryData = [
             'name' => $data['name'],
             'slug' => $slug,
@@ -103,6 +131,7 @@ class ProductService
             'status' => filter_var($data['status'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'show_in_footer' => filter_var($data['show_in_footer'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'available_days' => $availableDays,
+            'box_options' => $boxOptions,
             'order' => (int) ($data['order'] ?? 0),
         ];
 

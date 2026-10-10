@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\Customer;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductVariation;
 use Illuminate\Support\Facades\DB;
@@ -120,8 +121,6 @@ class OrderService
             $subtotal = 0.00;
 
             foreach ($data['items'] as $item) {
-                $product = Product::where('status', true)->with('category')->findOrFail($item['product_id']);
-
                 // Verify category day-based availability
                 $fulfillmentDay = null;
                 if ($type === 'collection' && !empty($data['collection_time'])) {
@@ -134,52 +133,137 @@ class OrderService
                     $fulfillmentDay = strtolower(now(config('app.timezone', 'Europe/London'))->format('l'));
                 }
 
-                if ($product->category && (!$product->category->status || !$product->category->isAvailableOnDay($fulfillmentDay))) {
-                    $availMsg = $product->category->formatted_available_days;
-                    throw new Exception("Product '{$product->name}' is from category '{$product->category->name}' which is not available for this order (Available: {$availMsg}).");
-                }
+                if (!empty($item['is_box'])) {
+                    $category = Category::where('status', true)->findOrFail($item['category_id']);
 
-                $variation = null;
-                $price = 0.00;
-                $variationName = null;
-
-                if ($product->has_variations) {
-                    if (empty($item['product_variation_id'])) {
-                        throw new Exception("Product '{$product->name}' requires a variation choice.");
+                    if (!$category->isAvailableOnDay($fulfillmentDay)) {
+                        $availMsg = $category->formatted_available_days;
+                        throw new Exception("Category '{$category->name}' is not available for this order (Available: {$availMsg}).");
                     }
-                    $variation = ProductVariation::where('product_id', $product->id)->findOrFail($item['product_variation_id']);
-                    $price = (float) $variation->price;
-                    $variationName = $variation->name;
 
-                    // Optional Stock check
-                    if ($variation->stock !== null) {
-                        if ($variation->stock < $item['quantity']) {
-                            throw new Exception("Not enough stock for '{$product->name} ({$variation->name})'. Available: {$variation->stock}");
+                    $boxSize = (int) ($item['box_size'] ?? 0);
+                    if ($boxSize <= 0) {
+                        throw new Exception("Invalid box size for '{$category->name}'.");
+                    }
+
+                    // Find configured box option for price verification
+                    $boxOptions = $category->box_options ?? [];
+                    $matchedOption = null;
+                    foreach ($boxOptions as $opt) {
+                        if ((int) ($opt['size'] ?? 0) === $boxSize && ($opt['status'] ?? true)) {
+                            $matchedOption = $opt;
+                            break;
                         }
-                        // Decrement stock
-                        $variation->decrement('stock', $item['quantity']);
                     }
+
+                    if (!$matchedOption) {
+                        throw new Exception("Box of {$boxSize} is not available for '{$category->name}'.");
+                    }
+
+                    $boxPrice = (float) $matchedOption['price'];
+                    $boxName = $matchedOption['name'] ?? "Box of {$boxSize}";
+
+                    // Verify box items assortment
+                    $rawBoxItems = $item['box_items'] ?? [];
+                    if (empty($rawBoxItems) || !is_array($rawBoxItems)) {
+                        throw new Exception("Please pick items to fill your {$boxName}.");
+                    }
+
+                    $totalBoxCount = 0;
+                    $processedBoxItems = [];
+
+                    foreach ($rawBoxItems as $bItem) {
+                        $bQty = (int) ($bItem['quantity'] ?? 0);
+                        if ($bQty <= 0) continue;
+                        $totalBoxCount += $bQty;
+
+                        $p = Product::where('status', true)->where('category_id', $category->id)->findOrFail($bItem['product_id']);
+                        $processedBoxItems[] = [
+                            'product_id' => $p->id,
+                            'product_name' => $p->name,
+                            'quantity' => $bQty,
+                        ];
+                    }
+
+                    if ($totalBoxCount !== $boxSize) {
+                        throw new Exception("{$boxName} requires exactly {$boxSize} items (currently selected {$totalBoxCount}).");
+                    }
+
+                    $qty = (int) ($item['quantity'] ?? 1);
+                    if ($qty <= 0) {
+                        throw new Exception("Quantity for {$boxName} must be greater than zero.");
+                    }
+
+                    $itemTotal = round($boxPrice * $qty, 2);
+                    $subtotal += $itemTotal;
+
+                    $processedItems[] = [
+                        'category_id' => $category->id,
+                        'product_id' => null,
+                        'product_variation_id' => null,
+                        'product_name' => "{$category->name} ({$boxName})",
+                        'variation_name' => $boxName,
+                        'is_box' => true,
+                        'box_size' => $boxSize,
+                        'box_items' => $processedBoxItems,
+                        'price' => $boxPrice,
+                        'quantity' => $qty,
+                        'total' => $itemTotal,
+                    ];
                 } else {
-                    $price = (float) $product->base_price;
+                    $product = Product::where('status', true)->with('category')->findOrFail($item['product_id']);
+
+                    if ($product->category && (!$product->category->status || !$product->category->isAvailableOnDay($fulfillmentDay))) {
+                        $availMsg = $product->category->formatted_available_days;
+                        throw new Exception("Product '{$product->name}' is from category '{$product->category->name}' which is not available for this order (Available: {$availMsg}).");
+                    }
+
+                    $variation = null;
+                    $price = 0.00;
+                    $variationName = null;
+
+                    if ($product->has_variations) {
+                        if (empty($item['product_variation_id'])) {
+                            throw new Exception("Product '{$product->name}' requires a variation choice.");
+                        }
+                        $variation = ProductVariation::where('product_id', $product->id)->findOrFail($item['product_variation_id']);
+                        $price = (float) $variation->price;
+                        $variationName = $variation->name;
+
+                        // Optional Stock check
+                        if ($variation->stock !== null) {
+                            if ($variation->stock < $item['quantity']) {
+                                throw new Exception("Not enough stock for '{$product->name} ({$variation->name})'. Available: {$variation->stock}");
+                            }
+                            // Decrement stock
+                            $variation->decrement('stock', $item['quantity']);
+                        }
+                    } else {
+                        $price = (float) $product->base_price;
+                    }
+
+                    $qty = (int) $item['quantity'];
+                    if ($qty <= 0) {
+                        throw new Exception("Quantity for product '{$product->name}' must be greater than zero.");
+                    }
+
+                    $itemTotal = round($price * $qty, 2);
+                    $subtotal += $itemTotal;
+
+                    $processedItems[] = [
+                        'category_id' => $product->category_id,
+                        'product_id' => $product->id,
+                        'product_variation_id' => $variation ? $variation->id : null,
+                        'product_name' => $product->name,
+                        'variation_name' => $variationName,
+                        'is_box' => false,
+                        'box_size' => null,
+                        'box_items' => null,
+                        'price' => $price,
+                        'quantity' => $qty,
+                        'total' => $itemTotal,
+                    ];
                 }
-
-                $qty = (int) $item['quantity'];
-                if ($qty <= 0) {
-                    throw new Exception("Quantity for product '{$product->name}' must be greater than zero.");
-                }
-
-                $itemTotal = round($price * $qty, 2);
-                $subtotal += $itemTotal;
-
-                $processedItems[] = [
-                    'product_id' => $product->id,
-                    'product_variation_id' => $variation ? $variation->id : null,
-                    'product_name' => $product->name,
-                    'variation_name' => $variationName,
-                    'price' => $price,
-                    'quantity' => $qty,
-                    'total' => $itemTotal,
-                ];
             }
 
             // Calculate delivery fee after subtotal is known
