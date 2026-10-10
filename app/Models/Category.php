@@ -63,12 +63,20 @@ class Category extends Model
     public function scopeAvailableOnDay(Builder $query, ?string $day = null): Builder
     {
         $targetDay = strtolower($day ?: now(config('app.timezone', 'Europe/London'))->format('l'));
+        $driver = $query->getConnection()->getDriverName();
 
-        return $query->where(function (Builder $q) use ($targetDay) {
-            $q->whereNull('available_days')
-              ->orWhere('available_days', '[]')
-              ->orWhere('available_days', 'like', '%"' . $targetDay . '"%')
-              ->orWhere('available_days', 'like', '%"all"%');
+        return $query->where(function (Builder $q) use ($targetDay, $driver) {
+            $q->whereNull('available_days');
+
+            if ($driver === 'pgsql') {
+                $q->orWhereRaw("available_days::text = '[]'")
+                  ->orWhereRaw("available_days::text ILIKE ?", ['%"' . $targetDay . '"%'])
+                  ->orWhereRaw("available_days::text ILIKE ?", ['%"all"%']);
+            } else {
+                $q->orWhere('available_days', '[]')
+                  ->orWhere('available_days', 'like', '%"' . $targetDay . '"%')
+                  ->orWhere('available_days', 'like', '%"all"%');
+            }
         });
     }
 
