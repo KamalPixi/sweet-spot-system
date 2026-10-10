@@ -157,6 +157,7 @@ export default function AdminDashboard() {
     const [catImageFile, setCatImageFile] = useState(null);
     const [catImagePreview, setCatImagePreview] = useState('');
     const [catStatus, setCatStatus] = useState(true);
+    const [catShowInFooter, setCatShowInFooter] = useState(false);
     const [catOrder, setCatOrder] = useState(0);
 
     // Image Cropper States
@@ -838,6 +839,7 @@ export default function AdminDashboard() {
         payload.append('name', catName);
         payload.append('icon', catIcon || '');
         payload.append('status', catStatus ? '1' : '0');
+        payload.append('show_in_footer', catShowInFooter ? '1' : '0');
         payload.append('order', parseInt(catOrder || 0));
         if (catImageFile) {
             payload.append('image', catImageFile);
@@ -870,6 +872,7 @@ export default function AdminDashboard() {
                 setCatImageFile(null);
                 setCatImagePreview('');
                 setCatStatus(true);
+                setCatShowInFooter(false);
                 setCatOrder(0);
                 fetchData();
             } else {
@@ -889,6 +892,7 @@ export default function AdminDashboard() {
         setCatImageFile(null);
         setCatImagePreview(imageUrl);
         setCatStatus(cat.status);
+        setCatShowInFooter(Boolean(cat.show_in_footer));
         setCatOrder(cat.order);
         setCatIcon(cat.icon || '');
         setCatFormOpen(true);
@@ -2804,6 +2808,7 @@ export default function AdminDashboard() {
                                                 setCatImageFile(null);
                                                 setCatImagePreview('');
                                                 setCatStatus(true);
+                                                setCatShowInFooter(false);
                                                 setCatOrder(0);
                                             }}
                                             className="bg-secondary hover:bg-secondary-hover active:scale-98 text-white font-bold px-4 py-2.5 text-xs flex items-center space-x-2 transition-all rounded-xl shadow-xs cursor-pointer hover:-translate-y-0.5 shrink-0 self-start sm:self-auto"
@@ -2875,29 +2880,41 @@ export default function AdminDashboard() {
                                                         </button>
                                                     )}
                                                 </div>
-                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2">Sort Order</label>
-                                                        <input 
-                                                            type="number" 
-                                                            value={catOrder}
-                                                            onChange={(e) => setCatOrder(e.target.value)}
-                                                            placeholder="0"
-                                                            className="w-full bg-white border border-neutral-300 px-4 py-3 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
-                                                        />
-                                                        <p className="text-[10px] text-neutral-400 mt-1">Determines display sequence order (lower numbers show first).</p>
-                                                    </div>
-                                                    <div>
-                                                        <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2">Visibility Status</label>
-                                                        <div className="flex items-center space-x-3 py-2.5">
+                                                <div>
+                                                    <label className="block text-neutral-500 text-xs font-bold uppercase tracking-wider mb-2">Sort Order</label>
+                                                    <input 
+                                                        type="number" 
+                                                        value={catOrder}
+                                                        onChange={(e) => setCatOrder(e.target.value)}
+                                                        placeholder="0"
+                                                        className="w-full bg-white border border-neutral-300 px-4 py-3 text-xs text-neutral-850 focus:border-neutral-950 focus:outline-none focus:ring-1 focus:ring-neutral-950 rounded-lg transition-colors"
+                                                    />
+                                                    <p className="text-[10px] text-neutral-400 mt-1">Determines display sequence order (lower numbers show first).</p>
+                                                </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
+                                                    <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl">
+                                                        <label className="block text-neutral-500 text-[11px] font-bold uppercase tracking-wider mb-1.5">Visibility Status</label>
+                                                        <label className="flex items-center space-x-3 py-1 cursor-pointer">
                                                             <input 
                                                                 type="checkbox" 
                                                                 checked={catStatus}
                                                                 onChange={(e) => setCatStatus(e.target.checked)}
                                                                 className="bg-white border-neutral-300 text-primary w-4 h-4 focus:ring-primary focus:outline-none rounded cursor-pointer"
                                                             />
-                                                            <span className="text-xs font-semibold text-neutral-700">Category is visible to customers</span>
-                                                        </div>
+                                                            <span className="text-xs font-semibold text-neutral-700">Category is active in menu</span>
+                                                        </label>
+                                                    </div>
+                                                    <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl">
+                                                        <label className="block text-neutral-500 text-[11px] font-bold uppercase tracking-wider mb-1.5">Footer Navigation</label>
+                                                        <label className="flex items-center space-x-3 py-1 cursor-pointer">
+                                                            <input 
+                                                                type="checkbox" 
+                                                                checked={catShowInFooter}
+                                                                onChange={(e) => setCatShowInFooter(e.target.checked)}
+                                                                className="bg-white border-neutral-300 text-primary w-4 h-4 focus:ring-primary focus:outline-none rounded cursor-pointer"
+                                                            />
+                                                            <span className="text-xs font-semibold text-neutral-700">Show in Footer ("Our Products")</span>
+                                                        </label>
                                                     </div>
                                                 </div>
                                                 <div className="flex items-center space-x-3 pt-5 border-t border-neutral-200 mt-6">
@@ -2931,16 +2948,23 @@ export default function AdminDashboard() {
                                                                 <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-neutral-950/80 backdrop-blur-xs text-white border border-white/10">
                                                                     Order: {catOrder || 0}
                                                                 </span>
-                                                                {catStatus ? (
-                                                                    <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1">
-                                                                        <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
-                                                                        Active
-                                                                    </span>
-                                                                ) : (
-                                                                    <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-neutral-100 text-neutral-500 border border-neutral-200">
-                                                                        Disabled
-                                                                    </span>
-                                                                )}
+                                                                <div className="flex items-center gap-1">
+                                                                    {catShowInFooter && (
+                                                                        <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-amber-500 text-white shadow-xs">
+                                                                            In Footer
+                                                                        </span>
+                                                                    )}
+                                                                    {catStatus ? (
+                                                                        <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1">
+                                                                            <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                                                                            Active
+                                                                        </span>
+                                                                    ) : (
+                                                                        <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-neutral-100 text-neutral-500 border border-neutral-200">
+                                                                            Disabled
+                                                                        </span>
+                                                                    )}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                         <div className="text-left px-1">
@@ -3106,6 +3130,19 @@ export default function AdminDashboard() {
                                                             </div>
                                                         );
                                                     }
+                                                },
+                                                {
+                                                    header: "Footer",
+                                                    render: (cat) => (
+                                                        cat.show_in_footer ? (
+                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-amber-50 text-amber-800 border border-amber-200/80 inline-flex items-center gap-1">
+                                                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500 inline-block"></span>
+                                                                In Footer
+                                                            </span>
+                                                        ) : (
+                                                            <span className="text-[10px] text-stone-400 font-medium">—</span>
+                                                        )
+                                                    )
                                                 },
                                                 {
                                                     header: "Status",

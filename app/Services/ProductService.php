@@ -69,6 +69,7 @@ class ProductService
             'slug' => $slug,
             'icon' => $data['icon'] ?? null,
             'status' => filter_var($data['status'] ?? true, FILTER_VALIDATE_BOOLEAN),
+            'show_in_footer' => filter_var($data['show_in_footer'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'order' => (int) ($data['order'] ?? 0),
         ];
 

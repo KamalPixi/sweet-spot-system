@@ -27,6 +27,7 @@ class StoreCategoryRequest extends FormRequest
             'icon' => 'nullable|string|max:255',
             'image' => 'required|image|max:4096',
             'status' => 'nullable|boolean',
+            'show_in_footer' => 'nullable|boolean',
             'order' => 'nullable|integer',
         ];
     }

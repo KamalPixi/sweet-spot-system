@@ -5,8 +5,19 @@ import { SocialIcon, getPlatformInfo } from './SocialIcons';
 export default function Footer({ onCategoryClick, navigate }) {
     const { configs, catalog } = useApp();
     
-    // Get categories dynamically from catalog, limit to max 4.
-    const categoriesList = (catalog && catalog.length > 0 ? catalog : []).slice(0, 4);
+    // Filter active categories flagged for footer ("Our Products"), or fallback to top active categories if none flagged
+    const activeCatalog = (catalog && Array.isArray(catalog)) ? catalog.filter(c => c && c.status !== false) : [];
+    const footerFlaggedCategories = activeCatalog.filter(cat => Boolean(cat.show_in_footer));
+
+    const displayCategories = footerFlaggedCategories.length > 0
+        ? footerFlaggedCategories
+        : activeCatalog.slice(0, 4);
+
+    // Products: either flagged categories or curated fallback matching design
+    const defaultProducts = ['Cakes', 'Puddings', 'Braids', 'Toasts'];
+    const displayProducts = displayCategories.length > 0 
+        ? displayCategories 
+        : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
 
     // Real dynamic info from settings.
     const address = configs.store_address || '';
@@ -54,12 +65,6 @@ export default function Footer({ onCategoryClick, navigate }) {
             window.location.href = `/categories/${cat.slug}`;
         }
     };
-
-    // Products: either categories or curated fallback matching design
-    const defaultProducts = ['Cakes', 'Coffee', 'French Pastries', 'Drinks'];
-    const displayProducts = categoriesList.length > 0 
-        ? categoriesList 
-        : defaultProducts.map((name, i) => ({ id: i, name, slug: name.toLowerCase().replace(/\s+/g, '-') }));
 
     // Helper to format social links cleanly with http/https fallback
     const formatExternalUrl = (url, fallback = '#') => {
