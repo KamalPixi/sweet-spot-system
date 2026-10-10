@@ -261,6 +261,9 @@ class CloudPrntService
                 foreach ($item->box_items as $bItem) {
                     $bQty = $bItem['quantity'] ?? 1;
                     $bName = $bItem['product_name'] ?? ($bItem['name'] ?? 'Assorted Item');
+                    if (!empty($bItem['variation_name'])) {
+                        $bName .= " ({$bItem['variation_name']})";
+                    }
                     $lines[] = "  └ {$bQty}x {$bName}";
                 }
             }

@@ -690,7 +690,7 @@ export default function AdminOrderDetailPage() {
                                                                 {item.box_items.map((bi, bIdx) => (
                                                                     <span key={bIdx} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200/70 text-[11px] font-medium">
                                                                         <span className="font-bold text-amber-800">{bi.quantity}x</span>
-                                                                        <span>{bi.product_name || bi.name}</span>
+                                                                        <span>{bi.product_name || bi.name}{bi.variation_name ? ` (${bi.variation_name})` : ''}</span>
                                                                     </span>
                                                                 ))}
                                                             </div>
