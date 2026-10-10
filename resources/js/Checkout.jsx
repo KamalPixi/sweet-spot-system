@@ -1406,7 +1406,7 @@ export default function Checkout() {
                                                                         <div className="mt-1 flex flex-wrap gap-1">
                                                                             {item.box_items.map((b, bi) => (
                                                                                 <span key={bi} className="inline-flex items-center text-[9px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
-                                                                                    {b.quantity}x {b.product_name || b.name}
+                                                                                    {b.quantity}x {b.product_name || b.name}{b.variation_name ? ` (${b.variation_name})` : ''}
                                                                                 </span>
                                                                             ))}
                                                                         </div>
@@ -2156,7 +2156,7 @@ export default function Checkout() {
                                                             <div className="mt-1 flex flex-wrap gap-1">
                                                                 {item.box_items.map((b, bi) => (
                                                                     <span key={bi} className="inline-flex items-center text-[9.5px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
-                                                                        {b.quantity}x {b.product_name || b.name}
+                                                                        {b.quantity}x {b.product_name || b.name}{b.variation_name ? ` (${b.variation_name})` : ''}
                                                                     </span>
                                                                 ))}
                                                             </div>

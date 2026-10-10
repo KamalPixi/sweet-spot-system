@@ -11,6 +11,34 @@ import { SlidersHorizontal, ArrowUpDown, X, UtensilsCrossed, Package, Plus, Minu
 
 const CATALOG_CACHE_KEY = 'cached_menu_catalog_v2';
 
+const resolveItemImageUrl = (product, variation = null) => {
+    if (!product && !variation) return '/images/placeholder.svg';
+    const resolve = (url) => {
+        if (!url) return '/images/placeholder.svg';
+        if (url.startsWith('http') || url.startsWith('data:')) return url;
+        const clean = url.replace(/^\/?(storage\/)+/, '');
+        return `/storage/${clean}`;
+    };
+    if (variation?.images && variation.images.length > 0) {
+        const primary = variation.images.find(img => img.is_primary);
+        return resolve(primary ? primary.url : variation.images[0].url);
+    }
+    if (variation?.image) {
+        return resolve(variation.image);
+    }
+    if (product?.images && product.images.length > 0) {
+        const primary = product.images.find(img => img.is_primary);
+        const u = primary ? primary.url : product.images[0].url;
+        return resolve(u);
+    }
+    if (product?.image) {
+        return resolve(product.image);
+    }
+    return '/images/placeholder.svg';
+};
+
+const resolveProductImageUrl = (product) => resolveItemImageUrl(product);
+
 export default function Categories() {
     const navigate = useNavigate();
     const location = useLocation();
@@ -45,7 +73,8 @@ export default function Categories() {
 
     // Box of (X) Mix & Match state
     const [selectedBoxOption, setSelectedBoxOption] = useState(null);
-    const [boxTrayItems, setBoxTrayItems] = useState({}); // { [productId]: { product, count } }
+    const [boxTrayItems, setBoxTrayItems] = useState({}); // { [itemKey]: { key, product, variation, count } }
+    const [boxVariationProduct, setBoxVariationProduct] = useState(null);
 
     // Filter states
     const [searchQuery, setSearchQuery] = useState(searchParams.get('search') || searchTerm || '');
@@ -58,6 +87,7 @@ export default function Categories() {
         setActiveCategorySlug(catFromUrl);
         setSelectedBoxOption(null);
         setBoxTrayItems({});
+        setBoxVariationProduct(null);
     }, [categorySlug, searchParams]);
 
     // Sync global search term if updated from overlay
@@ -239,38 +269,68 @@ export default function Categories() {
         return list;
     }, [boxTrayItems]);
 
+    const getProductBoxCount = (productId) => {
+        return Object.values(boxTrayItems)
+            .filter(item => item.product.id === productId)
+            .reduce((sum, item) => sum + item.count, 0);
+    };
+
     const handleSelectBoxMode = (option) => {
         setSelectedBoxOption(option);
         setBoxTrayItems({});
+        setBoxVariationProduct(null);
     };
 
-    const handleAddBoxItem = (product) => {
+    const handleAddBoxItem = (product, variation = null) => {
         if (!selectedBoxOption) return;
         if (currentBoxCount >= selectedBoxOption.size) return;
+
+        // If product has multiple variations and none was explicitly passed, open picker modal
+        if (!variation && product.has_variations && product.variations && product.variations.length > 1) {
+            setBoxVariationProduct(product);
+            return;
+        }
+
+        const chosenVariation = variation || (product.has_variations && product.variations && product.variations.length > 0 ? product.variations[0] : null);
+        const itemKey = chosenVariation ? `${product.id}-${chosenVariation.id}` : `${product.id}`;
+
         setBoxTrayItems(prev => {
-            const current = prev[product.id]?.count || 0;
+            const current = prev[itemKey]?.count || 0;
             return {
                 ...prev,
-                [product.id]: {
+                [itemKey]: {
+                    key: itemKey,
                     product,
+                    variation: chosenVariation,
                     count: current + 1
                 }
             };
         });
     };
 
-    const handleRemoveBoxItem = (productId) => {
+    const handleRemoveBoxItem = (itemKeyOrProductId, variationId = null) => {
         setBoxTrayItems(prev => {
-            const current = prev[productId]?.count || 0;
+            let targetKey = itemKeyOrProductId;
+            if (variationId) {
+                targetKey = `${itemKeyOrProductId}-${variationId}`;
+            }
+
+            if (!prev[targetKey]) {
+                const matchingKeys = Object.keys(prev).filter(k => prev[k].product.id === itemKeyOrProductId);
+                if (matchingKeys.length === 0) return prev;
+                targetKey = matchingKeys[matchingKeys.length - 1];
+            }
+
+            const current = prev[targetKey]?.count || 0;
             if (current <= 1) {
                 const next = { ...prev };
-                delete next[productId];
+                delete next[targetKey];
                 return next;
             }
             return {
                 ...prev,
-                [productId]: {
-                    ...prev[productId],
+                [targetKey]: {
+                    ...prev[targetKey],
                     count: current - 1
                 }
             };
@@ -283,11 +343,12 @@ export default function Categories() {
 
         const boxItems = Object.values(boxTrayItems).map(item => {
             const p = item.product;
-            const img = p.images && p.images.length > 0
-                ? (p.images.find(i => i.is_primary)?.url || p.images[0].url)
-                : (p.image || '/images/placeholder.svg');
+            const v = item.variation;
+            const img = resolveItemImageUrl(p, v);
             return {
                 product_id: p.id,
+                product_variation_id: v ? v.id : null,
+                variation_name: v ? v.name : null,
                 product_name: p.name,
                 quantity: item.count,
                 image: img
@@ -302,6 +363,7 @@ export default function Categories() {
         });
 
         setBoxTrayItems({});
+        setBoxVariationProduct(null);
     };
 
     if (loading && catalog.length === 0) {
@@ -676,7 +738,7 @@ export default function Categories() {
                                                 key={product.id} 
                                                 product={product} 
                                                 boxMode={Boolean(selectedBoxOption)}
-                                                boxCount={boxTrayItems[product.id]?.count || 0}
+                                                boxCount={getProductBoxCount(product.id)}
                                                 onAddBoxItem={() => handleAddBoxItem(product)}
                                                 onRemoveBoxItem={() => handleRemoveBoxItem(product.id)}
                                                 isBoxFull={isBoxFull}
@@ -706,11 +768,22 @@ export default function Categories() {
                                     {currentBoxCount} / {selectedBoxOption.size} items
                                 </span>
                             </div>
-                            <div className="text-right">
-                                <span className="text-xs text-neutral-400 block -mb-0.5">Fixed Price</span>
-                                <span className="text-sm sm:text-base font-black text-[#e5b582]">
-                                    £{parseFloat(selectedBoxOption.price || 0).toFixed(2)}
-                                </span>
+                            <div className="flex items-center gap-2.5">
+                                <div className="text-right">
+                                    <span className="text-xs text-neutral-400 block -mb-0.5">Fixed Price</span>
+                                    <span className="text-sm sm:text-base font-black text-[#e5b582]">
+                                        £{parseFloat(selectedBoxOption.price || 0).toFixed(2)}
+                                    </span>
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => handleSelectBoxMode(null)}
+                                    className="w-7 h-7 rounded-full bg-white/10 hover:bg-rose-500/20 text-neutral-300 hover:text-rose-300 flex items-center justify-center transition-all cursor-pointer border border-white/10 hover:border-rose-400/40"
+                                    title="Cancel Box Selection & Return to Single Items"
+                                    aria-label="Cancel Box Mode"
+                                >
+                                    <X size={14} strokeWidth={2.5} />
+                                </button>
                             </div>
                         </div>
 
@@ -721,19 +794,29 @@ export default function Categories() {
                                 return (
                                     <div 
                                         key={slotIdx}
-                                        className={`w-10 h-10 rounded-xl border-2 flex items-center justify-center overflow-hidden shrink-0 transition-all ${
+                                        onClick={() => {
+                                            if (filledItem) {
+                                                handleRemoveBoxItem(filledItem.key || filledItem.product.id);
+                                            }
+                                        }}
+                                        className={`group relative w-10 h-10 rounded-xl border-2 flex items-center justify-center overflow-hidden shrink-0 transition-all ${
                                             filledItem 
-                                                ? 'bg-white border-[#e5b582] shadow-xs' 
-                                                : 'bg-white/5 border-dashed border-white/20 text-white/40 text-[11px] font-mono font-bold'
+                                                ? 'bg-white border-[#e5b582] shadow-xs cursor-pointer hover:border-rose-400' 
+                                                : 'bg-white/5 border-dashed border-white/20 text-white/40 text-[11px] font-mono font-bold select-none'
                                         }`}
-                                        title={filledItem ? filledItem.product.name : `Slot ${slotIdx + 1}`}
+                                        title={filledItem ? `Remove ${filledItem.product.name}${filledItem.variation ? ` (${filledItem.variation.name})` : ''} from box` : `Empty Slot ${slotIdx + 1}`}
                                     >
                                         {filledItem ? (
-                                            <img 
-                                                src={filledItem.product.image || (filledItem.product.images && filledItem.product.images[0] ? filledItem.product.images[0].url : '/images/placeholder.svg')} 
-                                                alt={filledItem.product.name} 
-                                                className="w-full h-full object-cover" 
-                                            />
+                                            <>
+                                                <img 
+                                                    src={resolveItemImageUrl(filledItem.product, filledItem.variation)} 
+                                                    alt={filledItem.product.name} 
+                                                    className="w-full h-full object-cover transition-opacity group-hover:opacity-40" 
+                                                />
+                                                <div className="absolute inset-0 bg-rose-600/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    <X size={14} strokeWidth={3} />
+                                                </div>
+                                            </>
                                         ) : (
                                             slotIdx + 1
                                         )}
@@ -767,6 +850,145 @@ export default function Categories() {
                                 {currentBoxCount === selectedBoxOption.size 
                                     ? `Add ${selectedBoxOption.name} to Basket • £${parseFloat(selectedBoxOption.price || 0).toFixed(2)}`
                                     : `Pick ${selectedBoxOption.size - currentBoxCount} more ${selectedBoxOption.size - currentBoxCount === 1 ? 'flavor' : 'flavors'} to complete box`}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Box Variation Picker Modal */}
+            {boxVariationProduct && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-xs animate-fadeIn"
+                    onClick={() => setBoxVariationProduct(null)}
+                >
+                    <div 
+                        className="bg-white rounded-3xl max-w-md w-full overflow-hidden shadow-2xl border border-neutral-100 animate-scaleUp text-left"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal Header */}
+                        <div className="p-4 sm:p-5 border-b border-neutral-100 flex items-center justify-between bg-[#faf7f2]">
+                            <div className="flex items-center gap-3">
+                                <div className="w-12 h-12 rounded-xl overflow-hidden bg-white border border-neutral-200/80 shrink-0">
+                                    <img 
+                                        src={resolveItemImageUrl(boxVariationProduct)} 
+                                        alt={boxVariationProduct.name}
+                                        className="w-full h-full object-cover"
+                                    />
+                                </div>
+                                <div>
+                                    <div className="flex items-center gap-2">
+                                        <h3 className="font-extrabold text-neutral-900 text-sm sm:text-base leading-tight">
+                                            {boxVariationProduct.name}
+                                        </h3>
+                                    </div>
+                                    <p className="text-[11px] text-neutral-500 font-medium mt-0.5">
+                                        Select flavors for your box ({currentBoxCount}/{selectedBoxOption?.size})
+                                    </p>
+                                </div>
+                            </div>
+                            <button 
+                                type="button"
+                                onClick={() => setBoxVariationProduct(null)}
+                                className="w-7 h-7 rounded-full bg-white hover:bg-neutral-200 text-neutral-500 hover:text-neutral-900 flex items-center justify-center border border-neutral-200/80 transition-colors cursor-pointer"
+                            >
+                                <X size={14} strokeWidth={2.5} />
+                            </button>
+                        </div>
+
+                        {/* Variations List */}
+                        <div className="p-4 sm:p-5 max-h-[55vh] overflow-y-auto space-y-2.5 custom-scrollbar">
+                            {boxVariationProduct.variations && boxVariationProduct.variations.map((v) => {
+                                const itemKey = `${boxVariationProduct.id}-${v.id}`;
+                                const varCount = boxTrayItems[itemKey]?.count || 0;
+                                return (
+                                    <div 
+                                        key={v.id}
+                                        className={`p-3 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                                            varCount > 0 
+                                                ? 'bg-[#faf7f2] border-[#e5b582] shadow-xs' 
+                                                : 'bg-white border-neutral-200/80 hover:border-neutral-300'
+                                        }`}
+                                    >
+                                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                                            <div className="w-10 h-10 rounded-xl overflow-hidden bg-neutral-100 border border-neutral-200/60 shrink-0">
+                                                <img 
+                                                    src={resolveItemImageUrl(boxVariationProduct, v)} 
+                                                    alt={v.name}
+                                                    className="w-full h-full object-cover"
+                                                />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h4 className="font-bold text-neutral-900 text-xs sm:text-[13px] truncate">
+                                                    {v.name}
+                                                </h4>
+                                                {v.description && (
+                                                    <p className="text-[10.5px] text-neutral-400 font-light truncate">
+                                                        {v.description}
+                                                    </p>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Stepper or Add Button */}
+                                        <div className="shrink-0">
+                                            {varCount === 0 ? (
+                                                <button
+                                                    type="button"
+                                                    disabled={isBoxFull}
+                                                    onClick={() => handleAddBoxItem(boxVariationProduct, v)}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-bold transition-all flex items-center gap-1 cursor-pointer ${
+                                                        isBoxFull
+                                                            ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
+                                                            : 'bg-[#24161b] hover:bg-black text-[#e5b582] hover:text-white border border-[#e5b582]/30 active:scale-95'
+                                                    }`}
+                                                >
+                                                    <Plus size={12} strokeWidth={2.5} />
+                                                    <span>Add</span>
+                                                </button>
+                                            ) : (
+                                                <div className="flex items-center gap-1 border-2 border-[#e5b582] rounded-full px-1.5 py-0.5 bg-white shadow-2xs">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleRemoveBoxItem(itemKey)}
+                                                        className="w-5 h-5 rounded-full border border-neutral-300 flex items-center justify-center text-neutral-700 hover:bg-neutral-100 active:scale-90 transition-all cursor-pointer"
+                                                    >
+                                                        <Minus size={10} strokeWidth={2.5} />
+                                                    </button>
+                                                    <span className="font-black text-xs text-[#24161b] min-w-[18px] text-center select-none">
+                                                        {varCount}
+                                                    </span>
+                                                    <button
+                                                        type="button"
+                                                        disabled={isBoxFull}
+                                                        onClick={() => handleAddBoxItem(boxVariationProduct, v)}
+                                                        className={`w-5 h-5 rounded-full flex items-center justify-center active:scale-90 transition-all cursor-pointer ${
+                                                            isBoxFull
+                                                                ? 'bg-neutral-200 text-neutral-400 cursor-not-allowed'
+                                                                : 'bg-[#24161b] text-[#e5b582] hover:bg-black'
+                                                        }`}
+                                                    >
+                                                        <Plus size={10} strokeWidth={2.5} />
+                                                    </button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                );
+                            })}
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="p-3.5 sm:p-4 border-t border-neutral-100 bg-[#faf7f2] flex items-center justify-between">
+                            <div className="text-xs font-bold text-neutral-600">
+                                Box: <span className="text-[#24161b] font-black">{currentBoxCount}</span> / <span className="text-[#24161b] font-black">{selectedBoxOption?.size}</span> filled
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setBoxVariationProduct(null)}
+                                className="bg-[#24161b] hover:bg-black text-[#e5b582] hover:text-white px-4 py-2 rounded-full text-xs font-bold transition-all cursor-pointer shadow-xs active:scale-95"
+                            >
+                                Done
                             </button>
                         </div>
                     </div>

@@ -40,9 +40,15 @@ export default function ProductCard({
     const matchingCartItems = cart.filter(item => item.product_id === product.id && !item.is_box);
     const totalQty = matchingCartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+    const hasMultipleVariations = Boolean(product.has_variations && product.variations && product.variations.length > 1);
+
     const handleCardClick = () => {
         if (boxMode) {
-            if (boxCount === 0 && !isBoxFull && onAddBoxItem) {
+            if (hasMultipleVariations) {
+                if (onAddBoxItem) onAddBoxItem();
+                return;
+            }
+            if (!isBoxFull && onAddBoxItem) {
                 onAddBoxItem();
             }
             return;
@@ -53,12 +59,12 @@ export default function ProductCard({
     const handleAdd = (e) => {
         e.stopPropagation();
         if (boxMode) {
-            if (!isBoxFull && onAddBoxItem) {
+            if (onAddBoxItem) {
                 onAddBoxItem();
             }
             return;
         }
-        if (product.has_variations && product.variations && product.variations.length > 1) {
+        if (hasMultipleVariations) {
             openProductModal(product);
             return;
         }
@@ -71,6 +77,10 @@ export default function ProductCard({
     const handleIncrement = (e) => {
         e.stopPropagation();
         if (boxMode) {
+            if (hasMultipleVariations) {
+                if (onAddBoxItem) onAddBoxItem();
+                return;
+            }
             if (!isBoxFull && onAddBoxItem) {
                 onAddBoxItem();
             }
@@ -170,7 +180,7 @@ export default function ProductCard({
                             }`}
                         >
                             <Plus size={14} />
-                            <span>{isBoxFull ? 'Box Full' : 'Add to Box'}</span>
+                            <span>{isBoxFull ? 'Box Full' : (hasMultipleVariations ? 'Choose Flavors' : 'Add to Box')}</span>
                         </button>
                     ) : (
                         <div className="flex items-center justify-between border-2 border-[#e5b582] rounded-full px-2 py-1 bg-white shadow-2xs">

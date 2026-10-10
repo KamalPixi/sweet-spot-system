@@ -156,10 +156,20 @@ export default function CartDrawer() {
                                             </div>
                                         </div>
 
-                                        {item.variation_name && (
+                                        {item.variation_name && !item.is_box && (
                                             <span className="inline-block mt-0.5 px-2 py-0.5 bg-white border border-neutral-200 rounded-full text-[10px] font-semibold text-neutral-600">
                                                 {item.variation_name}
                                             </span>
+                                        )}
+
+                                        {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
+                                            <div className="mt-1 flex flex-wrap gap-1">
+                                                {item.box_items.map((b, bi) => (
+                                                    <span key={bi} className="inline-flex items-center text-[9.5px] bg-white border border-neutral-200/80 text-[#24161b] px-1.5 py-0.5 rounded-md font-medium">
+                                                        {b.quantity}x {b.product_name || b.name}{b.variation_name ? ` (${b.variation_name})` : ''}
+                                                    </span>
+                                                ))}
+                                            </div>
                                         )}
                                     </div>
 

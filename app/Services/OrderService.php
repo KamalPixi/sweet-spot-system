@@ -178,9 +178,38 @@ class OrderService
                         $totalBoxCount += $bQty;
 
                         $p = Product::where('status', true)->where('category_id', $category->id)->findOrFail($bItem['product_id']);
+                        $variation = null;
+                        $displayName = $p->name;
+
+                        if (!empty($bItem['product_variation_id'])) {
+                            $variation = ProductVariation::where('product_id', $p->id)->findOrFail($bItem['product_variation_id']);
+                            $displayName = "{$p->name} ({$variation->name})";
+
+                            // Decrement variation stock if applicable
+                            if ($variation->stock !== null) {
+                                if ($variation->stock < $bQty) {
+                                    throw new Exception("Not enough stock for '{$displayName}' in box. Available: {$variation->stock}");
+                                }
+                                $variation->decrement('stock', $bQty);
+                            }
+                        } elseif ($p->has_variations && !empty($bItem['variation_name'])) {
+                            $variation = ProductVariation::where('product_id', $p->id)->where('name', $bItem['variation_name'])->first();
+                            if ($variation) {
+                                $displayName = "{$p->name} ({$variation->name})";
+                                if ($variation->stock !== null) {
+                                    if ($variation->stock < $bQty) {
+                                        throw new Exception("Not enough stock for '{$displayName}' in box. Available: {$variation->stock}");
+                                    }
+                                    $variation->decrement('stock', $bQty);
+                                }
+                            }
+                        }
+
                         $processedBoxItems[] = [
                             'product_id' => $p->id,
-                            'product_name' => $p->name,
+                            'product_variation_id' => $variation ? $variation->id : null,
+                            'variation_name' => $variation ? $variation->name : ($bItem['variation_name'] ?? null),
+                            'product_name' => $displayName,
                             'quantity' => $bQty,
                         ];
                     }
