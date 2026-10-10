@@ -326,6 +326,10 @@ export default function AdminDashboard() {
                 const res = await fetch('/api/admin/admin-reports', { headers });
                 const d = await res.json();
                 if (d.success) setReports(d.data);
+
+                const ordersRes = await fetch('/api/admin/orders', { headers });
+                const ordersD = await ordersRes.json();
+                if (ordersD.success) setOrders(ordersD.data);
             } else if (activeTab === 'reports') {
                 const params = new URLSearchParams({ range: reportRange });
                 if (reportRange === 'custom') {
@@ -336,12 +340,10 @@ export default function AdminDashboard() {
                 const res = await fetch(`/api/admin/admin-reports?${params.toString()}`, { headers });
                 const d = await res.json();
                 if (d.success) setReports(d.data);
-            } else if (activeTab === 'orders') {
+            } else if (activeTab === 'orders' || activeTab === 'tables') {
                 const params = new URLSearchParams();
-                if (orderStatusFilter === 'incomplete') {
-                    params.append('status', 'incomplete');
-                } else if (orderStatusFilter === 'awaiting_payment') {
-                    params.append('status', 'awaiting_payment');
+                if (orderStatusFilter && orderStatusFilter !== 'active') {
+                    params.append('status', orderStatusFilter);
                 }
                 const res = await fetch(`/api/admin/orders${params.toString() ? `?${params.toString()}` : ''}`, { headers });
                 const d = await res.json();
@@ -502,7 +504,7 @@ export default function AdminDashboard() {
 
         if (eventType === 'order.created' || eventType === 'order.updated') {
             fetchNotifications();
-            if (['dashboard', 'orders', 'reports'].includes(activeTab)) {
+            if (['dashboard', 'orders', 'reports', 'tables'].includes(activeTab)) {
                 fetchData();
             }
             return;
@@ -519,7 +521,7 @@ export default function AdminDashboard() {
         onMessage: handleAdminRealtimeMessage,
         fallbackPoll: () => {
             fetchNotifications();
-            if (['dashboard', 'orders', 'reports'].includes(activeTab)) {
+            if (['dashboard', 'orders', 'reports', 'tables'].includes(activeTab)) {
                 fetchData();
             }
         },

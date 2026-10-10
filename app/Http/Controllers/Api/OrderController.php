@@ -280,7 +280,6 @@ class OrderController extends Controller
         $this->orderStatusAutomationService->autoAdvanceEligibleOrders();
 
         $query = Order::with(['items.product.category', 'customer', 'deliveryAddress'])->orderBy('created_at', 'desc');
-
         $statusFilter = $request->input('status', 'all');
 
         if ($statusFilter === 'incomplete') {
@@ -292,13 +291,14 @@ class OrderController extends Controller
                          ->whereIn('payment_status', ['unpaid', 'failed']);
                   });
             });
+        } elseif ($statusFilter === 'awaiting_payment') {
+            $query->where('status', 'awaiting_payment');
+        } elseif ($statusFilter === 'active') {
+            $query->whereIn('status', ['pending', 'preparing', 'ready']);
         } elseif ($statusFilter !== 'all') {
-            $query->where('status', $statusFilter)
-                  ->where('status', '!=', 'awaiting_payment');
-        } else {
-            // Default: exclude awaiting_payment (not yet paid) from main order list
-            $query->where('status', '!=', 'awaiting_payment');
+            $query->where('status', $statusFilter);
         }
+        // When $statusFilter === 'all', query includes all orders without exclusion
 
         if ($request->has('type') && $request->input('type') !== 'all') {
             $query->where('type', $request->input('type'));
