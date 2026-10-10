@@ -427,19 +427,62 @@ export default function Categories() {
 
                                     {catalog.map(cat => {
                                         const isActive = activeCategorySlug === cat.slug;
+                                        const hasBoxOptions = cat.box_options && Array.isArray(cat.box_options) && cat.box_options.length > 0;
+
                                         return (
-                                            <button
-                                                key={cat.id}
-                                                type="button"
-                                                onClick={() => handleCategorySelect(cat.slug)}
-                                                className={`px-4.5 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer text-center select-none ${
-                                                    isActive
-                                                        ? 'bg-[#1c1410] text-[#e5b582] shadow-xs border border-[#1c1410]'
-                                                        : 'bg-white text-neutral-700 border border-neutral-300 hover:border-neutral-900 hover:text-neutral-950'
-                                                }`}
-                                            >
-                                                {cat.name}
-                                            </button>
+                                            <div key={cat.id} className="flex flex-col gap-1.5 shrink-0">
+                                                <button
+                                                    type="button"
+                                                    onClick={() => handleCategorySelect(cat.slug)}
+                                                    className={`px-4.5 py-2 rounded-full text-xs font-semibold transition-all whitespace-nowrap cursor-pointer text-center select-none ${
+                                                        isActive
+                                                            ? 'bg-[#1c1410] text-[#e5b582] shadow-xs border border-[#1c1410]'
+                                                            : 'bg-white text-neutral-700 border border-neutral-300 hover:border-neutral-900 hover:text-neutral-950'
+                                                    }`}
+                                                >
+                                                    {cat.name}
+                                                </button>
+
+                                                {/* Sub-item Box Tiers in Sidebar */}
+                                                {isActive && hasBoxOptions && (
+                                                    <div className="hidden md:flex flex-col ml-3 pl-3 border-l-2 border-[#e5b582]/50 py-1 space-y-1 animate-fadeIn">
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => handleSelectBoxMode(null)}
+                                                            className={`text-left px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                                                                selectedBoxOption === null
+                                                                    ? 'bg-[#24161b] text-[#e5b582] shadow-xs'
+                                                                    : 'text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100'
+                                                            }`}
+                                                        >
+                                                            <span>Single Items</span>
+                                                        </button>
+
+                                                        {cat.box_options.map((opt, optIdx) => {
+                                                            const isBoxSelected = selectedBoxOption?.size === opt.size;
+                                                            return (
+                                                                <button
+                                                                    key={optIdx}
+                                                                    type="button"
+                                                                    onClick={() => handleSelectBoxMode(opt)}
+                                                                    className={`text-left px-3 py-1.5 rounded-xl text-[11px] font-bold transition-all cursor-pointer flex items-center justify-between gap-1.5 ${
+                                                                        isBoxSelected
+                                                                            ? 'bg-[#e5b582] text-[#24161b] shadow-xs font-black'
+                                                                            : 'text-neutral-600 hover:text-neutral-950 hover:bg-neutral-100'
+                                                                    }`}
+                                                                >
+                                                                    <span>{opt.name}</span>
+                                                                    <span className={`text-[10px] font-mono font-black px-1.5 py-0.5 rounded ${
+                                                                        isBoxSelected ? 'bg-black/15 text-[#24161b]' : 'bg-neutral-100 text-neutral-600'
+                                                                    }`}>
+                                                                        £{parseFloat(opt.price || 0).toFixed(2)}
+                                                                    </span>
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
                                         );
                                     })}
                                 </div>
@@ -459,75 +502,38 @@ export default function Categories() {
                                     </div>
                                     <div className="w-full h-[1px] bg-neutral-200" />
                                 </div>
-
-                                {/* Box Package / Mix & Match Option Selector */}
+                                {/* Mobile Category Box Sub-pills (Only on small screens) */}
                                 {activeCategory?.box_options && Array.isArray(activeCategory.box_options) && activeCategory.box_options.length > 0 && (
-                                    <div className="mb-6 p-4 sm:p-5 rounded-3xl bg-gradient-to-br from-[#24161b] via-[#331c26] to-[#1c1410] text-white shadow-xl border border-[#e5b582]/30 space-y-3.5">
-                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
-                                            <div className="flex items-center space-x-3">
-                                                <div className="w-9 h-9 rounded-2xl bg-[#e5b582]/20 text-[#e5b582] flex items-center justify-center shrink-0 border border-[#e5b582]/30">
-                                                    <Package size={18} />
-                                                </div>
-                                                <div>
-                                                    <div className="flex items-center gap-2">
-                                                        <h3 className="text-sm sm:text-base font-black text-white tracking-tight">
-                                                            Choose Box Size
-                                                        </h3>
-                                                        <span className="px-2 py-0.5 rounded-full text-[9.5px] font-black uppercase tracking-wider bg-[#e5b582] text-[#24161b]">
-                                                            Mix & Match
-                                                        </span>
-                                                    </div>
-                                                    <p className="text-[11px] text-neutral-300 font-light">
-                                                        Pick any combination of flavors below for a fixed box price
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            {selectedBoxOption && (
-                                                <div className="self-start sm:self-auto flex items-center gap-1.5 bg-white/10 px-3 py-1 rounded-full border border-white/15">
-                                                    <span className="text-[11px] text-neutral-300">Box Total:</span>
-                                                    <span className="text-xs font-black text-[#e5b582]">
-                                                        £{parseFloat(selectedBoxOption.price || 0).toFixed(2)}
-                                                    </span>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Box Option Buttons */}
-                                        <div className="flex flex-wrap gap-2 pt-0.5 select-none">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleSelectBoxMode(null)}
-                                                className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer select-none ${
-                                                    selectedBoxOption === null
-                                                        ? 'bg-white text-[#24161b] shadow-md scale-100'
-                                                        : 'bg-white/10 text-white/80 hover:bg-white/20 hover:text-white'
-                                                }`}
-                                            >
-                                                Single / Individual
-                                            </button>
-                                            {activeCategory.box_options.map((opt, i) => {
-                                                const isSelected = selectedBoxOption?.size === opt.size;
-                                                return (
-                                                    <button
-                                                        key={i}
-                                                        type="button"
-                                                        onClick={() => handleSelectBoxMode(opt)}
-                                                        className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all cursor-pointer flex items-center gap-2 select-none ${
-                                                            isSelected
-                                                                ? 'bg-[#e5b582] text-[#24161b] shadow-md font-black ring-2 ring-white/50'
-                                                                : 'bg-white/10 text-white/85 hover:bg-white/20 hover:text-white'
-                                                        }`}
-                                                    >
-                                                        <span>{opt.name}</span>
-                                                        <span className={`px-1.5 py-0.5 rounded-md text-[10.5px] font-mono font-bold ${
-                                                            isSelected ? 'bg-[#24161b]/15 text-[#24161b]' : 'bg-black/30 text-[#e5b582]'
-                                                        }`}>
-                                                            £{parseFloat(opt.price || 0).toFixed(2)}
-                                                        </span>
-                                                    </button>
-                                                );
-                                            })}
-                                        </div>
+                                    <div className="flex md:hidden items-center gap-1.5 overflow-x-auto scrollbar-none mb-3 pb-0.5">
+                                        <button
+                                            type="button"
+                                            onClick={() => handleSelectBoxMode(null)}
+                                            className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all cursor-pointer ${
+                                                selectedBoxOption === null
+                                                    ? 'bg-[#24161b] text-[#e5b582]'
+                                                    : 'bg-neutral-100 text-neutral-600'
+                                            }`}
+                                        >
+                                            Single
+                                        </button>
+                                        {activeCategory.box_options.map((opt, optIdx) => {
+                                            const isBoxSelected = selectedBoxOption?.size === opt.size;
+                                            return (
+                                                <button
+                                                    key={optIdx}
+                                                    type="button"
+                                                    onClick={() => handleSelectBoxMode(opt)}
+                                                    className={`px-3 py-1.5 rounded-full text-xs font-bold shrink-0 transition-all flex items-center gap-1.5 cursor-pointer ${
+                                                        isBoxSelected
+                                                            ? 'bg-[#e5b582] text-[#24161b]'
+                                                            : 'bg-neutral-100 text-neutral-600'
+                                                    }`}
+                                                >
+                                                    <span>{opt.name}</span>
+                                                    <span className="text-[10px] font-mono font-black">£{parseFloat(opt.price || 0).toFixed(2)}</span>
+                                                </button>
+                                            );
+                                        })}
                                     </div>
                                 )}
 
