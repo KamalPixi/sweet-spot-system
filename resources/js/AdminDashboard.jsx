@@ -196,6 +196,7 @@ export default function AdminDashboard() {
     const [prodStatusFilter, setProdStatusFilter] = useState('all');
     const [prodTypeFilter, setProdTypeFilter] = useState('all');
     const [prodCategoryPickerOpen, setProdCategoryPickerOpen] = useState(false);
+    const [togglingProductId, setTogglingProductId] = useState(null);
 
     // Settings config
     const [settingsForm, setSettingsForm] = useState({});
@@ -1127,6 +1128,48 @@ export default function AdminDashboard() {
         } catch (err) {
             console.error(err);
             setError('Failed to delete product.');
+        }
+    };
+
+    const handleToggleProductStatus = async (product) => {
+        const newStatus = !product.status;
+        setTogglingProductId(product.id);
+
+        // Optimistically update product status in table and summary counts
+        setProducts(prev => prev.map(p => p.id === product.id ? { ...p, status: newStatus } : p));
+        setProductSummary(prev => ({
+            ...prev,
+            active: newStatus ? (prev.active + 1) : Math.max(0, prev.active - 1),
+            inactive: newStatus ? Math.max(0, prev.inactive - 1) : (prev.inactive + 1),
+        }));
+
+        try {
+            const res = await fetch(`/api/admin/products/${product.id}/toggle-status`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ status: newStatus })
+            });
+            const d = await res.json();
+            if (d.success) {
+                toast.success(`"${product.name}" is now ${newStatus ? 'Active' : 'Inactive'}.`);
+                clearStorefrontCatalogCache();
+            } else {
+                // Rollback on failure
+                setProducts(prev => prev.map(p => p.id === product.id ? { ...p, status: product.status } : p));
+                toast.error(getApiErrorMessage(d, 'Failed to update product status.'));
+                fetchData();
+            }
+        } catch (err) {
+            console.error(err);
+            // Rollback on network error
+            setProducts(prev => prev.map(p => p.id === product.id ? { ...p, status: product.status } : p));
+            toast.error('Network error updating product status.');
+            fetchData();
+        } finally {
+            setTogglingProductId(null);
         }
     };
 
@@ -3758,16 +3801,34 @@ export default function AdminDashboard() {
                                                 },
                                                 {
                                                     header: "Status",
-                                                    render: (prod) => (
-                                                        prod.status ? (
-                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 inline-flex items-center gap-1">
-                                                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
-                                                                Active
-                                                            </span>
-                                                        ) : (
-                                                            <span className="px-2.5 py-0.5 text-[9.5px] font-bold rounded-full bg-stone-100 text-stone-400 border border-stone-200">Inactive</span>
-                                                        )
-                                                    )
+                                                    render: (prod) => {
+                                                        const isToggling = togglingProductId === prod.id;
+                                                        return (
+                                                            <button
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleToggleProductStatus(prod);
+                                                                }}
+                                                                disabled={isToggling}
+                                                                title={`Click to switch to ${prod.status ? 'Inactive' : 'Active'}`}
+                                                                className={`group inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold transition-all duration-150 cursor-pointer select-none border active:scale-95 disabled:opacity-60 disabled:cursor-wait hover:shadow-xs ${
+                                                                    prod.status
+                                                                        ? 'bg-emerald-50 hover:bg-emerald-100/90 text-emerald-800 border-emerald-200'
+                                                                        : 'bg-stone-100 hover:bg-stone-200 text-stone-600 border-stone-200'
+                                                                }`}
+                                                            >
+                                                                {isToggling ? (
+                                                                    <Loader2 size={10} className="animate-spin text-stone-500" />
+                                                                ) : prod.status ? (
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                                                                ) : (
+                                                                    <span className="w-1.5 h-1.5 rounded-full bg-stone-400" />
+                                                                )}
+                                                                <span>{prod.status ? 'Active' : 'Inactive'}</span>
+                                                            </button>
+                                                        );
+                                                    }
                                                 }
                                             ]}
                                             actions={(prod) => (

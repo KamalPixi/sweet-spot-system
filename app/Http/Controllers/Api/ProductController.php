@@ -267,6 +267,26 @@ class ProductController extends Controller
     }
 
     /**
+     * Toggle or update product status (Admin).
+     */
+    public function toggleProductStatus(Request $request, int $id): JsonResponse
+    {
+        $product = Product::findOrFail($id);
+        if ($request->has('status')) {
+            $product->status = $request->boolean('status');
+        } else {
+            $product->status = !$product->status;
+        }
+        $product->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => "Product status changed to " . ($product->status ? 'Active' : 'Inactive') . '.',
+            'data' => Product::with(['category', 'variations.images', 'relatedProducts', 'images'])->find($product->id),
+        ]);
+    }
+
+    /**
      * Delete Product.
      */
     public function destroyProduct(int $id): JsonResponse

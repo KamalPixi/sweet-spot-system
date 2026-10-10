@@ -125,6 +125,7 @@ Route::middleware('throttle:global_api')->group(function () {
             Route::get('/products', [ProductController::class, 'adminProducts']);
             Route::post('/products', [ProductController::class, 'storeProduct']);
             Route::put('/products/{id}', [ProductController::class, 'updateProduct']);
+            Route::patch('/products/{id}/toggle-status', [ProductController::class, 'toggleProductStatus']);
             Route::delete('/products/{id}', [ProductController::class, 'destroyProduct']);
             
             // Admin Orders Management
