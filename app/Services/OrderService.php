@@ -120,7 +120,25 @@ class OrderService
             $subtotal = 0.00;
 
             foreach ($data['items'] as $item) {
-                $product = Product::where('status', true)->findOrFail($item['product_id']);
+                $product = Product::where('status', true)->with('category')->findOrFail($item['product_id']);
+
+                // Verify category day-based availability
+                $fulfillmentDay = null;
+                if ($type === 'collection' && !empty($data['collection_time'])) {
+                    $fulfillmentDay = strtolower(\Carbon\Carbon::parse($data['collection_time'])->format('l'));
+                } elseif (!empty($data['fulfillment_day'])) {
+                    $fulfillmentDay = strtolower($data['fulfillment_day']);
+                } elseif (!empty($data['day'])) {
+                    $fulfillmentDay = strtolower($data['day']);
+                } else {
+                    $fulfillmentDay = strtolower(now(config('app.timezone', 'Europe/London'))->format('l'));
+                }
+
+                if ($product->category && (!$product->category->status || !$product->category->isAvailableOnDay($fulfillmentDay))) {
+                    $availMsg = $product->category->formatted_available_days;
+                    throw new Exception("Product '{$product->name}' is from category '{$product->category->name}' which is not available for this order (Available: {$availMsg}).");
+                }
+
                 $variation = null;
                 $price = 0.00;
                 $variationName = null;

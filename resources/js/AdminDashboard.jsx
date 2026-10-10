@@ -19,7 +19,7 @@ import {
     Search, Layers, ShoppingBag, Eye, EyeOff, Trash2, RotateCcw, Users, User, Bell, RefreshCw, ChevronDown, Upload, Clock,
     Store, MapPin, Truck, Trophy, Globe, QrCode, Printer, DollarSign, Flame, CheckCircle2, ArrowUpRight,
     Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat,
-    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart,
+    Compass, LineChart, ReceiptText, UtensilsCrossed, Receipt, Calendar, CalendarClock, Tag, Package, UserCheck, Send, SlidersHorizontal, ArchiveRestore, MessageSquare, Heart,
     FileText, Download, CreditCard, ShieldCheck, KeyRound, Timer, Zap
 } from 'lucide-react';
 import * as Lucide from 'lucide-react';
@@ -80,8 +80,26 @@ const categoryIconOptions = [
     { name: 'Apple', icon: Apple, label: 'Healthy' }
 ];
 
-export const categoryIconMap = {
-    Cake, Coffee, Cookie, Croissant, IceCream, Pizza, Sandwich, Soup, Salad, Egg, Apple, Citrus, Grape, CupSoda, GlassWater, Donut, Dessert, Wheat
+export const DAYS_OF_WEEK = [
+    { key: 'monday', label: 'Mon', full: 'Monday' },
+    { key: 'tuesday', label: 'Tue', full: 'Tuesday' },
+    { key: 'wednesday', label: 'Wed', full: 'Wednesday' },
+    { key: 'thursday', label: 'Thu', full: 'Thursday' },
+    { key: 'friday', label: 'Fri', full: 'Friday' },
+    { key: 'saturday', label: 'Sat', full: 'Saturday' },
+    { key: 'sunday', label: 'Sun', full: 'Sunday' },
+];
+
+export const formatDaysLabel = (days) => {
+    if (!days || !Array.isArray(days) || days.length === 0 || days.length >= 7 || days.includes('all')) {
+        return 'Every day';
+    }
+    const normalized = days.map(d => String(d).toLowerCase());
+    const shortNames = { monday: 'Mon', tuesday: 'Tue', wednesday: 'Wed', thursday: 'Thu', friday: 'Fri', saturday: 'Sat', sunday: 'Sun' };
+    const matched = DAYS_OF_WEEK.filter(d => normalized.includes(d.key)).map(d => d.label);
+    if (matched.length === 2 && matched.includes('Sat') && matched.includes('Sun')) return 'Weekends';
+    if (matched.length === 5 && !matched.includes('Sat') && !matched.includes('Sun')) return 'Weekdays';
+    return matched.join(', ');
 };
 
 export default function AdminDashboard() {
@@ -158,6 +176,7 @@ export default function AdminDashboard() {
     const [catImagePreview, setCatImagePreview] = useState('');
     const [catStatus, setCatStatus] = useState(true);
     const [catShowInFooter, setCatShowInFooter] = useState(false);
+    const [catAvailableDays, setCatAvailableDays] = useState([]);
     const [catOrder, setCatOrder] = useState(0);
 
     // Image Cropper States
@@ -841,6 +860,7 @@ export default function AdminDashboard() {
         payload.append('icon', catIcon || '');
         payload.append('status', catStatus ? '1' : '0');
         payload.append('show_in_footer', catShowInFooter ? '1' : '0');
+        payload.append('available_days', JSON.stringify(catAvailableDays || []));
         payload.append('order', parseInt(catOrder || 0));
         if (catImageFile) {
             payload.append('image', catImageFile);
@@ -874,6 +894,7 @@ export default function AdminDashboard() {
                 setCatImagePreview('');
                 setCatStatus(true);
                 setCatShowInFooter(false);
+                setCatAvailableDays([]);
                 setCatOrder(0);
                 fetchData();
             } else {
@@ -894,6 +915,7 @@ export default function AdminDashboard() {
         setCatImagePreview(imageUrl);
         setCatStatus(cat.status);
         setCatShowInFooter(Boolean(cat.show_in_footer));
+        setCatAvailableDays(Array.isArray(cat.available_days) ? cat.available_days : []);
         setCatOrder(cat.order);
         setCatIcon(cat.icon || '');
         setCatFormOpen(true);
@@ -2934,6 +2956,100 @@ export default function AdminDashboard() {
                                                     />
                                                     <p className="text-[10px] text-neutral-400 mt-1">Determines display sequence order (lower numbers show first).</p>
                                                 </div>
+                                                <div className="p-4 bg-neutral-50/80 border border-neutral-200/90 rounded-2xl space-y-3">
+                                                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                        <div>
+                                                            <label className="block text-neutral-800 text-xs font-extrabold uppercase tracking-wider">
+                                                                Available Days of Week
+                                                            </label>
+                                                            <p className="text-[10.5px] text-neutral-400 mt-0.5">
+                                                                Restrict when this category and its products appear on the store
+                                                            </p>
+                                                        </div>
+                                                        <div className="flex items-center space-x-1.5 text-[10.5px] self-start sm:self-auto">
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCatAvailableDays([])}
+                                                                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                                                                    !catAvailableDays || catAvailableDays.length === 0 || catAvailableDays.length === 7
+                                                                        ? 'bg-neutral-900 text-white shadow-xs'
+                                                                        : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+                                                                }`}
+                                                            >
+                                                                Every Day
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCatAvailableDays(['monday', 'tuesday', 'wednesday', 'thursday', 'friday'])}
+                                                                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                                                                    catAvailableDays?.length === 5 && !catAvailableDays.includes('saturday') && !catAvailableDays.includes('sunday')
+                                                                        ? 'bg-neutral-900 text-white shadow-xs'
+                                                                        : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+                                                                }`}
+                                                            >
+                                                                Weekdays
+                                                            </button>
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setCatAvailableDays(['saturday', 'sunday'])}
+                                                                className={`px-2.5 py-1 rounded-lg font-bold transition-all cursor-pointer ${
+                                                                    catAvailableDays?.length === 2 && catAvailableDays.includes('saturday') && catAvailableDays.includes('sunday')
+                                                                        ? 'bg-neutral-900 text-white shadow-xs'
+                                                                        : 'bg-white text-neutral-600 border border-neutral-200 hover:bg-neutral-100'
+                                                                }`}
+                                                            >
+                                                                Weekends
+                                                            </button>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Day-of-week Toggle Grid */}
+                                                    <div className="grid grid-cols-7 gap-1.5 pt-1">
+                                                        {DAYS_OF_WEEK.map((day) => {
+                                                            const isAll = !catAvailableDays || catAvailableDays.length === 0 || catAvailableDays.length === 7;
+                                                            const isSelected = isAll || catAvailableDays.includes(day.key);
+                                                            return (
+                                                                <button
+                                                                    key={day.key}
+                                                                    type="button"
+                                                                    onClick={() => {
+                                                                        let current = (!catAvailableDays || catAvailableDays.length === 0 || catAvailableDays.length === 7)
+                                                                            ? DAYS_OF_WEEK.map(d => d.key)
+                                                                            : [...catAvailableDays];
+                                                                        if (current.includes(day.key)) {
+                                                                            if (current.length > 1) {
+                                                                                current = current.filter(d => d !== day.key);
+                                                                            }
+                                                                        } else {
+                                                                            current.push(day.key);
+                                                                        }
+                                                                        if (current.length === 7) {
+                                                                            setCatAvailableDays([]);
+                                                                        } else {
+                                                                            setCatAvailableDays(current);
+                                                                        }
+                                                                    }}
+                                                                    className={`py-2.5 px-1.5 text-center rounded-xl text-xs font-extrabold transition-all border cursor-pointer flex flex-col items-center justify-center space-y-0.5 ${
+                                                                        isSelected
+                                                                            ? 'bg-neutral-900 text-white border-neutral-900 shadow-xs'
+                                                                            : 'bg-white text-neutral-400 border-neutral-200/90 hover:border-neutral-300 hover:text-neutral-700'
+                                                                    }`}
+                                                                    title={`${day.full} - ${isSelected ? 'Active' : 'Hidden'}`}
+                                                                >
+                                                                    <span className="text-[11px] uppercase tracking-wider font-bold">{day.label}</span>
+                                                                    <span className={`w-1.5 h-1.5 rounded-full ${isSelected ? 'bg-emerald-400' : 'bg-transparent'}`} />
+                                                                </button>
+                                                            );
+                                                        })}
+                                                    </div>
+
+                                                    <div className="flex items-center space-x-1.5 text-[11px] text-neutral-500 pt-0.5">
+                                                        <Calendar size={13} className="text-neutral-400 shrink-0" />
+                                                        <span>
+                                                            Currently Active: <strong className="text-neutral-850 font-bold">{formatDaysLabel(catAvailableDays)}</strong>
+                                                        </span>
+                                                    </div>
+                                                </div>
                                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-1">
                                                     <div className="p-3.5 bg-neutral-50 border border-neutral-200 rounded-xl">
                                                         <label className="block text-neutral-500 text-[11px] font-bold uppercase tracking-wider mb-1.5">Visibility Status</label>
@@ -2997,6 +3113,9 @@ export default function AdminDashboard() {
                                                                             In Footer
                                                                         </span>
                                                                     )}
+                                                                    <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                                                        {formatDaysLabel(catAvailableDays)}
+                                                                    </span>
                                                                     {catStatus ? (
                                                                         <span className="px-1.5 py-0.5 text-[8px] font-bold rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center gap-1">
                                                                             <span className="w-1 h-1 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
@@ -3186,6 +3305,22 @@ export default function AdminDashboard() {
                                                             <span className="text-[10px] text-stone-400 font-medium">—</span>
                                                         )
                                                     )
+                                                },
+                                                {
+                                                    header: "Availability",
+                                                    render: (cat) => {
+                                                        const isEveryday = !cat.available_days || cat.available_days.length === 0 || cat.available_days.length === 7;
+                                                        return (
+                                                            <span className={`px-2.5 py-0.5 text-[9.5px] font-bold rounded-full border inline-flex items-center gap-1 ${
+                                                                isEveryday
+                                                                    ? 'bg-stone-50 text-stone-600 border-stone-200'
+                                                                    : 'bg-indigo-50 text-indigo-700 border-indigo-200/80'
+                                                            }`}>
+                                                                <Calendar size={11} className={isEveryday ? 'text-stone-400' : 'text-indigo-500'} />
+                                                                {cat.formatted_available_days || formatDaysLabel(cat.available_days)}
+                                                            </span>
+                                                        );
+                                                    }
                                                 },
                                                 {
                                                     header: "Status",

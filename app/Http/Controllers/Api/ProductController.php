@@ -25,44 +25,44 @@ class ProductController extends Controller
     /**
      * Get active categories (Storefront).
      */
-    public function categories(): JsonResponse
+    public function categories(Request $request): JsonResponse
     {
         return response()->json([
             'success' => true,
-            'data' => $this->productService->getActiveCategories(),
+            'data' => $this->productService->getActiveCategories($request->input('day')),
         ]);
     }
 
     /**
      * Get full menu catalog (Storefront).
      */
-    public function menuCatalog(): JsonResponse
+    public function menuCatalog(Request $request): JsonResponse
     {
         return response()->json([
             'success' => true,
-            'data' => $this->productService->getMenuCatalog(),
+            'data' => $this->productService->getMenuCatalog($request->input('day')),
         ]);
     }
 
     /**
      * Get products by category slug (Storefront).
      */
-    public function categoryProducts(string $slug): JsonResponse
+    public function categoryProducts(Request $request, string $slug): JsonResponse
     {
         return response()->json([
             'success' => true,
-            'data' => $this->productService->getProductsByCategory($slug),
+            'data' => $this->productService->getProductsByCategory($slug, $request->input('day')),
         ]);
     }
 
     /**
      * Get single product details (Storefront).
      */
-    public function show(string $slug): JsonResponse
+    public function show(Request $request, string $slug): JsonResponse
     {
         return response()->json([
             'success' => true,
-            'data' => $this->productService->getProductDetails($slug),
+            'data' => $this->productService->getProductDetails($slug, $request->input('day')),
         ]);
     }
 
@@ -71,13 +71,14 @@ class ProductController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Product::where('status', true)->with(['images', 'variations.images']);
-
-        if ($request->has('category')) {
-            $query->whereHas('category', function($q) use ($request) {
-                $q->where('slug', $request->input('category'));
-            });
-        }
+        $query = Product::where('status', true)
+            ->whereHas('category', function($q) use ($request) {
+                $q->where('status', true)->availableOnDay($request->input('day'));
+                if ($request->has('category')) {
+                    $q->where('slug', $request->input('category'));
+                }
+            })
+            ->with(['images', 'variations.images']);
 
         if ($request->has('search')) {
             $search = $request->input('search');

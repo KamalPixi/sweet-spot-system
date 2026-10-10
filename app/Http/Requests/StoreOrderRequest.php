@@ -19,6 +19,8 @@ class StoreOrderRequest extends FormRequest
             'notes' => 'nullable|string',
             'payment_method' => 'nullable|string',
             'payment_transaction_id' => 'nullable|string',
+            'day' => 'nullable|string|max:20',
+            'fulfillment_day' => 'nullable|string|max:20',
             'items' => 'required|array|min:1',
             'items.*.product_id' => 'required|exists:products,id',
             'items.*.product_variation_id' => 'nullable|integer',

@@ -14,17 +14,25 @@ class ProductService
     /**
      * Get active categories ordered by sort sequence (including images).
      */
-    public function getActiveCategories()
+    public function getActiveCategories(?string $day = null)
     {
-        return Category::where('status', true)->with('images')->orderBy('order')->get();
+        return Category::where('status', true)
+            ->availableOnDay($day)
+            ->with('images')
+            ->orderBy('order')
+            ->get();
     }
 
     /**
      * Get products by category slug (including images).
      */
-    public function getProductsByCategory(string $categorySlug)
+    public function getProductsByCategory(string $categorySlug, ?string $day = null)
     {
-        $category = Category::where('slug', $categorySlug)->where('status', true)->firstOrFail();
+        $category = Category::where('slug', $categorySlug)
+            ->where('status', true)
+            ->availableOnDay($day)
+            ->firstOrFail();
+
         return Product::where('category_id', $category->id)
             ->where('status', true)
             ->with(['images', 'variations.images'])
@@ -34,12 +42,19 @@ class ProductService
     /**
      * Get details of a single product, including variations, related products, and all images.
      */
-    public function getProductDetails(string $slug)
+    public function getProductDetails(string $slug, ?string $day = null)
     {
         return Product::where('slug', $slug)
             ->where('status', true)
-            ->with(['images', 'variations.images', 'relatedProducts' => function ($query) {
-                $query->where('status', true)->with(['images', 'variations.images']);
+            ->whereHas('category', function ($query) use ($day) {
+                $query->where('status', true)->availableOnDay($day);
+            })
+            ->with(['images', 'variations.images', 'category', 'relatedProducts' => function ($query) use ($day) {
+                $query->where('status', true)
+                    ->whereHas('category', function ($catQuery) use ($day) {
+                        $catQuery->where('status', true)->availableOnDay($day);
+                    })
+                    ->with(['images', 'variations.images']);
             }])
             ->firstOrFail();
     }
@@ -47,9 +62,10 @@ class ProductService
     /**
      * Get the full menu catalog (categories with active products, variations, and images).
      */
-    public function getMenuCatalog()
+    public function getMenuCatalog(?string $day = null)
     {
         return Category::where('status', true)
+            ->availableOnDay($day)
             ->orderBy('order')
             ->with(['images', 'products' => function ($query) {
                 $query->where('status', true)->with(['images', 'variations.images']);
@@ -64,12 +80,29 @@ class ProductService
     {
         $slug = Str::slug($data['name']);
         
+        $availableDays = null;
+        if (isset($data['available_days'])) {
+            if (is_string($data['available_days'])) {
+                $decoded = json_decode($data['available_days'], true);
+                $availableDays = is_array($decoded) ? $decoded : (empty($data['available_days']) ? null : explode(',', $data['available_days']));
+            } elseif (is_array($data['available_days'])) {
+                $availableDays = $data['available_days'];
+            }
+            if (is_array($availableDays)) {
+                $availableDays = array_values(array_filter(array_map('trim', array_map('strtolower', $availableDays))));
+                if (in_array('all', $availableDays) || empty($availableDays) || count($availableDays) >= 7) {
+                    $availableDays = null; // null represents available all days
+                }
+            }
+        }
+
         $categoryData = [
             'name' => $data['name'],
             'slug' => $slug,
             'icon' => $data['icon'] ?? null,
             'status' => filter_var($data['status'] ?? true, FILTER_VALIDATE_BOOLEAN),
             'show_in_footer' => filter_var($data['show_in_footer'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            'available_days' => $availableDays,
             'order' => (int) ($data['order'] ?? 0),
         ];
 

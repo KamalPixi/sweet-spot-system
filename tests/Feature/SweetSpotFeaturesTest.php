@@ -269,4 +269,73 @@ class SweetSpotFeaturesTest extends TestCase
         $pollAfterRes->assertStatus(200)
             ->assertJsonPath('jobReady', false);
     }
+
+    /**
+     * 7. Test Category Day Availability & Child Product Visibility.
+     */
+    public function test_category_and_child_products_day_based_availability(): void
+    {
+        // Create Weekend-only category
+        $weekendCategory = Category::create([
+            'name' => 'Weekend Specials',
+            'slug' => 'weekend-specials',
+            'status' => true,
+            'order' => 2,
+            'available_days' => ['saturday', 'sunday'],
+        ]);
+
+        $weekendProduct = Product::create([
+            'category_id' => $weekendCategory->id,
+            'name' => 'Sunday Roast Tart',
+            'slug' => 'sunday-roast-tart',
+            'status' => true,
+            'price' => 8.00,
+        ]);
+
+        // Menu Catalog on Wednesday: Weekend category & product should NOT appear
+        $catalogWed = $this->getJson('/api/menu-catalog?day=wednesday');
+        $catalogWed->assertStatus(200);
+        $wedCategorySlugs = collect($catalogWed->json('data'))->pluck('slug')->all();
+        $this->assertNotContains('weekend-specials', $wedCategorySlugs);
+
+        // Menu Catalog on Sunday: Weekend category & product SHOULD appear
+        $catalogSun = $this->getJson('/api/menu-catalog?day=sunday');
+        $catalogSun->assertStatus(200);
+        $sunCategorySlugs = collect($catalogSun->json('data'))->pluck('slug')->all();
+        $this->assertContains('weekend-specials', $sunCategorySlugs);
+
+        // Product search on Monday: Weekend product excluded
+        $searchMon = $this->getJson('/api/products?search=Sunday&day=monday');
+        $searchMon->assertStatus(200)
+            ->assertJsonCount(0, 'data');
+
+        // Product search on Saturday: Weekend product found
+        $searchSat = $this->getJson('/api/products?search=Sunday&day=saturday');
+        $searchSat->assertStatus(200)
+            ->assertJsonCount(1, 'data');
+
+        // Attempting to order on Monday should be rejected
+        $orderPayload = [
+            'type' => 'dine_in',
+            'table_number' => '5',
+            'payment_method' => 'cash_in_store',
+            'customer' => [
+                'first_name' => 'Test',
+                'last_name' => 'User',
+                'phone' => '+447000111333',
+            ],
+            'day' => 'monday',
+            'items' => [
+                [
+                    'product_id' => $weekendProduct->id,
+                    'quantity' => 1,
+                ]
+            ]
+        ];
+
+        $orderFailRes = $this->postJson('/api/orders', $orderPayload);
+        $orderFailRes->assertStatus(422)
+            ->assertJsonPath('success', false);
+    }
 }
+

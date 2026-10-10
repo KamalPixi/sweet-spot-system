@@ -28,6 +28,7 @@ class UpdateCategoryRequest extends FormRequest
             'image' => 'nullable|image|max:4096',
             'status' => 'nullable|boolean',
             'show_in_footer' => 'nullable|boolean',
+            'available_days' => 'nullable',
             'order' => 'nullable|integer',
         ];
     }
