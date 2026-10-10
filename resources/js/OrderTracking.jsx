@@ -595,13 +595,19 @@ export default function OrderTracking() {
                                     <div className="min-w-0 flex-1">
                                         <p className="font-bold text-neutral-800">
                                             {item.quantity}x {item.product_name}
-                                            {item.variation_name ? ` (${item.variation_name})` : ''}
+                                            {item.variation_name && !item.is_box ? ` (${item.variation_name})` : ''}
                                         </p>
                                         {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
                                             <div className="pl-2 border-l-2 border-[#e5b582]/60 mt-1 space-y-0.5 text-[10px] text-neutral-500">
-                                                {item.box_items.map((bi, bIdx) => (
-                                                    <div key={bIdx}>• {bi.quantity}x {bi.product_name || bi.name}</div>
-                                                ))}
+                                                {item.box_items.map((bi, bIdx) => {
+                                                    const bName = bi.product_name || bi.name || '';
+                                                    const varStr = bi.variation_name && !bName.includes(`(${bi.variation_name})`) 
+                                                        ? ` (${bi.variation_name})` 
+                                                        : '';
+                                                    return (
+                                                        <div key={bIdx}>• {bi.quantity}x {bName}{varStr}</div>
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                     </div>

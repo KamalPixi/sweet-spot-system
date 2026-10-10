@@ -672,7 +672,7 @@ export default function AdminOrderDetailPage() {
                                                     <div className="flex items-center gap-2 flex-wrap">
                                                         <p className="font-bold text-neutral-800">
                                                             {item.quantity}x {item.product_name}
-                                                            {item.variation_name ? ` (${item.variation_name})` : ''}
+                                                            {item.variation_name && !item.is_box ? ` (${item.variation_name})` : ''}
                                                         </p>
                                                         {item.is_box && (
                                                             <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-black uppercase tracking-wider">

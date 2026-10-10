@@ -209,7 +209,7 @@ class OrderService
                             'product_id' => $p->id,
                             'product_variation_id' => $variation ? $variation->id : null,
                             'variation_name' => $variation ? $variation->name : ($bItem['variation_name'] ?? null),
-                            'product_name' => $displayName,
+                            'product_name' => $p->name,
                             'quantity' => $bQty,
                         ];
                     }
