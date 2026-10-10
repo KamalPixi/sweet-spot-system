@@ -1960,26 +1960,36 @@ export default function Checkout() {
                                                         <AlertCircle size={16} className="shrink-0 mt-0.5 text-amber-600" />
                                                         <div>
                                                             <p className="font-bold">Choose your fulfillment method.</p>
-                                                            <p className="text-[11px] text-amber-700 mt-1">Select home delivery, collection, or scan your table QR code.</p>
+                                                            <p className="text-[11px] text-amber-700 mt-1">Select self collection or choose your in-store dining table.</p>
                                                         </div>
                                                     </div>
-                                                    <div className="grid sm:grid-cols-2 gap-3">
-                                                        <button 
-                                                            type="button" 
-                                                            onClick={() => handleSwitchOrderBanner('delivery')}
-                                                            className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
-                                                        >
-                                                            <MapPin size={15} className="text-[#e5b582]" />
-                                                            <span>Set Delivery Address</span>
-                                                        </button>
+                                                    <div className={`grid sm:${configs?.home_delivery_enabled === '1' ? 'grid-cols-3' : 'grid-cols-2'} gap-3`}>
                                                         <button 
                                                             type="button" 
                                                             onClick={() => handleSwitchOrderBanner('collection')}
                                                             className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
                                                         >
                                                             <Clock size={15} className="text-[#e5b582]" />
-                                                            <span>Set Collection Slot</span>
+                                                            <span>Store Collection</span>
                                                         </button>
+                                                        <button 
+                                                            type="button" 
+                                                            onClick={() => handleSwitchOrderBanner('dine_in')}
+                                                            className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
+                                                        >
+                                                            <UtensilsCrossed size={15} className="text-[#e5b582]" />
+                                                            <span>Dine-In Table</span>
+                                                        </button>
+                                                        {configs?.home_delivery_enabled === '1' && (
+                                                            <button 
+                                                                type="button" 
+                                                                onClick={() => handleSwitchOrderBanner('delivery')}
+                                                                className="flex items-center justify-center gap-2 rounded-2xl border border-neutral-200 bg-white hover:bg-neutral-50 px-4 py-3.5 text-[#24161b] font-bold transition-all cursor-pointer shadow-xs"
+                                                            >
+                                                                <MapPin size={15} className="text-[#e5b582]" />
+                                                                <span>Delivery</span>
+                                                            </button>
+                                                        )}
                                                     </div>
                                                 </div>
                                             ) : orderType === 'dine_in' ? (

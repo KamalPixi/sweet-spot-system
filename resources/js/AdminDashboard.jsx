@@ -4446,11 +4446,48 @@ export default function AdminDashboard() {
 
                                         {/* Card 3: Delivery Parameters */}
                                         <div className="bg-white border border-neutral-200/90 p-6 sm:p-8 rounded-2xl shadow-2xs space-y-6">
-                                            <div className="border-b border-neutral-100 pb-3">
-                                                <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
-                                                    <Truck size={18} className="text-neutral-500" /> Delivery Parameters
-                                                </h2>
+                                            <div className="border-b border-neutral-100 pb-3 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                                <div>
+                                                    <h2 className="text-base font-bold text-neutral-900 flex items-center gap-2">
+                                                        <Truck size={18} className="text-neutral-500" /> Home Delivery & Uber Direct Parameters
+                                                    </h2>
+                                                    <p className="text-xs text-neutral-500 mt-0.5">
+                                                        Control home delivery availability and distance settings. (All Uber Direct dispatch code remains fully preserved).
+                                                    </p>
+                                                </div>
+                                                <div>
+                                                    <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border ${
+                                                        (settingsForm.home_delivery_enabled ?? '0') === '1'
+                                                            ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                                            : 'bg-amber-50 text-amber-700 border-amber-200'
+                                                    }`}>
+                                                        {(settingsForm.home_delivery_enabled ?? '0') === '1' ? '🚚 Delivery Active' : '⏸️ Delivery Disabled (Collection & Dine-In Mode)'}
+                                                    </span>
+                                                </div>
                                             </div>
+
+                                            {/* Home Delivery Enable Toggle */}
+                                            <div className="p-4 bg-neutral-50/70 border border-neutral-200/80 rounded-xl space-y-2">
+                                                <div className="flex items-center justify-between">
+                                                    <div>
+                                                        <label className="block text-neutral-800 text-xs font-bold">
+                                                            Enable Home Delivery on Storefront
+                                                        </label>
+                                                        <p className="text-[11px] text-neutral-500 mt-0.5">
+                                                            When turned off, customers will order via Self-Collection or In-Store Table Dine-In.
+                                                        </p>
+                                                    </div>
+                                                    <select
+                                                        value={settingsForm.home_delivery_enabled ?? '0'}
+                                                        onChange={(e) => setSettingsForm({ ...settingsForm, home_delivery_enabled: e.target.value })}
+                                                        className="bg-white border border-neutral-300 px-3 py-1.5 text-xs font-bold text-neutral-800 rounded-lg cursor-pointer focus:outline-none focus:border-neutral-950"
+                                                    >
+                                                        <option value="0">Disabled (Collection & Dine-In Only)</option>
+                                                        <option value="1">Enabled (Active on Storefront)</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+
                                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                                                 <div>
                                                     <label className="block text-neutral-500 text-[10px] font-bold uppercase tracking-wider mb-2">Max Delivery Radius (Miles)</label>
@@ -4490,11 +4527,11 @@ export default function AdminDashboard() {
                                             <div className="pt-2 flex justify-start">
                                                 <button
                                                     type="button"
-                                                    onClick={() => handleSaveSection(['store_delivery_max_radius_miles', 'delivery_fee', 'free_delivery_threshold'], 'Delivery Parameters')}
+                                                    onClick={() => handleSaveSection(['home_delivery_enabled', 'store_delivery_max_radius_miles', 'delivery_fee', 'free_delivery_threshold'], 'Delivery Parameters')}
                                                     disabled={savingSection === 'Delivery Parameters'}
                                                     className="bg-primary hover:bg-black text-white text-xs font-bold px-5 py-2.5 rounded-xl transition-all shadow-2xs cursor-pointer flex items-center gap-2 disabled:opacity-50"
                                                 >
-                                                    {savingSection === 'Delivery Parameters' ? 'Saving...' : 'Save Delivery'}
+                                                    {savingSection === 'Delivery Parameters' ? 'Saving...' : 'Save Delivery Settings'}
                                                 </button>
                                             </div>
                                         </div>

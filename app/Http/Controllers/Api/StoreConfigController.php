@@ -48,6 +48,7 @@ class StoreConfigController extends Controller
         $configs['auto_status_transition_enabled'] = $this->storeConfigService->get('auto_status_transition_enabled', '1');
         $configs['auto_status_preparing_minutes'] = $this->storeConfigService->get('auto_status_preparing_minutes', '15');
         $configs['auto_status_ready_minutes'] = $this->storeConfigService->get('auto_status_ready_minutes', '5');
+        $configs['home_delivery_enabled'] = $this->storeConfigService->get('home_delivery_enabled', '0');
 
         return response()->json([
             'success' => true,

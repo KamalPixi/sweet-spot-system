@@ -16,6 +16,8 @@ export default function HeroSection({ onOrderClick, configs: propConfigs }) {
     const heroTitleHighlight = configs?.hero_title_highlight || 'Sweetness';
     const heroSubtitle = configs?.hero_subtitle || 'We are the best dessert spot for your cravings. Handcrafted waffles, sundaes, and shakes served fresh daily.';
     
+    const isDeliveryEnabled = configs?.home_delivery_enabled === '1';
+
     // Determine fulfillment state and appropriate button text
     const hasSelection = Boolean(
         (orderType === 'dine_in' && tableNumber) ||
@@ -23,7 +25,7 @@ export default function HeroSection({ onOrderClick, configs: propConfigs }) {
         (orderType === 'collection' && collectionSlot?.time)
     );
 
-    let buttonLabel = 'Set Delivery or Collection';
+    let buttonLabel = isDeliveryEnabled ? 'Set Delivery or Collection' : 'Set Collection or Dine-In';
     let selectionSummary = null;
 
     if (orderType === 'dine_in' && tableNumber) {
@@ -33,7 +35,7 @@ export default function HeroSection({ onOrderClick, configs: propConfigs }) {
         buttonLabel = 'Delivering to';
         selectionSummary = deliveryInfo.postcode;
     } else if (orderType === 'collection' && collectionSlot?.time) {
-        buttonLabel = 'Collection';
+        buttonLabel = 'Store Collection';
         // Check slot date safely, extract from datetime or fallback to 'Today'
         const datePart = collectionSlot.date || (collectionSlot.datetime ? collectionSlot.datetime.split(' ')[0] : null);
         let dayLabel = 'Today';
@@ -105,7 +107,6 @@ export default function HeroSection({ onOrderClick, configs: propConfigs }) {
                                     : 'bg-[#3a2327]/90 hover:bg-[#4d2e34] border-white/20 hover:border-white/40 text-white shadow-black/25'
                             } hover:-translate-y-0.5 active:translate-y-0`}
                         >
-                            {/* Icon based on selection */}
                             <span className={`p-1 rounded-full ${hasSelection ? 'bg-amber-500/20 text-amber-300' : 'bg-white/10 text-white/80'}`}>
                                 {orderType === 'dine_in' && tableNumber ? (
                                     <UtensilsCrossed size={14} />
@@ -113,8 +114,10 @@ export default function HeroSection({ onOrderClick, configs: propConfigs }) {
                                     <Bike size={14} />
                                 ) : orderType === 'collection' && collectionSlot?.time ? (
                                     <Store size={14} />
-                                ) : (
+                                ) : isDeliveryEnabled ? (
                                     <Bike size={14} />
+                                ) : (
+                                    <Store size={14} />
                                 )}
                             </span>
 
@@ -130,7 +133,7 @@ export default function HeroSection({ onOrderClick, configs: propConfigs }) {
                                     </span>
                                 ) : (
                                     <span className="text-xs sm:text-[13px] font-bold text-white tracking-normal mt-0.5 leading-tight">
-                                        Choose Delivery or Collection
+                                        {isDeliveryEnabled ? 'Choose Delivery, Collection or Dine-In' : 'Choose Collection or Dine-In Table'}
                                     </span>
                                 )}
                             </div>
