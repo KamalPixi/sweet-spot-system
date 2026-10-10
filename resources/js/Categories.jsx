@@ -369,7 +369,9 @@ export default function Categories() {
                 <div className="w-full h-8 sm:h-12 bg-transparent" />
 
                 {/* 2. Floating Curved White Container Layout */}
-                <div className="w-full -mt-4 mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 bg-white shadow-2xl p-5 sm:p-7 md:p-10 lg:p-12">
+                <div className={`w-full -mt-4 mb-[-32px] md:mb-[-48px] rounded-[28px] md:rounded-[36px] relative z-30 bg-white shadow-2xl p-5 sm:p-7 md:p-10 lg:p-12 min-h-[calc(100vh-200px)] flex flex-col justify-between ${
+                    selectedBoxOption ? 'pb-36 sm:pb-40' : ''
+                }`}>
                     <div className="max-w-7xl mx-auto w-full">
 
                         {/* Dine-In Active Table Banner */}
@@ -693,7 +695,7 @@ export default function Categories() {
             {/* Floating Sticky Box Tray Bar (Active during Box Mode) */}
             {selectedBoxOption && (
                 <div className="fixed bottom-5 sm:bottom-7 left-1/2 -translate-x-1/2 z-50 w-full max-w-xl px-4 animate-auth-switch select-none">
-                    <div className="bg-[#24161b] text-white border-2 border-[#e5b582] rounded-3xl p-4 sm:p-5 shadow-2xl backdrop-blur-lg">
+                    <div className="bg-[#1c1410]/95 text-white border-2 border-[#e5b582] rounded-3xl p-4 sm:p-5 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.6)] backdrop-blur-2xl ring-1 ring-white/20">
                         <div className="flex items-center justify-between gap-3 mb-3">
                             <div className="flex items-center gap-2">
                                 <span className="w-2.5 h-2.5 rounded-full bg-[#e5b582] inline-block animate-pulse"></span>
