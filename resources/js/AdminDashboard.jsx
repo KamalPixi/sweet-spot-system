@@ -2735,31 +2735,43 @@ export default function AdminDashboard() {
                                                                         </td>
                                                                          <td className="py-4 px-5 min-w-56">
                                                                              <div className="space-y-1.5">
-                                                                                 {order.items?.map((item, idx) => (
-                                                                                     <div key={idx} className="text-[11px] leading-tight text-neutral-800 font-medium">
-                                                                                         <div className="flex items-center gap-1.5 flex-wrap">
-                                                                                             <span className="font-bold text-[#8e5233]">{item.quantity}x</span>
-                                                                                             <span className="font-semibold">{item.product_name}</span>
-                                                                                             {item.variation_name && !item.is_box && (
-                                                                                                 <span className="text-[9.5px] text-neutral-500 font-bold">({item.variation_name})</span>
-                                                                                             )}
-                                                                                             {item.is_box && (
-                                                                                                 <span className="px-1.5 py-0.5 text-[9px] rounded-md bg-amber-100 text-amber-900 font-black border border-amber-200 uppercase tracking-wide">
-                                                                                                     Box {item.box_size ? `of ${item.box_size}` : ''}
-                                                                                                 </span>
+                                                                                 {order.items?.map((item, idx) => {
+                                                                                     const isBox = Boolean(item.is_box);
+                                                                                     const pName = item.product_name || '';
+                                                                                     const vName = item.variation_name || '';
+                                                                                     const showVar = vName && !isBox && !pName.toLowerCase().includes(vName.toLowerCase());
+
+                                                                                     return (
+                                                                                         <div key={idx} className="text-[11px] leading-tight text-neutral-800 font-medium">
+                                                                                             <div className="flex items-center gap-1.5 flex-wrap">
+                                                                                                 <span className="font-bold text-[#8e5233]">{item.quantity}x</span>
+                                                                                                 <span className="font-semibold">{pName}</span>
+                                                                                                 {showVar && (
+                                                                                                     <span className="text-[9.5px] text-neutral-500 font-bold">({vName})</span>
+                                                                                                 )}
+                                                                                                 {isBox && (
+                                                                                                     <span className="px-1.5 py-0.5 text-[9px] rounded-md bg-amber-100 text-amber-900 font-black border border-amber-200 uppercase tracking-wide">
+                                                                                                         Box {item.box_size ? `of ${item.box_size}` : ''}
+                                                                                                     </span>
+                                                                                                 )}
+                                                                                             </div>
+                                                                                             {isBox && Array.isArray(item.box_items) && item.box_items.length > 0 && (
+                                                                                                 <div className="mt-1 pl-2 border-l-2 border-amber-300 flex flex-wrap gap-1">
+                                                                                                     {item.box_items.map((bi, bIdx) => {
+                                                                                                         const biName = bi.product_name || bi.name || '';
+                                                                                                         const biVar = bi.variation_name || '';
+                                                                                                         const showBiVar = biVar && !biName.toLowerCase().includes(biVar.toLowerCase());
+                                                                                                         return (
+                                                                                                             <span key={bIdx} className="text-[9.5px] bg-amber-50 text-amber-900 border border-amber-200/80 px-1.5 py-0.5 rounded font-medium">
+                                                                                                                 <span className="font-bold text-amber-800">{bi.quantity}x</span> {biName}{showBiVar ? ` (${biVar})` : ''}
+                                                                                                             </span>
+                                                                                                         );
+                                                                                                     })}
+                                                                                                 </div>
                                                                                              )}
                                                                                          </div>
-                                                                                         {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
-                                                                                             <div className="mt-1 pl-2 border-l-2 border-amber-300 flex flex-wrap gap-1">
-                                                                                                 {item.box_items.map((bi, bIdx) => (
-                                                                                                     <span key={bIdx} className="text-[9.5px] bg-amber-50 text-amber-900 border border-amber-200/80 px-1.5 py-0.5 rounded font-medium">
-                                                                                                         <span className="font-bold text-amber-800">{bi.quantity}x</span> {bi.product_name || bi.name}{bi.variation_name ? ` (${bi.variation_name})` : ''}
-                                                                                                     </span>
-                                                                                                 ))}
-                                                                                             </div>
-                                                                                         )}
-                                                                                     </div>
-                                                                                 ))}
+                                                                                     );
+                                                                                 })}
                                                                              </div>
                                                                          </td>
                                                                         <td className="py-4 px-5 font-bold text-neutral-900">{formatCurrency(order.total)}</td>

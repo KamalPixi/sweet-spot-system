@@ -1404,11 +1404,16 @@ export default function Checkout() {
                                                                     {item.variation_name && !item.is_box && <p className="text-[10px] text-neutral-400">{item.variation_name}</p>}
                                                                     {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
                                                                         <div className="mt-1 flex flex-wrap gap-1">
-                                                                            {item.box_items.map((b, bi) => (
-                                                                                <span key={bi} className="inline-flex items-center text-[9px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
-                                                                                    {b.quantity}x {b.product_name || b.name}{b.variation_name ? ` (${b.variation_name})` : ''}
-                                                                                </span>
-                                                                            ))}
+                                                                            {item.box_items.map((b, bi) => {
+                                                                                const bName = b.product_name || b.name || '';
+                                                                                const bVar = b.variation_name || '';
+                                                                                const showVar = bVar && !bName.toLowerCase().includes(bVar.toLowerCase());
+                                                                                return (
+                                                                                    <span key={bi} className="inline-flex items-center text-[9px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
+                                                                                        {b.quantity}x {bName}{showVar ? ` (${bVar})` : ''}
+                                                                                    </span>
+                                                                                );
+                                                                            })}
                                                                         </div>
                                                                     )}
                                                                     <div className="flex items-center border border-neutral-200 bg-white rounded-full w-fit px-1 mt-1">
@@ -2154,11 +2159,16 @@ export default function Checkout() {
                                                         )}
                                                         {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
                                                             <div className="mt-1 flex flex-wrap gap-1">
-                                                                {item.box_items.map((b, bi) => (
-                                                                    <span key={bi} className="inline-flex items-center text-[9.5px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
-                                                                        {b.quantity}x {b.product_name || b.name}{b.variation_name ? ` (${b.variation_name})` : ''}
-                                                                    </span>
-                                                                ))}
+                                                                {item.box_items.map((b, bi) => {
+                                                                    const bName = b.product_name || b.name || '';
+                                                                    const bVar = b.variation_name || '';
+                                                                    const showVar = bVar && !bName.toLowerCase().includes(bVar.toLowerCase());
+                                                                    return (
+                                                                        <span key={bi} className="inline-flex items-center text-[9.5px] bg-[#24161b]/5 text-[#24161b] px-1.5 py-0.5 rounded font-medium">
+                                                                            {b.quantity}x {bName}{showVar ? ` (${bVar})` : ''}
+                                                                        </span>
+                                                                    );
+                                                                })}
                                                             </div>
                                                         )}
                                                         <div className="flex items-center mt-2 gap-1 border border-neutral-200 bg-[#fdfaf5] rounded-full w-fit px-1.5 py-0.5">

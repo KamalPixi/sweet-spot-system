@@ -164,11 +164,16 @@ export default function CartDrawer() {
 
                                         {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
                                             <div className="mt-1 flex flex-wrap gap-1">
-                                                {item.box_items.map((b, bi) => (
-                                                    <span key={bi} className="inline-flex items-center text-[9.5px] bg-white border border-neutral-200/80 text-[#24161b] px-1.5 py-0.5 rounded-md font-medium">
-                                                        {b.quantity}x {b.product_name || b.name}{b.variation_name ? ` (${b.variation_name})` : ''}
-                                                    </span>
-                                                ))}
+                                                {item.box_items.map((b, bi) => {
+                                                    const bName = b.product_name || b.name || '';
+                                                    const bVar = b.variation_name || '';
+                                                    const showVar = bVar && !bName.toLowerCase().includes(bVar.toLowerCase());
+                                                    return (
+                                                        <span key={bi} className="inline-flex items-center text-[9.5px] bg-white border border-neutral-200/80 text-[#24161b] px-1.5 py-0.5 rounded-md font-medium">
+                                                            {b.quantity}x {bName}{showVar ? ` (${bVar})` : ''}
+                                                        </span>
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                     </div>

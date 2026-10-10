@@ -666,40 +666,52 @@ export default function AdminOrderDetailPage() {
                                         <h2 className="text-sm font-bold text-neutral-900">Order Items</h2>
                                     </div>
                                     <div className="divide-y divide-neutral-100">
-                                        {(order.items || []).map(item => (
-                                            <div key={item.id} className="px-5 py-4 flex items-start justify-between gap-4 text-xs">
-                                                <div className="min-w-0 flex-1">
-                                                    <div className="flex items-center gap-2 flex-wrap">
-                                                        <p className="font-bold text-neutral-800">
-                                                            {item.quantity}x {item.product_name}
-                                                            {item.variation_name && !item.is_box ? ` (${item.variation_name})` : ''}
-                                                        </p>
-                                                        {item.is_box && (
-                                                            <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-black uppercase tracking-wider">
-                                                                Box Assortment ({item.box_size} items)
-                                                            </span>
+                                        {(order.items || []).map(item => {
+                                            const isBox = Boolean(item.is_box);
+                                            const pName = item.product_name || '';
+                                            const vName = item.variation_name || '';
+                                            const showVar = vName && !isBox && !pName.toLowerCase().includes(vName.toLowerCase());
+
+                                            return (
+                                                <div key={item.id} className="px-5 py-4 flex items-start justify-between gap-4 text-xs">
+                                                    <div className="min-w-0 flex-1">
+                                                        <div className="flex items-center gap-2 flex-wrap">
+                                                            <p className="font-bold text-neutral-800">
+                                                                {item.quantity}x {pName}
+                                                                {showVar ? ` (${vName})` : ''}
+                                                            </p>
+                                                            {isBox && (
+                                                                <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200 text-[10px] font-black uppercase tracking-wider">
+                                                                    Box Assortment ({item.box_size} items)
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <p className="text-[10px] text-neutral-400 mt-0.5">£{parseFloat(item.price || 0).toFixed(2)} each</p>
+
+                                                        {/* Box Child Breakdown */}
+                                                        {isBox && Array.isArray(item.box_items) && item.box_items.length > 0 && (
+                                                            <div className="mt-2.5 pl-3 border-l-2 border-amber-200 space-y-1">
+                                                                <p className="text-[10px] font-bold text-amber-900/70 uppercase tracking-wider">Box Selection:</p>
+                                                                <div className="flex flex-wrap gap-1.5">
+                                                                    {item.box_items.map((bi, bIdx) => {
+                                                                        const biName = bi.product_name || bi.name || '';
+                                                                        const biVar = bi.variation_name || '';
+                                                                        const showBiVar = biVar && !biName.toLowerCase().includes(biVar.toLowerCase());
+                                                                        return (
+                                                                            <span key={bIdx} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200/70 text-[11px] font-medium">
+                                                                                <span className="font-bold text-amber-800">{bi.quantity}x</span>
+                                                                                <span>{biName}{showBiVar ? ` (${biVar})` : ''}</span>
+                                                                            </span>
+                                                                        );
+                                                                    })}
+                                                                </div>
+                                                            </div>
                                                         )}
                                                     </div>
-                                                    <p className="text-[10px] text-neutral-400 mt-0.5">£{parseFloat(item.price || 0).toFixed(2)} each</p>
-
-                                                    {/* Box Child Breakdown */}
-                                                    {item.is_box && Array.isArray(item.box_items) && item.box_items.length > 0 && (
-                                                        <div className="mt-2.5 pl-3 border-l-2 border-amber-200 space-y-1">
-                                                            <p className="text-[10px] font-bold text-amber-900/70 uppercase tracking-wider">Box Selection:</p>
-                                                            <div className="flex flex-wrap gap-1.5">
-                                                                {item.box_items.map((bi, bIdx) => (
-                                                                    <span key={bIdx} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-50 text-amber-900 border border-amber-200/70 text-[11px] font-medium">
-                                                                        <span className="font-bold text-amber-800">{bi.quantity}x</span>
-                                                                        <span>{bi.product_name || bi.name}{bi.variation_name ? ` (${bi.variation_name})` : ''}</span>
-                                                                    </span>
-                                                                ))}
-                                                            </div>
-                                                        </div>
-                                                    )}
+                                                    <span className="font-black text-neutral-900 whitespace-nowrap">£{parseFloat(item.total || 0).toFixed(2)}</span>
                                                 </div>
-                                                <span className="font-black text-neutral-900 whitespace-nowrap">£{parseFloat(item.total || 0).toFixed(2)}</span>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
                                 </div>
 
